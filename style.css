@@ -1,0 +1,663 @@
+/* Основні кольори */
+:root {
+    --color-primary: #38765E; /* Темно-зелений для активного стану/тексту */
+    --color-secondary: #E3F2E3; /* Дуже світлий фон */
+    --color-background: #F8FFF8; /* Білий фон додатку (Використовується для future) */
+    --color-card-light: #E9F4E9; /* Світла картка (Використовується для past) */
+    --color-card-dark: #5C8C7F; /* Темна картка (Використовується для current) */
+    --color-text-dark: #1F332C; /* Майже чорний текст */
+    --color-text-light: #F0F5F0; /* Світлий текст на темному фоні */
+    --color-shadow: rgba(0, 0, 0, 0.1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+body {
+    background-color: var(--color-background);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+}
+
+.app-container {
+    width: 100%;
+    max-width: 400px; /* Типова ширина мобільного екрану */
+    min-height: 100vh;
+    background-color: var(--color-secondary); /* Світло-зелений фон */
+    position: relative;
+    padding-bottom: 80px; /* Місце для нижнього меню */
+    overflow-x: hidden;
+}
+
+/* --- HEADER СТИЛІ --- */
+.header {
+    text-align: center;
+    padding: 30px 0 20px 0;
+    background-color: var(--color-secondary);
+}
+
+.day-selector {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
+    position: absolute; /* Для накладання */
+    top: 50px;
+    left: 0;
+    right: 0;
+    color: var(--color-primary);
+    opacity: 0.5;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.day-selector .active {
+    opacity: 1;
+}
+
+.main-day {
+    font-size: 38px;
+    font-weight: 900;
+    color: var(--color-primary);
+    margin-top: 10px;
+}
+
+.date {
+    font-size: 16px;
+    color: var(--color-primary);
+    opacity: 0.8;
+    margin-top: 5px;
+    cursor: pointer; /* Додано для кліку на дату */
+}
+
+/* --- СПИСОК ЗАНЯТЬ --- */
+.schedule-list {
+    padding: 20px 15px 15px 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.lesson-card {
+    position: relative;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px var(--color-shadow);
+    overflow: hidden; 
+    color: var(--color-text-dark);
+    /* Додано transition для плавного переходу між станами */
+    transition: opacity 0.3s, background-color 0.3s, box-shadow 0.3s;
+}
+
+/* 1. PAST: Минулі події (напів прозорі, світло-зелені) */
+.lesson-card.past {
+    background-color: var(--color-card-light);
+    opacity: 0.7; /* Напів прозорий */
+    box-shadow: none; /* Прибрати тінь */
+}
+.lesson-card.past .details-row span {
+    color: var(--color-primary);
+}
+.lesson-card.past .details-row.secondary span {
+    color: var(--color-text-dark);
+    opacity: 0.8;
+}
+
+/* 2. CURRENT: Поточна подія (темно-зелена) */
+.lesson-card.current {
+    background-color: var(--color-card-dark);
+    color: var(--color-text-light);
+    box-shadow: 0 4px 15px rgba(56, 118, 94, 0.4); /* Більш помітна тінь */
+    opacity: 1; 
+}
+.lesson-card.current .details-row span {
+    color: var(--color-text-light);
+    opacity: 0.8;
+}
+.lesson-card.current .details-row.secondary span {
+    color: var(--color-text-light);
+    opacity: 0.7;
+}
+
+/* 3. FUTURE: Майбутні події (білі/дефолтні) */
+.lesson-card.future {
+    background-color: var(--color-background); /* Білий фон */
+    opacity: 1; 
+    box-shadow: 0 4px 12px var(--color-shadow); /* Звичайна тінь */
+}
+.lesson-card.future .details-row span {
+    color: var(--color-primary);
+}
+.lesson-card.future .details-row.secondary span {
+    color: var(--color-text-dark);
+    opacity: 0.8;
+}
+
+/* Декоративні форми (коригування для new styles) */
+.decorative-shape-1, .decorative-shape-2 {
+    position: absolute;
+    border-radius: 50%;
+    z-index: 0;
+}
+.lesson-card.past .decorative-shape-1, .lesson-card.past .decorative-shape-2, 
+.lesson-card.future .decorative-shape-1, .lesson-card.future .decorative-shape-2 {
+    background-color: rgba(56, 118, 94, 0.1); /* Світлий відтінок для past/future */
+}
+.lesson-card.current .decorative-shape-1, .lesson-card.current .decorative-shape-2 {
+     background-color: rgba(255, 255, 255, 0.1); /* Світлий відтінок на темному фоні */
+}
+.decorative-shape-1 {
+    width: 150px;
+    height: 150px;
+    top: -50px;
+    right: -80px;
+    transform: rotate(30deg);
+}
+
+.decorative-shape-2 {
+    width: 80px;
+    height: 80px;
+    bottom: -30px;
+    left: -40px;
+    transform: rotate(-20deg);
+}
+
+/* Контент картки */
+.subject {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 1; /* Поверх декоративних форм */
+}
+
+.details-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+    font-size: 14px;
+    font-weight: 500;
+    position: relative;
+    z-index: 1;
+}
+
+.details-row span {
+    color: var(--color-primary);
+}
+
+.details-row.secondary {
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.details-row.secondary span {
+    color: var(--color-text-dark);
+    opacity: 0.8;
+}
+
+/* Стилі для світлих елементів на темній картці */
+.lesson-card.current .details-row span {
+    color: var(--color-text-light);
+    opacity: 0.8;
+}
+.lesson-card.current .details-row.secondary span {
+    color: var(--color-text-light);
+    opacity: 0.7;
+}
+
+
+/* --- BOTTOM NAV СТИЛІ --- */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    max-width: 400px;
+    height: 70px;
+    background-color: var(--color-card-light);
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
+    box-shadow: 0 -4px 12px var(--color-shadow);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 10px;
+}
+
+.nav-item {
+    padding: 8px 15px;
+    border-radius: 12px;
+    color: var(--color-primary);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.nav-item:hover {
+    background-color: rgba(56, 118, 94, 0.1);
+}
+
+.nav-item.active-nav {
+    color: white;
+}
+
+
+/* style.css */
+
+/* --- СТИЛІ МОДАЛЬНОГО КАЛЕНДАРЯ --- */
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: none; /* Приховано за замовчуванням */
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.modal.open {
+    display: flex; /* Показати при відкритті */
+}
+
+.modal-content {
+    background-color: var(--color-background);
+    padding: 20px;
+    border-radius: 25px;
+    width: 100%;
+    max-width: 350px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    color: var(--color-text-dark);
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    color: var(--color-primary);
+}
+
+#current-month-year {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.calendar-nav-btn {
+    cursor: pointer;
+    font-size: 28px;
+    opacity: 0.8;
+}
+
+.calendar-grid-header, .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    gap: 5px;
+}
+
+.calendar-grid-header span {
+    font-weight: 500;
+    color: var(--color-primary);
+    opacity: 0.7;
+    font-size: 14px;
+}
+
+.calendar-day {
+    padding: 8px 0;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.calendar-day.inactive {
+    color: #ccc;
+    cursor: default;
+    background: none;
+}
+
+.calendar-day:not(.inactive):hover {
+    background-color: var(--color-card-light);
+}
+
+.calendar-day.selected {
+    background-color: var(--color-primary);
+    color: var(--color-text-light);
+    font-weight: 700;
+}
+
+.close-btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 20px;
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 15px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* --- СТИЛІ МОДАЛЬНОГО КАЛЕНДАРЯ --- */
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: none; /* Приховано за замовчуванням */
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.modal.open {
+    display: flex; /* Показати при відкритті */
+}
+
+.modal-content {
+    background-color: var(--color-background);
+    padding: 20px;
+    border-radius: 25px;
+    width: 100%;
+    max-width: 350px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    color: var(--color-text-dark);
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    color: var(--color-primary);
+}
+
+#current-month-year {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.calendar-nav-btn {
+    cursor: pointer;
+    font-size: 28px;
+    opacity: 0.8;
+}
+
+.calendar-grid-header, .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    gap: 5px;
+}
+
+.calendar-grid-header span {
+    font-weight: 500;
+    color: var(--color-primary);
+    opacity: 0.7;
+    font-size: 14px;
+}
+
+.calendar-day {
+    padding: 8px 0;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.calendar-day.inactive {
+    color: #ccc;
+    cursor: default;
+    background: none;
+}
+
+.calendar-day:not(.inactive):hover {
+    background-color: var(--color-card-light);
+}
+
+.calendar-day.selected {
+    background-color: var(--color-primary);
+    color: var(--color-text-light);
+    font-weight: 700;
+}
+
+.close-btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 20px;
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 15px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+
+/* ... (Ваші попередні стилі) ... */
+
+/* --- СТИЛІ СТЕКУ ПРОЙДЕНИХ ЗАНЯТЬ (past-stack-container) --- */
+
+.past-stack-container {
+    cursor: pointer;
+    background-color: var(--color-card-light);
+    border-radius: 20px;
+    box-shadow: 0 5px 15px var(--color-shadow);
+    position: relative;
+    overflow: hidden; 
+    transition: all 0.3s ease-in-out;
+}
+
+.stack-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    background-color: var(--color-secondary); /* Світліший фон, ніж картка */
+    color: var(--color-primary);
+    font-weight: 500;
+    border-radius: 20px;
+    position: relative;
+    z-index: 10; 
+    transition: border-radius 0.3s ease;
+}
+
+.stack-header span:first-child {
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+.expand-icon {
+    transition: transform 0.3s ease;
+}
+
+.stack-cards-wrapper {
+    position: relative;
+    top: -10px;
+    /* Висота стеку: 1 картка + невелика тінь */ 
+    transition: max-height 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Плавне розгортання */
+}
+
+/* Стек: візуальний ефект накладання */
+.past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card {
+    position: absolute;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Відображаємо тільки верхню картку (остання в масиві) */
+.past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card:first-child { 
+    position: relative; 
+    transform: translateY(0);
+    visibility: visible;
+    opacity: 1;
+    margin-bottom: 0;
+}
+
+/* Ефект тіні для стеку - додаємо трансформацію до другої та третьої картки знизу */
+.past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card:nth-last-child(2) {
+    transform: translateY(4px) scale(0.98);
+    opacity: 0.5; /* Забезпечуємо візуальний натяк на наявність */
+    visibility: visible;
+}
+
+.past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card:nth-last-child(3) {
+    transform: translateY(8px) scale(0.96);
+    opacity: 0.3;
+    visibility: visible;
+}
+
+
+/* СТАН РОЗГОРНУТОГО СТЕКУ (EXPANDED) */
+.past-stack-container.expanded {
+    border-radius: 20px;
+}
+
+.past-stack-container.expanded .stack-header {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.past-stack-container.expanded .expand-icon {
+    transform: rotate(180deg);
+}
+
+.past-stack-container.expanded .stack-cards-wrapper {
+    max-height: 1000px; /* Достатньо велике значення для відображення всіх карток */
+}
+
+.past-stack-container.expanded .stack-cards-wrapper .lesson-card {
+    /* Картки відображаються нормально, одна під одною */
+    position: relative;
+    width: 100%;
+    margin: 0;
+    padding: 15px 20px;
+    box-shadow: none;
+    border-radius: 0;
+    border-bottom: 1px solid rgba(56, 118, 94, 0.1); /* Роздільник */
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+	color: #5c8c7f;
+}
+
+.past-stack-container.expanded .stack-cards-wrapper .lesson-card:last-child {
+    border-bottom: none;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+
+/* Приховуємо декоративні форми в стеку, щоб вони не заважали */
+.past-stack-container .decorative-shape-1,
+.past-stack-container .decorative-shape-2 {
+    display: none;
+}
+/* ... (Ваші попередні стилі для lesson-card.past) ... */
+
+/* --- СТИЛІ ПЕРЕМИКАННЯ ЕКРАНІВ --- */
+.content-wrapper {
+    width: 100%;}
+
+.view {
+    display: none;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.view.active-view {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.placeholder-text {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--color-text-dark);
+    opacity: 0.6;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+/* --- BOTTOM NAV СТИЛІ (ОНОВЛЕННЯ) --- */
+.bottom-nav .nav-item {
+    cursor: pointer;
+    text-align: center;
+    flex-grow: 0.12;
+    color: var(--color-primary);
+    opacity: 0.6;
+    transition: all 0.3s ease;
+}
+
+.bottom-nav .nav-item.active-nav {
+    opacity: 1;
+    color: var(--color-primary);
+    transform: scale(1.1);
+	background-color: rgb(34 139 98 / 18%);
+}
+
+.bottom-nav .nav-item.active-nav .material-icons {
+    padding: 4px;
+}
+
+.bottom-nav .material-icons {
+    font-size: 24px;
+}
+
+/* --- СТИЛІ HEADER ДЛЯ ПЕРЕМИКАННЯ ЕКРАНІВ --- */
+
+/* Захоплення Header, коли активний будь-який інший екран, крім Розкладу */
+.app-container:not(.is-schedule) .header {
+    /* Приховуємо header */
+    transform: translateY(-100%);
+    opacity: 0;
+    visibility: hidden;
+    height: 0; /* Це важливо, щоб контент не займав місце заголовка */
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.app-container.is-schedule .header {
+    /* Показуємо header, коли активний екран Розкладу */
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+    height: 120px; /* Повертаємо початкову висоту */
+    padding: 20px 20px 10px; /* Повертаємо початкові відступи */
+}
+
+/* Переконайтеся, що transition є на самому .header */
+.header {
+    transition: all 0.3s ease-in-out; 
+    /* Додайте цю властивість, якщо її ще немає, для плавної анімації */
+}
+
+/* Оновлення main container для адаптації до відсутності/наявності header */
+.content-wrapper {
+    /* Встановлюємо transition для плавного переміщення контенту */
+    transition: padding-top 0.3s ease-in-out;
+}
+
+.app-container:not(.is-schedule) .content-wrapper {
+    /* Коли header прихований, зменшуємо верхній відступ (або видаляємо, якщо він не потрібен) */
+    padding-top: 20px; 
+}

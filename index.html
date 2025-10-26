@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Розклад Занять</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <nav class="day-selector">
+           
+            </nav>
+            <h1 class="main-day"></h1>
+            <p class="date"></p>
+        </header>
+
+        <main class="content-wrapper">
+            <section id="schedule-view" class="view active-view">
+                <div class="schedule-list">
+                    </div>
+            </section>
+
+            <section id="search-view" class="view">
+                <p class="placeholder-text">🔍 Екран пошуку. Незабаром буде реалізовано форму пошуку.</p>
+            </section>
+            
+            <section id="notifications-view" class="view">
+                <p class="placeholder-text">🔔 Екран графіку дзвінків. Тут буде відображатись розклад дзвінків.</p>
+            </section>
+
+            <section id="grid-view" class="view">
+                <p class="placeholder-text">📰 Екран новин та погоди. Незабаром тут з'являться віджети.</p>
+            </section>
+            
+            <section id="menu-view" class="view">
+                <p class="placeholder-text">⚙️ Екран налаштувань. Тут будуть налаштування користувача.</p>
+            </section>
+        </main>
+
+<footer class="bottom-nav">
+            <div class="nav-item" data-icon="search">
+                <span class="material-icons">search</span>
+            </div>
+            <div class="nav-item" data-icon="format_list_bulleted">
+                <span class="material-icons">format_list_bulleted</span>
+            </div>
+            <div class="nav-item" data-icon="notifications">
+                <span class="material-icons">notifications</span>
+            </div>
+            <div class="nav-item" data-icon="grid_view">
+                <span class="material-icons">grid_view</span>
+            </div>
+            <div class="nav-item" data-icon="menu">
+                <span class="material-icons">menu</span>
+            </div>
+        </footer>
+    </div>
+	<div id="calendar-modal" class="modal">
+    <div class="modal-content">
+        <div class="calendar-header">
+            <span id="prev-month" class="material-icons calendar-nav-btn">chevron_left</span>
+            <h2 id="current-month-year">Листопад 2025</h2>
+            <span id="next-month" class="material-icons calendar-nav-btn">chevron_right</span>
+        </div>
+        <div class="calendar-grid-header">
+            <span>Нд</span><span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span>
+        </div>
+        <div id="calendar-grid" class="calendar-grid">
+            </div>
+        <button id="close-modal-btn" class="close-btn">Закрити</button>
+    </div>
+</div>
+    <script src="script.js"></script>
+</body>
+</html>
