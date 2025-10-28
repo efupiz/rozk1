@@ -1,4 +1,5 @@
 /* Основні кольори */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;700;800&display=swap');
 :root {
     --color-primary: #38765E; /* Темно-зелений для активного стану/тексту */
     --color-secondary: #E3F2E3; /* Дуже світлий фон */
@@ -7,14 +8,17 @@
     --color-card-dark: #5C8C7F; /* Темна картка (Використовується для current) */
     --color-text-dark: #1F332C; /* Майже чорний текст */
     --color-text-light: #F0F5F0; /* Світлий текст на темному фоні */
+	--color-btn-light: #c5e1d1;
     --color-shadow: rgba(0, 0, 0, 0.1);
 }
-
+/* Вимкнення синього (або іншого) підсвічування при торканні */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    /*font-family: "Segoe UI", Roboto, Helvetica, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", 'Nunito', sans-serif;*/
+	font-family: 'Nunito', sans-serif;
+	-webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -41,7 +45,7 @@ body {
     padding: 30px 0 20px 0;
     background-color: var(--color-secondary);
 }
-
+.day-item {cursor: pointer;}
 .day-selector {
     display: flex;
     justify-content: space-between;
@@ -227,6 +231,15 @@ body {
     justify-content: space-around;
     align-items: center;
     padding: 0 10px;
+	
+	/* Запобігає виділенню тексту більшістю браузерів */
+  -webkit-user-select: none; /* Chrome, Safari, Opera */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* Internet Explorer/Edge */
+  user-select: none;         /* Стандартна властивість */
+
+  /* Додатково може допомогти, якщо іконка є посиланням або інтерактивним елементом */
+  cursor: default; /* Встановлює звичайний курсор, щоб уникнути вигляду "тексту" */
 }
 
 .nav-item {
@@ -661,3 +674,470 @@ body {
     /* Коли header прихований, зменшуємо верхній відступ (або видаляємо, якщо він не потрібен) */
     padding-top: 20px; 
 }
+
+/* --- СТИЛІ ФОРМИ ПОШУКУ --- */
+.search-form-container {
+    padding: 20px 15px;
+}
+
+.title {
+    font-size: 38px;
+    font-weight: 900;
+    color: var(--color-primary);
+    margin-bottom: 40px;
+    text-align: center;
+
+}
+
+.filter-card {
+    background-color: var(--color-card-light);
+    border-radius: 20px;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+}
+
+.filter-header {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-text-dark);
+    margin-bottom: 15px;
+}
+
+.filter-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--color-text-dark);
+    border-bottom: 1px solid rgba(56, 118, 94, 0.2); /* Світла лінія-роздільник */
+    cursor: pointer;
+}
+
+.filter-item:hover {
+    opacity: 0.8;
+}
+
+.filter-item .material-icons {
+    color: var(--color-primary);
+    font-size: 24px;
+}
+
+.filter-item.no-border {
+    border-bottom: none;
+}
+
+.date-range-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
+.date-card {
+    flex: 1;
+    background-color: var(--color-card-light);
+    border-radius: 15px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.date-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-dark);
+    opacity: 0.7;
+    margin-bottom: 5px;
+}
+
+.date-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-text-dark);
+}
+
+.search-submit-btn {
+    width: 90%;
+    margin: 0 auto;
+    display: block;
+    padding: 15px 20px;
+    background-color: var(--color-btn-light);
+    color: var(--color-primary);
+    border: none;
+    border-radius: 15px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.search-submit-btn:hover {
+    background-color: var(--color-primary);
+	color: var(--color-text-light);
+}
+/* --- НОВІ СТИЛІ ДЛЯ ФІЛЬТРІВ (ІМІТАЦІЯ СТЕКУ) --- */
+
+/* Контейнер-обгортка, що імітує past-stack-container */
+.filter-stack-container {
+    cursor: pointer;
+    background-color: var(--color-card-light);
+    border-radius: 15px; /* Трохи менше, ніж у карток */
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 10px; /* Відступ між фільтрами */
+    transition: all 0.3s ease-in-out;
+}
+
+/* Базовий стиль для усіх елементів фільтру (заголовків та опцій) */
+.filter-item-base {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--color-text-dark);
+    transition: background-color 0.2s;
+}
+
+/* Заголовок (імітує stack-header) */
+.filter-stack-header {
+    /* Використовує стилі .filter-item-base */
+    background-color: var(--color-secondary); /* Світліший фон */
+    color: var(--color-primary);
+    font-weight: 500;
+    border-radius: 15px;
+    position: relative;
+    z-index: 10;
+    transition: border-radius 0.3s ease;
+}
+
+.filter-stack-header:hover {
+    background-color: var(--color-secondary);
+}
+
+.filter-stack-header .selected-display {
+    font-weight: 700;
+	opacity: 0.8;
+    margin-right: 10px;
+    color: var(--color-primary);
+}
+
+.filter-stack-header .material-icons {
+    color: var(--color-primary);
+}
+
+/* Обгортка для опцій (імітує stack-cards-wrapper) */
+.filter-stack-options {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s cubic-bezier(0.8, 0, 0.2, 1);
+    position: relative;
+    margin: 0px 10px 0px 10px;
+    padding-bottom: 5px;
+}
+
+/* Окрема опція (імітує картку у стеку) */
+.filter-option-item {
+    background-color: var(--color-background); /* Білий фон */
+    border-radius: 12px;
+    padding: 12px 15px;
+    margin-top: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    color: var(--color-text-dark);
+    font-size: 16px;
+    font-weight: 400;
+    transition: background-color 0.2s;
+}
+
+.filter-option-item:hover:not(.disabled) {
+    background-color: var(--color-card-light);
+}
+
+.filter-option-item.disabled {
+    opacity: 0.5;
+    cursor: default;
+    background-color: var(--color-background);
+}
+
+/* Стан 'РОЗГОРНУТО' (expanded) */
+.filter-stack-container.expanded .filter-stack-header {
+    border-radius: 15px 15px 0 0; /* Прибираємо нижні заокруглення */
+    box-shadow: none; /* Прибираємо тінь із заголовка */
+}
+
+.filter-stack-container.expanded .filter-stack-options {
+    max-height: 500px; /* Достатньо велике значення для анімації */
+    background-color: var(--color-card-light); /* Фон опцій */
+    border-radius: 0 0 15px 15px;
+}
+
+.filter-stack-container.expanded .expand-icon {
+    transform: rotate(180deg);
+}
+
+/* Видалив старі, непотрібні стилі .filter-item, .filter-item.no-border, оскільки вони замінені */
+.filter-card .filter-item {
+    display: none;
+}
+
+/* --- CSS для Спінера Завантаження --- */
+
+/* Контейнер, що центрує спінер і текст */
+.loader-container {
+    text-align: center;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* Використовуємо колір з вашого дизайну, якщо є */
+    color: var(--color-primary, #666); 
+    opacity: 0.8;
+}
+
+/* Текст під спінером */
+.loader-text {
+    margin-top: 15px; /* Відступ від спінера */
+    font-size: 0.9em;
+    color: inherit; /* Наслідує колір .loader-container */
+}
+
+/* Сам спінер (кільце) */
+.spinner {
+    width: 30px; /* Той самий розмір, що й у GIF */
+    height: 30px;
+    border: 4px solid rgba(0, 0, 0, 0.1); /* Світлий колір кільця */
+    /* Колір "активної" частини, беремо з вашої теми */
+    border-top-color: var(--color-primary, #007bff); 
+    border-radius: 50%;
+    /* Запускаємо анімацію */
+    animation: spin 1s linear infinite; 
+}
+
+/* Анімація обертання */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* --- СТИЛІ ДЛЯ ПОВІДОМЛЕННЯ "НЕМАЄ ЗАНЯТЬ" (ФІНАЛЬНА ВЕРСІЯ) --- */
+
+.no-schedule-message {
+    text-align: center;
+    /* Висота контейнера має бути 100% доступного простору */
+    min-height: calc(100vh - var(--header-height, 100px) - var(--nav-height, 150px));
+    height: auto;
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: end; /* Використовуємо justify-content: end для притискання до низу */
+    
+    position: relative;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+/* Великий, напівпрозорий "N/A" */
+.no-schedule-message::before {
+    content: "N/A";
+    /* Залишаємо vw для адаптивного розміру на мобільних */
+    font-size: 52vw; 
+    font-weight: 700;
+    color: var(--color-placeholder, rgb(56 118 94 / 5%)); 
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    
+    /* Зміщення */
+    transform: translate(-45%, calc(-50% - 15vh)) rotate(35deg); 
+    
+    line-height: 1;
+    user-select: none;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* --- ОБМЕЖЕННЯ РОЗМІРУ ДЛЯ ПК (КЛЮЧОВЕ ВИПРАВЛЕННЯ) --- */
+@media (min-width: 600px) { /* Застосовуємо, коли екран стає ширшим за 600px */
+    .no-schedule-message::before {
+        /* Фіксуємо максимальний розмір шрифту, щоб він не збільшувався далі */
+        /* Наприклад, 52vw при 400px ширини вікна - це близько 208px. 
+           Встановимо фіксоване значення, близьке до цього. */
+        font-size: 25vw; 
+        
+        /* Також може знадобитися зменшити вертикальне зміщення, щоб N/A не було надто високо */
+        transform: translate(-45%, calc(-50% - 80px)) rotate(35deg); 
+    }
+}
+
+/* Текст (Занять немає на цю дату) */
+.no-schedule-main-text {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: var(--color-primary, #6a6a6a); 
+    position: relative; 
+    z-index: 1; 
+    margin-bottom: 10px;
+    
+    /* Збереження вашого зміщення */
+    transform: translateY(-5vh); 
+}
+
+/* Додаткова підказка (На жаль, інформація...) */
+.no-schedule-sub-text {
+    font-size: 1em;
+    color: var(--color-text-secondary, #999); 
+    opacity: 0.8;
+    position: relative; 
+    z-index: 1; 
+    max-width: 80%;
+    
+    /* Збереження вашого зміщення */
+    transform: translateY(-5vh); 
+}
+
+
+
+
+
+
+
+        /* === ІЗОЛЬОВАНІ СТИЛІ === */
+
+        /* Загальні стилі для ізоляції */
+        #notifications-view { /* Новий клас для стилів body */
+            padding: 20px;
+        }
+        
+        /* Контейнер розкладу */
+        .schedule-wrapper {
+            max-width: 400px;
+            width: 100%;
+        }
+
+        /* Заголовок h1 */
+        .schedule-title { /* Новий клас для стилів h1 */
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #2B322C;
+            margin-bottom: 25px;
+            margin-top: 0; /* Додано, щоб уникнути конфліктів зовнішніх стилів h1 */
+        }
+        
+        /* --- СТРУКТУРНІ СТИЛІ (ЗАЛИШЕНО БЕЗ ЗМІН) --- */
+
+        .schedule-card {
+                display: flex;
+				justify-content: space-between;
+				align-items: baseline;
+				padding: 16px;
+				border-radius: 20px;
+				margin-bottom: 20px;
+				position: relative; 
+			}
+
+        .card-first {
+            background-color: #ECFCE5;
+			margin-top: 40px;
+        }
+
+        .card-second {
+            background-color: #ffffff;
+        }
+
+        .card-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px; 
+        }
+
+        .card-info h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 0;
+            color: #222;
+        }
+
+        .status-container {
+            position: relative;
+            margin-top: 4px;   
+        }
+
+        .status-label-pill,
+        .status-time-pill {
+                    position: absolute;
+					top: 0;
+					height: 31px;
+					border-radius: 20px;
+					display: flex;
+					align-items: center;
+					font-size: 14px;
+					font-weight: 800;
+					letter-spacing: 0.5px;
+					align-items: center;
+				}
+
+        .status-label-pill {
+			    left: 0;
+				background-color: #D1ECC7;
+				color: #263F27;
+				padding: 0px 18px;
+				z-index: 2;
+				justify-content: center;
+		}
+
+        .status-time-pill {
+                    left: 0;
+					background-color: #FCFCF7;
+					color: #263F27;
+					z-index: 1;
+					padding: 0 20px 0 100px;
+				}
+        
+        .card-times {
+                display: grid;
+				flex-direction: column;
+				align-items: flex-end;
+				gap: 8px;
+				position: relative;
+				z-index: 10;
+		}
+
+        .time-row {
+            font-size: 1.6rem;
+            letter-spacing: 0.5px;
+        }
+
+        .time-row .time-start {
+            font-weight: 800;
+            color: #333;
+            margin-right: 15px;
+        }
+
+        .time-row .time-end {
+            font-weight: 500;
+            color: #555;
+        }
+		
+		/* --- СТИЛІ ДЛЯ SVG ЕЛЕМЕНТА --- */
+		.svg-pattern {
+			    position: absolute;
+			top: 50%;
+			right: 0px;
+			transform: translateY(-45%);
+			opacity: 0.7;
+			z-index: 0;
+		}
+		
+		/* Налаштовуємо кольори для відповідності фону картки */
+		.svg-pattern path {
+			fill: #DDF3D6;
+		}
+		
