@@ -23,12 +23,156 @@
                     </div>
             </section>
 
-            <section id="search-view" class="view">
-                <p class="placeholder-text">🔍 Екран пошуку. Незабаром буде реалізовано форму пошуку.</p>
-            </section>
+<section id="search-view" class="view">
+    <div class="search-form-container">
+        <h2 class="title">Розклад занять</h2>
+        
+        <div class="filter-card">
+            <h3 class="filter-header">Фільтри:</h3>
+            
+            <div class="filter-stack-container" id="faculty-stack" data-filter-name="faculty">
+                <div class="filter-stack-header filter-item-base">
+                    <span class="selected-display" data-key="">Оберіть факультет:</span>
+                    <span class="material-icons expand-icon">expand_more</span>
+                </div>
+                <div class="filter-stack-options" id="faculty-options">
+                    </div>
+                <input type="hidden" id="faculty-select" name="faculty-id">
+            </div>
+            
+            <div class="filter-stack-container" id="education-form-stack" data-filter-name="education-form">
+                <div class="filter-stack-header filter-item-base">
+                    <span class="filter-label" data-key="Форма навчання:">Оберіть форму</span>
+                    <span class="material-icons expand-icon">expand_more</span>
+                </div>
+                <div class="filter-stack-options" id="education-form-options">
+                    </div>
+                <input type="hidden" id="education-form-select" name="education-form-id">
+            </div>
+            
+            <div class="filter-stack-container" id="course-stack" data-filter-name="course">
+                <div class="filter-stack-header filter-item-base">
+                    <span class="selected-display" data-key="">Оберіть курс:</span>
+                    <span class="material-icons expand-icon">expand_more</span>
+                </div>
+                <div class="filter-stack-options" id="course-options">
+                    </div>
+                <input type="hidden" id="course-select" name="course-id">
+            </div>
+        </div>
+
+        <div class="filter-card">
+            <h3 class="filter-header">Навчальна група:</h3>
+            <div class="filter-stack-container" id="group-stack" data-filter-name="group">
+                <div class="filter-stack-header filter-item-base">
+                    <span class="selected-display" data-key="">Оберіть групу:</span>
+                    <span class="material-icons expand-icon">expand_more</span>
+                </div>
+                <div class="filter-stack-options" id="group-options">
+                    </div>
+                <input type="hidden" id="group-select" name="group-id">
+            </div>
+        </div>
+        
+        <button class="search-submit-btn">Вивести</button>
+    </div>
+</section>
             
             <section id="notifications-view" class="view">
-                <p class="placeholder-text">🔔 Екран графіку дзвінків. Тут буде відображатись розклад дзвінків.</p>
+                <div class="schedule-wrapper">
+        <h1 class="title">Розклад дзвінків</h1>
+
+        <div class="schedule-card card-first">
+            <div class="card-info">
+                <h2>I пара</h2>
+                
+                <div class="status-container">
+					<div class="status-time-pill status-time-pill-animated">9:15</div>
+					<div class="status-label-pill">Триває</div>
+				</div>
+
+            </div>
+            <div class="card-times">
+                <div class="time-row">
+                    <span class="time-start">8.45</span>
+                    <span class="time-end">9.30</span>
+                </div>
+                <div class="time-row">
+                    <span class="time-start">9.35</span>
+                    <span class="time-end">10.20</span>
+                </div>
+            </div>			
+			<svg class="svg-pattern" width="150" height="140" viewBox="0 0 95 71" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<g clip-path="url(#clip0_948_150)">
+					<path d="M68.8466 0.841832C99.792 19.0312 104.751 36.0255 97.9915 74.7182C97.9915 74.7182 75.3438 59.909 69.0939 44.5635C63.2367 30.1823 67.8486 5.67497 68.8466 0.841832Z" fill="#DDF3D6"/>
+					<path d="M25.1822 13.0689C59.483 22.5987 68.3349 37.76 71.0082 76.9951C71.0082 76.9951 45.5481 68.5708 35.8394 55.3434C26.7408 42.9472 25.3674 18.01 25.1822 13.0689Z" fill="#DDF3D6"/>
+					<path d="M3.46489 56.1011C38.9518 56.3444 51.1439 68.7055 63.1046 105.993C63.1046 105.993 36.4415 104.505 23.8816 94.2406C12.1111 84.6214 4.82447 60.8366 3.46489 56.1011Z" fill="#DDF3D6"/>
+				</g>
+				<defs>
+					<clipPath id="clip0_948_150">
+						<rect width="95" height="71" rx="7" fill="white"/>
+					</clipPath>
+				</defs>
+			</svg>
+        </div>
+        <div class="schedule-card card-second">
+            <div class="card-info">
+                <h2>II пара</h2>
+            </div>
+            <div class="card-times">
+                <div class="time-row">
+                    <span class="time-start">10.35</span>
+                    <span class="time-end">11.20</span>
+                </div>
+                <div class="time-row">
+                    <span class="time-start">11.25</span>
+                    <span class="time-end">12.10</span>
+                </div>
+            </div>
+        </div>
+		<div class="schedule-card card-second">
+            <div class="card-info">
+                <h2>III пара</h2>
+            </div>
+            <div class="card-times">
+                <div class="time-row">
+                    <span class="time-start">12.30</span>
+                    <span class="time-end">13.15</span>
+                </div>
+                <div class="time-row">
+                    <span class="time-start">13.20</span>
+                    <span class="time-end">14.05</span>
+                </div>
+            </div>
+        </div>
+		<div class="schedule-card card-second">
+            <div class="card-info">
+                <h2>IV пара</h2>
+            </div>
+            <div class="card-times">
+                <div class="time-row">
+                    <span class="time-start">14.20</span>
+                    <span class="time-end">15.05</span>
+                </div>
+                <div class="time-row">
+                    <span class="time-start">15.10</span>
+                    <span class="time-end">15.55</span>
+                </div>
+            </div>
+        </div>
+		<div class="schedule-card card-second">
+            <div class="card-info">
+                <h2>V пара</h2>
+            </div>
+            <div class="card-times">
+                <div class="time-row">
+                    <span class="time-start">17.05</span>
+                    <span class="time-end">17.25</span>
+                </div>
+				
+            </div>
+        </div>
+    </div>
             </section>
 
             <section id="grid-view" class="view">
