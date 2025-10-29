@@ -58,6 +58,10 @@ body {
     opacity: 0.5;
     font-size: 16px;
     font-weight: 500;
+      user-select: none;
+  -webkit-user-select: none; /* Safari, Chrome, Opera, Edge */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* Internet Explorer 10+ */
 }
 
 .day-selector .active {
@@ -231,7 +235,7 @@ body {
     justify-content: space-around;
     align-items: center;
     padding: 0 10px;
-	
+	z-index: 99;
 	/* Запобігає виділенню тексту більшістю браузерів */
   -webkit-user-select: none; /* Chrome, Safari, Opera */
   -moz-user-select: none;    /* Firefox */
@@ -526,8 +530,8 @@ body {
 
 /* Ефект тіні для стеку - додаємо трансформацію до другої та третьої картки знизу */
 .past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card:nth-last-child(2) {
-    transform: translateY(4px) scale(0.98);
-    opacity: 0.5; /* Забезпечуємо візуальний натяк на наявність */
+    transform: translateY(8px) scale(0.96);
+    opacity: 0.3; /* Забезпечуємо візуальний натяк на наявність */
     visibility: visible;
 }
 
@@ -536,7 +540,31 @@ body {
     opacity: 0.3;
     visibility: visible;
 }
-
+.past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card:nth-last-child(4) {
+    transform: translateY(8px) scale(0.96);
+    opacity: 0.3;
+    visibility: visible;
+}
+.past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card:nth-last-child(5) {
+    transform: translateY(8px) scale(0.96);
+    opacity: 0.3;
+    visibility: visible;
+}
+.past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card:nth-last-child(6) {
+    transform: translateY(8px) scale(0.96);
+    opacity: 0.3;
+    visibility: visible;
+}
+.past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card:nth-last-child(7) {
+    transform: translateY(8px) scale(0.96);
+    opacity: 0.3;
+    visibility: visible;
+}
+.past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card:nth-last-child(8) {
+    transform: translateY(8px) scale(0.96);
+    opacity: 0.3;
+    visibility: visible;
+}
 
 /* СТАН РОЗГОРНУТОГО СТЕКУ (EXPANDED) */
 .past-stack-container.expanded {
@@ -947,7 +975,7 @@ body {
 .no-schedule-message::before {
     content: "N/A";
     /* Залишаємо vw для адаптивного розміру на мобільних */
-    font-size: 52vw; 
+    font-size: 40vw; 
     font-weight: 700;
     color: var(--color-placeholder, rgb(56 118 94 / 5%)); 
     position: absolute;
@@ -1011,133 +1039,237 @@ body {
         /* === ІЗОЛЬОВАНІ СТИЛІ === */
 
         /* Загальні стилі для ізоляції */
-        #notifications-view { /* Новий клас для стилів body */
-            padding: 20px;
-        }
-        
-        /* Контейнер розкладу */
-        .schedule-wrapper {
-            max-width: 400px;
-            width: 100%;
-        }
+#notifications-view {
+    padding: 20px;
+}
 
-        /* Заголовок h1 */
-        .schedule-title { /* Новий клас для стилів h1 */
-            text-align: center;
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: #2B322C;
-            margin-bottom: 25px;
-            margin-top: 0; /* Додано, щоб уникнути конфліктів зовнішніх стилів h1 */
-        }
-        
-        /* --- СТРУКТУРНІ СТИЛІ (ЗАЛИШЕНО БЕЗ ЗМІН) --- */
+/* Контейнер розкладу */
+.schedule-wrapper {
+    max-width: 400px;
+    width: 100%;
+}
 
-        .schedule-card {
-                display: flex;
-				justify-content: space-between;
-				align-items: baseline;
-				padding: 16px;
-				border-radius: 20px;
-				margin-bottom: 20px;
-				position: relative; 
-			}
+/* Заголовок h1 */
+.title { /* Використовуємо існуючий .title в HTML */
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #2B322C;
+    margin-bottom: 25px;
+    margin-top: 0;
+}
 
-        .card-first {
-            background-color: #ECFCE5;
-			margin-top: 40px;
-        }
+/* --- СТРУКТУРНІ СТИЛІ: КАРТКА --- */
+.schedule-card {
+    /* Змінено: Картка тепер використовує flex-direction: column для вертикального розміщення рядків */
+    display: flex;
+    flex-direction: column; 
+    
+    /* align-items: baseline; - видалено/змінено, оскільки тепер це вертикальний flex */
+    /* justify-content: space-between; - видалено, оскільки тепер це вертикальний flex */
+    
+    padding: 15px 20px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    position: relative;
+    /* gap: 10px; можна додати, щоб забезпечити проміжок між рядками, якщо потрібно */
+}
 
-        .card-second {
-            background-color: #ffffff;
-        }
+/* Стилі для рядка Заголовок + Статус (тільки для card-first в HTML) */
+.card-info-header {
+    display: flex;
+    justify-content: space-between;
+    z-index: 1;
+}
 
-        .card-info {
-            display: flex;
-            flex-direction: column;
-            gap: 6px; 
-        }
+.card-first {
+    background-color: #ECFCE5;
+    min-height: auto; /* Встановлюємо auto або видаляємо, оскільки висота зміниться */
+}
 
-        .card-info h2 {
-            font-size: 2rem;
-            font-weight: 800;
-            margin: 0;
-            color: #222;
-        }
+.card-second {
+    background-color: #ffffff;
+}
 
-        .status-container {
-            position: relative;
-            margin-top: 4px;   
-        }
+/* Контейнер назви пари (I пара, II пара...) */
+.card-info {
+    /* Змінено: більше не використовується flex-direction: column, але залишено для h2 */
+    display: flex; 
+    flex-direction: column; 
+    margin-bottom: 15px;
+}
 
-        .status-label-pill,
-        .status-time-pill {
-                    position: absolute;
-					top: 0;
-					height: 31px;
-					border-radius: 20px;
-					display: flex;
-					align-items: center;
-					font-size: 14px;
-					font-weight: 800;
-					letter-spacing: 0.5px;
-					align-items: center;
-				}
+.card-info h2 {
+    font-size: 24px;
+    font-weight: 800;
+    margin: 0;
+    color: #222;
+}
 
-        .status-label-pill {
-			    left: 0;
-				background-color: #D1ECC7;
-				color: #263F27;
-				padding: 0px 18px;
-				z-index: 2;
-				justify-content: center;
-		}
+/* Контейнер статусу */
+.status-container {
+    /* Змінено: position: relative; залишаємо, але додаємо width, щоб займати необхідний простір */
+    position: relative;
+    margin-top: 0; /* Видалено попередній margin-top: 4px; */
+    height: 31px; /* Фіксована висота, щоб не стрибало при абсолютних елементах */
+    min-width: 145px; /* Приблизна ширина для розміщення двох пігулок */
+}
 
-        .status-time-pill {
-                    left: 0;
-					background-color: #FCFCF7;
-					color: #263F27;
-					z-index: 1;
-					padding: 0 20px 0 100px;
-				}
-        
-        .card-times {
-                display: grid;
-				flex-direction: column;
-				align-items: flex-end;
-				gap: 8px;
-				position: relative;
-				z-index: 10;
-		}
+.status-label-pill,
+.status-time-pill {
+    /* Змінено: тепер вони розміщуються всередині status-container, який знаходиться праворуч */
+    position: absolute;
+    top: 0;
+    height: 31px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
 
-        .time-row {
-            font-size: 1.6rem;
-            letter-spacing: 0.5px;
-        }
+.status-label-pill {
+    left: auto; /* Видаляємо left: 0; */
+   
+    background-color: #D1ECC7;
+    color: #263F27;
+    padding: 0px 14px;
+    z-index: 2;
+    justify-content: center;
+}
 
-        .time-row .time-start {
-            font-weight: 800;
-            color: #333;
-            margin-right: 15px;
-        }
+.status-time-pill {
+    left: auto; /* Видаляємо left: 0; */
+    right: 0; /* Прикріплюємо до правого краю контейнера статусу */
+    background-color: #FCFCF7;
+    color: #263F27;
+    z-index: 1;
+    padding: 0 20px 0 80px;
+}
+ 
+/* Контейнер розкладу годин */
+.card-times {
+    /* Змінено: Встановлюємо display: flex та justify-content: space-between */
+    display: flex;
+    justify-content: space-between; /* Розміщує time-row по всій ширині */
+    
+    flex-direction: row; /* Забезпечує горизонтальне розміщення time-row */
+    align-items: flex-start; /* Вирівнювання елементів (time-row) на початку */
+    gap: 15px; /* Проміжок між парами часу */
+    
+    position: relative;
+    z-index: 10;
+    
+    /* Видалено: flex-direction: column; */
+    /* Видалено: align-items: flex-end; */
+}
 
-        .time-row .time-end {
-            font-weight: 500;
-            color: #555;
-        }
-		
-		/* --- СТИЛІ ДЛЯ SVG ЕЛЕМЕНТА --- */
-		.svg-pattern {
-			    position: absolute;
-			top: 50%;
-			right: 0px;
-			transform: translateY(-45%);
-			opacity: 0.7;
-			z-index: 0;
-		}
-		
-		/* Налаштовуємо кольори для відповідності фону картки */
-		.svg-pattern path {
-			fill: #DDF3D6;
-		}
-		
+.time-row {
+    font-size: 18px;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    color: #555;
+    white-space: nowrap; /* Запобігає переносу часу на новий рядок */
+    display: contents;
+}
+
+/* Стилі для часів (залишено без змін) */
+.time-row .time-new {
+    font-weight: 800 !important;
+    font-size: 20px !important;
+    color: #555 !important;
+}
+
+.time-row .time-pouse-start, .time-pouse-end {
+    color:#919191;
+}
+
+/* 1. Створення Keyframes для імітації миготіння */
+@keyframes blink-colon {
+    0% { opacity: 1; }
+    50% { opacity: 0.3; }
+    100% { opacity: 1; }
+}
+
+/* 2. Виправлені стилі для елемента .animated-clok */
+.animated-clok {
+    /* Робимо елемент вбудовано-блоковим, щоб він коректно розміщувався в рядку */
+    display: inline-block; 
+    
+    animation-name: blink-colon;
+    animation-duration: 1.2s; 
+    animation-timing-function: steps(1, end); 
+    animation-iteration-count: infinite;
+}
+
+/* --- СТИЛІ ДЛЯ SVG ЕЛЕМЕНТА (залишено без змін) --- */
+.svg-pattern {
+    position: absolute;
+    top: 50%;
+    left: 0px;
+    transform: translateY(-45%);
+    opacity: 0.7;
+    z-index: 0;
+}
+
+/* Налаштовуємо кольори для відповідності фону картки */
+.svg-pattern path {
+    fill: #DDF3D6;
+}
+
+/*
+ * СТИЛІ ДЛЯ КНОПКИ ФІЛЬТРА ДЗВІНКІВ
+ */
+#toggle-bells-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: #c5e1d1;
+    color: var(--color-primary);
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    margin: 0 auto 16px auto; /* Центруємо кнопку */
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+#toggle-bells-btn:hover {
+        background-color: var(--color-primary);
+    color: var(--color-text-light);
+}
+
+#toggle-bells-btn .material-icons {
+    font-size: 18px;
+}
+
+/* Стиль для режиму "Показати всі" */
+#toggle-bells-btn[data-mode="all"] {
+    background-color: #c5e1d1;
+    color: var(--color-primary);
+    border-color: transparent;
+}
+.controls-bar {
+    display: flex;
+    justify-content: space-between; /* Розносить дату та кнопку по краях */
+    align-items: center;
+    margin-bottom: 16px; /* Відступ від карток дзвінків */
+    padding: 0 8px; /* Невеликий внутрішній відступ */
+    gap: 10px; /* Відстань між елементами */
+}
+
+.controls-bar .date-display {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-text-secondary); /* Трохи світліший колір */
+    flex-shrink: 0; /* Щоб дата не стискалася */
+}
+
+/* Оновлення стилів кнопки, щоб вона працювала в flex-контейнері */
+#toggle-bells-btn {
+    /* Видаляємо старий margin, оскільки тепер flex ним керує */
+    margin: 0; 
+}
