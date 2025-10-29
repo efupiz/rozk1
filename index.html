@@ -10,9 +10,7 @@
 <body>
     <div class="app-container">
         <header class="header">
-            <nav class="day-selector">
-           
-            </nav>
+            <nav class="day-selector"></nav>
             <h1 class="main-day"></h1>
             <p class="date"></p>
         </header>
@@ -42,7 +40,7 @@
             
             <div class="filter-stack-container" id="education-form-stack" data-filter-name="education-form">
                 <div class="filter-stack-header filter-item-base">
-                    <span class="filter-label" data-key="Форма навчання:">Оберіть форму</span>
+                    <span class="selected-display" data-key="">Оберіть форму</span>
                     <span class="material-icons expand-icon">expand_more</span>
                 </div>
                 <div class="filter-stack-options" id="education-form-options">
@@ -78,102 +76,168 @@
     </div>
 </section>
             
-            <section id="notifications-view" class="view">
-                <div class="schedule-wrapper">
+ <section id="notifications-view" class="view">
+    <div class="schedule-wrapper">
         <h1 class="title">Розклад дзвінків</h1>
+        <div id="bell-schedule-controls" class="controls-bar">
+            <div id="current-bell-date" class="date-display">--/--/----</div>
 
+            <button id="toggle-bells-btn" class="toggle-filter-btn" data-mode="filtered">
+                <span class="material-icons">visibility_off</span>
+                <span>Показати всі дзвінки</span>
+            </button>
+        </div>
         <div class="schedule-card card-first">
-            <div class="card-info">
-                <h2>I пара</h2>
+            <div class="card-info-header"> 
+                <div class="card-info">
+                    <h2>I пара</h2>
+                </div>
                 
                 <div class="status-container">
-					<div class="status-time-pill status-time-pill-animated">9:15</div>
-					<div class="status-label-pill">Триває</div>
-				</div>
-
+                    <div class="status-time-pill status-time-pill-animated">9<div class="animated-clok">:</div>15</div>
+                    <div class="status-label-pill">Триває</div>
+                </div>
             </div>
-            <div class="card-times">
+            
+            <div class="card-times"> 
                 <div class="time-row">
-                    <span class="time-start">8.45</span>
-                    <span class="time-end">9.30</span>
+                    <span class="time-start time-new">08:30</span>
+                    <span class="time-pouse-start">09:07</span>
+                    <span class="time-pouse-end">09:12</span>
+                    <span class="time-end">09:50</span>
                 </div>
-                <div class="time-row">
-                    <span class="time-start">9.35</span>
-                    <span class="time-end">10.20</span>
+            </div>
+            
+            <svg class="svg-pattern" width="150" height="140" viewBox="0 0 95 71" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g clip-path="url(#clip0_948_150)">
+                <path d="M26.1534 0.841832C-4.79197 19.0312 -9.75135 36.0255 -2.99146 74.7182C-2.99146 74.7182 19.6562 59.909 25.9061 44.5635C31.7633 30.1823 27.1514 5.67497 26.1534 0.841832Z" fill="#DDF3D6"/>
+                <path d="M69.8178 13.0689C35.517 22.5987 26.6651 37.76 23.9918 76.9951C23.9918 76.9951 49.4519 68.5708 59.1606 55.3434C68.2592 42.9472 69.6326 18.01 69.8178 13.0689Z" fill="#DDF3D6"/>
+                <path d="M91.5349 56.1011C56.048 56.3444 43.8558 68.7055 31.8952 105.993C31.8952 105.993 58.5583 104.505 71.1181 94.2406C82.8887 84.6214 90.1753 60.8366 91.5349 56.1011Z" fill="#DDF3D6"/>
+                </g>
+                <defs>
+                    <clipPath id="clip0_948_150">
+                        <rect width="150" height="140" rx="7" transform="matrix(-1 0 0 1 95 0)" fill="white"/>
+                    </clipPath>
+                </defs>
+            </svg>
+
+
+        </div>
+        
+        <div class="schedule-card card-second">
+            <div class="card-info-header">
+                <div class="card-info">
+                    <h2>II пара</h2>
                 </div>
-            </div>			
-			<svg class="svg-pattern" width="150" height="140" viewBox="0 0 95 71" fill="none" xmlns="http://www.w3.org/2000/svg">
-				<g clip-path="url(#clip0_948_150)">
-					<path d="M68.8466 0.841832C99.792 19.0312 104.751 36.0255 97.9915 74.7182C97.9915 74.7182 75.3438 59.909 69.0939 44.5635C63.2367 30.1823 67.8486 5.67497 68.8466 0.841832Z" fill="#DDF3D6"/>
-					<path d="M25.1822 13.0689C59.483 22.5987 68.3349 37.76 71.0082 76.9951C71.0082 76.9951 45.5481 68.5708 35.8394 55.3434C26.7408 42.9472 25.3674 18.01 25.1822 13.0689Z" fill="#DDF3D6"/>
-					<path d="M3.46489 56.1011C38.9518 56.3444 51.1439 68.7055 63.1046 105.993C63.1046 105.993 36.4415 104.505 23.8816 94.2406C12.1111 84.6214 4.82447 60.8366 3.46489 56.1011Z" fill="#DDF3D6"/>
-				</g>
-				<defs>
-					<clipPath id="clip0_948_150">
-						<rect width="95" height="71" rx="7" fill="white"/>
-					</clipPath>
-				</defs>
-			</svg>
+            </div>    
+                <div class="card-times">
+                    <div class="time-row">
+                        <span class="time-start">10:10</span>
+                        <span class="time-pouse-start">10:47</span>
+                        <span class="time-pouse-end">10:52</span>
+                        <span class="time-end">11:30</span>
+                    </div>
+                </div>
+            
         </div>
         <div class="schedule-card card-second">
-            <div class="card-info">
-                <h2>II пара</h2>
-            </div>
+            <div class="card-info-header">
+                <div class="card-info">
+                    <h2>III пара</h2>
+                </div>
+            </div>   
             <div class="card-times">
                 <div class="time-row">
-                    <span class="time-start">10.35</span>
-                    <span class="time-end">11.20</span>
-                </div>
-                <div class="time-row">
-                    <span class="time-start">11.25</span>
-                    <span class="time-end">12.10</span>
+                    <span class="time-start">12:00</span>
+                    <span class="time-pouse-start">12:37</span>
+                    <span class="time-pouse-end">12:42</span>
+                    <span class="time-end">13:20</span>
                 </div>
             </div>
         </div>
-		<div class="schedule-card card-second">
-            <div class="card-info">
-                <h2>III пара</h2>
-            </div>
+
+        <div class="schedule-card card-second">
+            <div class="card-info-header">
+                <div class="card-info">
+                    <h2>IV пара</h2>
+                </div>
+            </div>   
             <div class="card-times">
                 <div class="time-row">
-                    <span class="time-start">12.30</span>
-                    <span class="time-end">13.15</span>
-                </div>
-                <div class="time-row">
-                    <span class="time-start">13.20</span>
-                    <span class="time-end">14.05</span>
+                    <span class="time-start">13:30</span>
+                    <span class="time-pouse-start">14:07</span>
+                    <span class="time-pouse-end">14:12</span>
+                    <span class="time-end">14:50</span>
                 </div>
             </div>
         </div>
-		<div class="schedule-card card-second">
-            <div class="card-info">
-                <h2>IV пара</h2>
-            </div>
+
+        <div class="schedule-card card-second">
+            <div class="card-info-header">
+                <div class="card-info">
+                    <h2>V пара</h2>
+                </div>
+            </div>   
             <div class="card-times">
                 <div class="time-row">
-                    <span class="time-start">14.20</span>
-                    <span class="time-end">15.05</span>
-                </div>
-                <div class="time-row">
-                    <span class="time-start">15.10</span>
-                    <span class="time-end">15.55</span>
+                    <span class="time-start">15:00</span>
+                    <span class="time-pouse-start">15:37</span>
+                    <span class="time-pouse-end">15:42</span>
+                    <span class="time-end">16:20</span>
                 </div>
             </div>
         </div>
-		<div class="schedule-card card-second">
-            <div class="card-info">
-                <h2>V пара</h2>
-            </div>
+
+        <div class="schedule-card card-second">
+            <div class="card-info-header">
+                <div class="card-info">
+                    <h2>VI пара</h2>
+                </div>
+            </div>   
             <div class="card-times">
                 <div class="time-row">
-                    <span class="time-start">17.05</span>
-                    <span class="time-end">17.25</span>
+                    <span class="time-start">16:30</span>
+                    <span class="time-pouse-start">17:07</span>
+                    <span class="time-pouse-end">17:12</span>
+                    <span class="time-end">17:50</span>
                 </div>
-				
             </div>
         </div>
+
+        <div class="schedule-card card-second">
+            <div class="card-info-header">
+                <div class="card-info">
+                    <h2>VII пара</h2>
+                </div>
+            </div>   
+            <div class="card-times">
+                <div class="time-row">
+                    <span class="time-start">18:00</span>
+                    <span class="time-pouse-start">18:37</span>
+                    <span class="time-pouse-end">18:42</span>
+                    <span class="time-end">19:20</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="schedule-card card-second">
+            <div class="card-info-header">
+                <div class="card-info">
+                    <h2>VIII пара</h2>
+                </div>
+            </div>   
+            <div class="card-times">
+                <div class="time-row">
+                    <span class="time-start">19:30</span>
+                    <span class="time-pouse-start">20:07</span>
+                    <span class="time-pouse-end">20:12</span>
+                    <span class="time-end">20:50</span>
+                </div>
+            </div>
+        </div>
+
     </div>
-            </section>
+</section>
 
             <section id="grid-view" class="view">
                 <p class="placeholder-text">📰 Екран новин та погоди. Незабаром тут з'являться віджети.</p>
@@ -218,5 +282,6 @@
     </div>
 </div>
     <script src="script.js"></script>
+	<script src="time.card.js"></script>
 </body>
 </html>
