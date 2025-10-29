@@ -1,4 +1,4 @@
-// ОНОВЛЕНИЙ script.js — версія з викликами API (замінює тестові дані)
+// ПОВНИЙ, ВИПРАВЛЕНИЙ script.js — Версія з надійним кешуванням розкладу та виправленням Багів 1 і 2
 document.addEventListener('DOMContentLoaded', () => {
     // ===============================================================
     // КОНФІГУРАЦІЯ API
@@ -26,28 +26,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const facultyStack = document.getElementById('faculty-stack');
     const facultyDisplay = facultyStack ? facultyStack.querySelector('.selected-display') : null;
     const facultyOptions = document.getElementById('faculty-options');
-    const facultySelectHidden = document.getElementById('faculty-select');
 
     const educationFormStack = document.getElementById('education-form-stack');
     const educationFormDisplay = educationFormStack ? educationFormStack.querySelector('.selected-display') : null;
     const educationFormOptions = document.getElementById('education-form-options');
-    const educationFormSelectHidden = document.getElementById('education-form-select');
 
     const courseStack = document.getElementById('course-stack');
     const courseDisplay = courseStack ? courseStack.querySelector('.selected-display') : null;
     const courseOptions = document.getElementById('course-options');
-    const courseSelectHidden = document.getElementById('course-select');
 
     const groupStack = document.getElementById('group-stack');
     const groupDisplay = groupStack ? groupStack.querySelector('.selected-display') : null;
     const groupOptions = document.getElementById('group-options');
-    const groupSelectHidden = document.getElementById('group-select');
+    const groupSelectHidden = document.getElementById('group-select'); 
 
-    // Дати — якщо на сторінці є інпути з такими id
+    // Дати 
     const startDateInput = document.getElementById('start-date-input') || document.querySelector('#start-date-input');
     const endDateInput = document.getElementById('end-date-input') || document.querySelector('#end-date-input');
 
-    // Кнопка пошуку — в HTML у тебе клас .search-submit-btn, тому вибираю через селектор
+    // Кнопка пошуку
     const searchSubmitBtn = document.querySelector('.search-submit-btn');
 
     // Навігація, локалізація
@@ -68,37 +65,150 @@ document.addEventListener('DOMContentLoaded', () => {
 	let currentDisplayDate = new Date();
 	let currentCalendarDate = new Date(currentDisplayDate);
 	let allScheduleData = [];
-	let currentGroupName = 'Завантаження...';
+	let currentGroupName = 'Завантаження...'; 
 
 	let currentFacultyID = null;
 	let currentEducationFormID = null;
 	let currentCourseID = null;
-	let currentGroupID = null; // поки не вибрано
+	let currentGroupID = null; 
 
-	// ДОДАЙТЕ ЦІ РЯДКИ
-	let currentLoadedStartDate = null; // Початок завантаженого діапазону
-	let currentLoadedEndDate = null;   // Кінець завантаженого діапазону
+	let currentLoadedStartDate = null; 
+	let currentLoadedEndDate = null;   
+    let currentLoadedGroupID = null; 
+    // Кеш для часу розкладу поточного дня (для time.card.js)
+    let lastDayScheduleTimes = null;
+    // Слухач на випадок, якщо time.card.js завантажиться пізніше
+    document.addEventListener('bellScheduleReady', () => {
+        if (lastDayScheduleTimes && typeof window.updateBellScheduleVisibility === 'function') {
+            // ТЕПЕР ПЕРЕДАЄМО ОБ'ЄКТ З ЧАСОМ ТА ДАТОЮ
+            window.updateBellScheduleVisibility(lastDayScheduleTimes.times, lastDayScheduleTimes.date);
+        }
+    });
+    // ===============================================================
+    // ФУНКЦІЇ LOCAL STORAGE: ФІЛЬТРИ
+    // ===============================================================
+
+    function saveFiltersToLocalStorage() {
+        const fName = facultyDisplay?.dataset.key ? facultyDisplay.textContent : null;
+        const eName = educationFormDisplay?.dataset.key ? educationFormDisplay.textContent : null;
+        const cName = courseDisplay?.dataset.key ? courseDisplay.textContent : null;
+
+        const filtersState = {
+            facultyID: currentFacultyID,
+            educationFormID: currentEducationFormID,
+            courseID: currentCourseID,
+            groupID: currentGroupID,
+            groupName: currentGroupName,
+            facultyName: fName, 
+            educationFormName: eName,
+            courseName: cName,
+        };
+        try {
+            if (currentGroupID) {
+                localStorage.setItem('scheduleFiltersState', JSON.stringify(filtersState));
+            } else {
+                localStorage.removeItem('scheduleFiltersState');
+            }
+        } catch (e) {
+            console.error("Помилка при збереженні фільтрів у LocalStorage", e);
+        }
+    }
+
+    function loadFiltersFromLocalStorage() {
+        try {
+            const storedState = localStorage.getItem('scheduleFiltersState');
+            if (storedState) {
+                const state = JSON.parse(storedState);
+                currentFacultyID = state.facultyID || null;
+                currentEducationFormID = state.educationFormID || null;
+                currentCourseID = state.courseID || null;
+                currentGroupID = state.groupID || null;
+                currentGroupName = state.groupName || 'Група не обрана'; 
+
+                if (currentFacultyID && facultyStack && state.facultyName) {
+                    updateFilterDisplay(facultyStack, currentFacultyID, state.facultyName, null, true);
+                }
+                if (currentEducationFormID && educationFormStack && state.educationFormName) {
+                    updateFilterDisplay(educationFormStack, currentEducationFormID, state.educationFormName, null, true);
+                }
+                if (currentCourseID && courseStack && state.courseName) {
+                    updateFilterDisplay(courseStack, currentCourseID, state.courseName, null, true);
+                }
+                if (currentGroupID && groupStack && state.groupName) {
+                    updateFilterDisplay(groupStack, currentGroupID, state.groupName, null, true);
+                }
+
+                return true; 
+            }
+        } catch (e) {
+            console.error("Помилка при завантаженні фільтрів з LocalStorage", e);
+            localStorage.removeItem('scheduleFiltersState'); 
+        }
+        return false; 
+    }
 
     // ===============================================================
-    // ХЕЛПЕР ДЛЯ АКТИВАЦІЇ В'Ю ПОШУКУ (НОВА ФУНКЦІЯ)
+    // ФУНКЦІЇ LOCAL STORAGE: РОЗКЛАД
+    // ===============================================================
+
+    function saveScheduleToLocalStorage() {
+        if (!allScheduleData || allScheduleData.length === 0 || !currentGroupID) return;
+
+        const scheduleState = {
+            data: allScheduleData,
+            startDate: currentLoadedStartDate ? currentLoadedStartDate.toISOString() : null,
+            endDate: currentLoadedEndDate ? currentLoadedEndDate.toISOString() : null,
+            groupID: currentGroupID,
+            groupName: currentGroupName
+        };
+        try {
+            localStorage.setItem('scheduleDataState', JSON.stringify(scheduleState));
+            currentLoadedGroupID = currentGroupID;
+        } catch (e) {
+            console.warn("Помилка при збереженні розкладу у LocalStorage. Може бути перевищено ліміт.", e);
+        }
+    }
+
+    function loadScheduleFromLocalStorage() {
+        try {
+            const storedState = localStorage.getItem('scheduleDataState');
+            if (storedState) {
+                const state = JSON.parse(storedState);
+
+                allScheduleData = state.data || [];
+                currentLoadedStartDate = state.startDate ? new Date(state.startDate) : null;
+                currentLoadedEndDate = state.endDate ? new Date(state.endDate) : null;
+                currentLoadedGroupID = state.groupID || null;
+
+                if (currentLoadedGroupID && currentLoadedGroupID === currentGroupID && allScheduleData.length > 0) {
+                    currentGroupName = state.groupName || currentGroupName;
+                    return true;
+                }
+            }
+        } catch (e) {
+            console.error("Помилка при завантаженні розкладу з LocalStorage", e);
+            localStorage.removeItem('scheduleDataState');
+        }
+        return false;
+    }
+    
+    // ===============================================================
+    // ХЕЛПЕР ДЛЯ АКТИВАЦІЇ В'Ю ПОШУКУ
     // ===============================================================
     function activateSearcherView() {
         const searchView = document.getElementById('search-view');
-        // Знаходимо елемент навігації пошуку
         const searchNavItem = document.querySelector('.bottom-nav [data-icon="search"]')?.closest('.nav-item');
 
-        // 1. Деактивуємо поточну вкладку та навігацію
         document.querySelector('.view.active-view')?.classList.remove('active-view');
         document.querySelector('.nav-item.active-nav')?.classList.remove('active-nav');
         appContainer?.classList.remove('is-schedule');
 
-        // 2. Активуємо вкладку "Пошук" та навігацію
         searchView?.classList.add('active-view');
         searchNavItem?.classList.add('active-nav');
     }
     
     // ===============================================================
-    // JSONP ФУНКЦІЯ (залишена — вона формує callback та робить запит)
+    // JSONP ФУНКЦІЯ 
     // ===============================================================
     function fetchJsonp(method, params = {}) {
         return new Promise((resolve, reject) => {
@@ -108,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const urlParams = Object.keys(params).map(key => {
                 let value = params[key];
                 if (typeof value === 'string') {
-                    value = `"${value}"`; // API очікує рядки в лапках у query
+                    value = `"${value}"`; 
                 } else if (value === null) {
                     value = 'null';
                 } else if (value === undefined || value === '') {
@@ -125,7 +235,6 @@ document.addEventListener('DOMContentLoaded', () => {
             window[callbackName] = (response) => {
                 delete window[callbackName];
                 script.remove();
-                // У schedule.min.js дані лежать в response.d; тут узгоджено — повертаємо response.d
                 resolve(response.d);
             };
 
@@ -141,43 +250,72 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ===============================================================
     // УНІФІКОВАНЕ РЕНДЕРЕННЯ ОПЦІЙ ДЛЯ СТЕКУ
-    // Підтримує об'єкти формату {Key, Value} або {ID, Name}
     // ===============================================================
-    function populateFilterOptions(optionsElement, data, filterName) {
+    function populateFilterOptions(optionsElement, data, filterName, autoSelectKey = null) {
         if (!optionsElement) return;
         optionsElement.innerHTML = '';
+        const stackContainer = optionsElement.closest('.filter-stack-container');
 
         if (!data || data.length === 0) {
             optionsElement.innerHTML = '<div class="filter-option-item disabled">Дані не знайдено.</div>';
+            updateFilterDisplay(stackContainer, null, null, null, false);
             return;
         }
 
+        let autoSelected = false;
+        let autoSelectedValue = null; 
+        
         data.forEach(item => {
             const key = item.Key ?? item.ID ?? item.StudyGroupID ?? item.Id ?? item.id ?? '';
             const value = item.Value ?? item.Name ?? item.DisplayName ?? item.NameUa ?? '';
+            
             const div = document.createElement('div');
             div.className = 'filter-option-item';
             div.textContent = value || '(без назви)';
             div.dataset.key = key;
             div.dataset.value = value;
             div.dataset.filter = filterName;
+            
+            if (autoSelectKey && String(key) === String(autoSelectKey)) {
+                div.classList.add('selected');
+                autoSelected = true;
+                autoSelectedValue = value; 
+            }
+            
             optionsElement.appendChild(div);
         });
+
+        if (autoSelected) {
+            updateFilterDisplay(stackContainer, autoSelectKey, autoSelectedValue, null, true);
+            
+            if (filterName === 'group' && searchSubmitBtn) {
+                searchSubmitBtn.disabled = false;
+                groupStack.classList.remove('disabled');
+            }
+        } else {
+            if (autoSelectKey) {
+                if (filterName === 'faculty') currentFacultyID = null;
+                if (filterName === 'education-form') currentEducationFormID = null;
+                if (filterName === 'course') currentCourseID = null;
+            }
+            updateFilterDisplay(stackContainer, null, null, null, false);
+        }
     }
 
-    function updateFilterDisplay(stackElement, key, value, placeholder) {
+    function updateFilterDisplay(stackElement, key, value, placeholder, isSelected) {
         if (!stackElement) return;
         const display = stackElement.querySelector('.selected-display');
         const hiddenInput = stackElement.querySelector('input[type="hidden"]');
         const expandIcon = stackElement.querySelector('.expand-icon');
 
-        if (key && value) {
+        if (isSelected && key && value) {
             display.textContent = value;
-            if (hiddenInput) hiddenInput.value = key;
+            display.dataset.key = key;
+            if (hiddenInput) hiddenInput.value = key; 
             stackElement.classList.add('selected');
         } else {
-            if (display) display.textContent = placeholder || '';
-            if (hiddenInput) hiddenInput.value = '';
+            delete display.dataset.key;
+            if (hiddenInput) hiddenInput.value = ''; 
             stackElement.classList.remove('selected');
         }
 
@@ -186,40 +324,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ===============================================================
-    // ФУНКЦІЇ ДЛЯ ОТРИМАННЯ ДАНИХ З API (заміна тестових масивів)
-    // - loadFilters() -> GetStudentScheduleFiltersData
-    // - getStudyGroupsFromApi(...) -> GetStudyGroups
+    // ФУНКЦІЇ ДЛЯ ОТРИМАННЯ ДАНИХ З API
     // ===============================================================
     async function loadFilters() {
-        // Показати тимчасовий стан завантаження
         if (facultyOptions) facultyOptions.innerHTML = '<div class="filter-option-item disabled">Завантаження...</div>';
         if (educationFormOptions) educationFormOptions.innerHTML = '<div class="filter-option-item disabled">Завантаження...</div>';
         if (courseOptions) courseOptions.innerHTML = '<div class="filter-option-item disabled">Завантаження...</div>';
 
         try {
-            const data = await fetchJsonp('GetStudentScheduleFiltersData', {}); // повертає { faculties, educForms, courses, ... }
+            const data = await fetchJsonp('GetStudentScheduleFiltersData', {}); 
             if (!data) throw new Error('Порожня відповідь від GetStudentScheduleFiltersData');
 
-            // Відповідь очікується у вигляді data.faculties, data.educForms, data.courses
-            populateFilterOptions(facultyOptions, data.faculties || [], 'faculty');
-            populateFilterOptions(educationFormOptions, data.educForms || [], 'education-form');
-            populateFilterOptions(courseOptions, data.courses || [], 'course');
+            populateFilterOptions(facultyOptions, data.faculties || [], 'faculty', currentFacultyID);
+            populateFilterOptions(educationFormOptions, data.educForms || [], 'education-form', currentEducationFormID);
+            populateFilterOptions(courseOptions, data.courses || [], 'course', currentCourseID);
 
-            // Скидаємо відображення
-            updateFilterDisplay(facultyStack, null, null, 'Оберіть факультет');
-            updateFilterDisplay(educationFormStack, null, null, 'Оберіть форму');
-            updateFilterDisplay(courseStack, null, null, 'Оберіть курс');
-
-            // Група — поки вимкнена
-            groupOptions.innerHTML = '<div class="filter-option-item disabled">Оберіть Факультет, Форму та Курс</div>';
-            groupStack.classList.add('disabled');
-            updateFilterDisplay(groupStack, null, null, 'Оберіть групу');
+            if (currentFacultyID && currentEducationFormID && currentCourseID) {
+                await updateGroups(true); 
+            } else {
+                groupOptions.innerHTML = '<div class="filter-option-item disabled">Оберіть Факультет, Форму та Курс</div>';
+                groupStack.classList.add('disabled');
+                updateFilterDisplay(groupStack, null, null, null, false);
+            }
 
         } catch (err) {
             console.error('Помилка при завантаженні фільтрів:', err);
-            if (facultyOptions) facultyOptions.innerHTML = '<div class="filter-option-item disabled">Помилка завантаження</div>';
-            if (educationFormOptions) educationFormOptions.innerHTML = '<div class="filter-option-item disabled">Помилка завантаження</div>';
-            if (courseOptions) courseOptions.innerHTML = '<div class="filter-option-item disabled">Помилка завантаження</div>';
         }
     }
 
@@ -234,9 +363,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 aGiveStudyTimes: false
             };
             const res = await fetchJsonp('GetStudyGroups', params);
-            // Очікуємо, що res має властивість studyGroups (як у schedule.min.js)
             if (res && res.studyGroups) return res.studyGroups;
-            // Якщо повернулися одразу масив
             if (Array.isArray(res)) return res;
             return [];
         } catch (err) {
@@ -253,8 +380,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!headerElement) return;
         const stackContainer = headerElement.closest('.filter-stack-container');
         
-        // КЛЮЧОВЕ ВИПРАВЛЕННЯ: Якщо контейнер вимкнений, миттєво виходимо, 
-        // щоб запобігти анімації іконки
         if (stackContainer.classList.contains('disabled')) return; 
 
         const isCurrentlyExpanded = stackContainer.classList.contains('expanded');
@@ -280,39 +405,53 @@ document.addEventListener('DOMContentLoaded', () => {
         const key = option.dataset.key;
         const value = option.dataset.value;
 
-        updateFilterDisplay(stackContainer, key, value, '');
+        option.parentNode.querySelectorAll('.filter-option-item.selected').forEach(item => item.classList.remove('selected'));
+        option.classList.add('selected'); 
 
-        // Оновлюємо стан для каскаду
-        currentFacultyID = facultySelectHidden?.value || (facultyStack?.querySelector('.selected-display')?.dataset?.key) || currentFacultyID;
-        currentEducationFormID = educationFormSelectHidden?.value || (educationFormStack?.querySelector('.selected-display')?.dataset?.key) || currentEducationFormID;
-        currentCourseID = courseSelectHidden?.value || (courseStack?.querySelector('.selected-display')?.dataset?.key) || currentCourseID;
+        updateFilterDisplay(stackContainer, key, value, null, true); 
+        
+        const newFacultyID = (filterName === 'faculty' ? key : currentFacultyID) || null;
+        const newEducationFormID = (filterName === 'education-form' ? key : currentEducationFormID) || null;
+        const newCourseID = (filterName === 'course' ? key : currentCourseID) || null;
 
-        // Якщо було вибрано один із трьох базових фільтрів — оновлюємо групи
         if (['faculty', 'education-form', 'course'].includes(filterName)) {
-            // читабельний варіант: беремо hidden values, але якщо вони пусті - беремо dataset.key в дисплеї
-            currentFacultyID = facultySelectHidden?.value || facultyStack.querySelector('.selected-display')?.dataset?.key || null;
-            currentEducationFormID = educationFormSelectHidden?.value || educationFormStack.querySelector('.selected-display')?.dataset?.key || null;
-            currentCourseID = courseSelectHidden?.value || courseStack.querySelector('.selected-display')?.dataset?.key || null;
-
-            await updateGroups();
+            if (newFacultyID !== currentFacultyID || newEducationFormID !== currentEducationFormID || newCourseID !== currentCourseID) {
+                 currentGroupID = null; 
+                 currentGroupName = 'Група не обрана';
+                 updateFilterDisplay(groupStack, null, null, null, false);
+                 if (searchSubmitBtn) searchSubmitBtn.disabled = true;
+            }
+            
+            currentFacultyID = newFacultyID;
+            currentEducationFormID = newEducationFormID;
+            currentCourseID = newCourseID;
+            
+            await updateGroups(false); 
+            saveFiltersToLocalStorage(); 
             return;
         }
 
-        // Якщо обрали групу
         if (filterName === 'group') {
             currentGroupID = key;
+            currentGroupName = value;
             if (searchSubmitBtn) searchSubmitBtn.disabled = false;
+            
+            saveFiltersToLocalStorage(); 
         }
     }
 
-    // Каскадне оновлення груп
-    async function updateGroups() {
+    async function updateGroups(isAutoSelect = false) { 
         const allSelected = currentFacultyID && currentEducationFormID && currentCourseID;
 
         groupStack.classList.remove('disabled');
         groupOptions.innerHTML = '<div class="filter-option-item disabled">Завантаження груп...</div>';
         if (searchSubmitBtn) searchSubmitBtn.disabled = true;
-        updateFilterDisplay(groupStack, null, null, 'Оберіть групу');
+        
+        if (!isAutoSelect) {
+            updateFilterDisplay(groupStack, null, null, null, false);
+            currentGroupID = null;
+            currentGroupName = 'Група не обрана';
+        }
 
         if (!allSelected) {
             groupOptions.innerHTML = '<div class="filter-option-item disabled">Оберіть Факультет, Форму та Курс</div>';
@@ -322,12 +461,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const groups = await getStudyGroupsFromApi(currentFacultyID, currentEducationFormID, currentCourseID);
+            
             if (groups && groups.length > 0) {
-                populateFilterOptions(groupOptions, groups, 'group');
+                populateFilterOptions(groupOptions, groups, 'group', currentGroupID);
                 groupStack.classList.remove('disabled');
+                
+                if (isAutoSelect && currentGroupID) {
+                     if (searchSubmitBtn) searchSubmitBtn.disabled = false;
+                }
+                
             } else {
                 groupOptions.innerHTML = '<div class="filter-option-item disabled">Групи не знайдено.</div>';
                 groupStack.classList.add('disabled');
+                if (searchSubmitBtn) searchSubmitBtn.disabled = true;
+                
+                currentGroupID = null;
+                currentGroupName = 'Група не обрана';
+                saveFiltersToLocalStorage();
             }
         } catch (err) {
             console.error('Помилка при завантаженні груп:', err);
@@ -335,8 +485,7 @@ document.addEventListener('DOMContentLoaded', () => {
             groupStack.classList.add('disabled');
         }
     }
-
-    // Додаємо слухачі
+    
     function setupFilterListeners() {
         document.querySelectorAll('.filter-stack-container').forEach(stack => {
             const header = stack.querySelector('.filter-stack-header');
@@ -353,34 +502,24 @@ document.addEventListener('DOMContentLoaded', () => {
 	// ===============================================================
 	// ХЕЛПЕР ДЛЯ ДІАПАЗОНУ ДАТ
 	// ===============================================================
-	/**
-	 * Розраховує діапазон завантаження: 
-	 * (1-й день місяця refDate - 7 днів) до (останній день місяця refDate + 7 днів)
-	 * @param {Date} referenceDate - Дата, на основі місяця якої будується діапазон
-	 * @returns {{startDate: Date, endDate: Date}}
-	 */
 	function getScheduleDateRange(referenceDate) {
 		const year = referenceDate.getFullYear();
 		const month = referenceDate.getMonth();
 
-		// Перший день місяця, на який клікнули
 		const monthStart = new Date(year, month, 1);
-		// Останній день місяця (через new Date(year, month + 1, 0))
 		const monthEnd = new Date(year, month + 1, 0);
 
-		// Клонуємо дати, щоб не змінити оригінали
 		const startDate = new Date(monthStart);
-		startDate.setDate(monthStart.getDate() - 7); // 7 днів до початку місяця
+		startDate.setDate(monthStart.getDate() - 7); 
 
 		const endDate = new Date(monthEnd);
-		endDate.setDate(monthEnd.getDate() + 7); // 7 днів після кінця місяця
+		endDate.setDate(monthEnd.getDate() + 7); 
 
 		return { startDate, endDate };
 	}
 
     // ===============================================================
-    // РЕНДЕР РОЗКЛАДУ (використовує вже наявні функції transform / render)
-    // (збережено логіку з твого початкового скрипту)
+    // РЕНДЕР РОЗКЛАДУ 
     // ===============================================================
     function transformScheduleData(rawData) {
         return rawData.map(lesson => {
@@ -476,43 +615,50 @@ document.addEventListener('DOMContentLoaded', () => {
     function toggleStack(event){ const stack = event.currentTarget; stack.classList.toggle('expanded'); const icon = stack.querySelector('.expand-icon'); icon && (icon.textContent = stack.classList.contains('expanded') ? 'expand_less' : 'expand_more'); }
     function addStackClickListener(){ document.querySelectorAll('.past-stack-container').forEach(s=>{ s.removeEventListener('click', toggleStack); s.addEventListener('click', toggleStack); }); }
 
-async function renderSchedule(date) {
+    function formatDateForBellSchedule(date) {
+        const options = { weekday: 'short', month: 'short', day: 'numeric' };
+        // Додаємо рік, тільки якщо це не поточний рік, щоб не захаращувати інтерфейс
+        if (date.getFullYear() !== new Date().getFullYear()) {
+             options.year = 'numeric';
+        }
+        
+        // Використовуємо українську локаль для форматування
+        const formattedDate = date.toLocaleDateString('uk-UA', options);
+        
+        // Робимо першу літеру великою
+        return formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
+    }
+
+    async function renderSchedule(date) {
         currentDisplayDate = date;
         const selectedDateIso = formatDateIso(date);
-        updateDaySelector(date); // Оновлюємо селектор дня одразу
+        updateDaySelector(date); 
 
-        // 1. Перевірка: чи потрібно завантажувати нові дані?
-        // (true якщо: (1) перший запуск АБО (2) обрана дата раніше завантаженої АБО (3) обрана дата пізніше завантаженої)
         const needsFetch = !currentLoadedStartDate || !currentLoadedEndDate || 
                            date.getTime() < currentLoadedStartDate.getTime() || 
-                           date.getTime() > currentLoadedEndDate.getTime();
+                           date.getTime() > currentLoadedEndDate.getTime() ||
+                           currentLoadedGroupID !== currentGroupID; 
 
+        // Змінна, що відстежує, чи відновлено дані з кешу після помилки мережі
+        let isCacheRecovery = false;
+
+        // 1. ПЕРЕВІРКА І ЗАВАНТАЖЕННЯ З АРІ АБО LOCAL STORAGE
         if (needsFetch) {
-            // Якщо групи НЕМАЄ (початкове завантаження) - ми НЕ МОЖЕМО нічого завантажити.
             if (!currentGroupID) {
-                // АВТОМАТИЧНО ПЕРЕКЛЮЧАЄМО НА ВКЛАДКУ "ПОШУК"
                 activateSearcherView();
                 scheduleList.innerHTML = '<p style="text-align:center;color:var(--color-primary);opacity:0.8;padding:40px;">Будь ласка, оберіть групу.</p>';
-                return; // Нічого не завантажуємо
+                return; 
             }
 
-            // Якщо група Є (або це перезавантаження по кліку на календар),
-            // показуємо лоадер і завантажуємо новий діапазон.
-				scheduleList.innerHTML = `
-					<div class="loader-container">
-						<div class="spinner"></div>
-						<p class="loader-text">Завантаження розкладу (новий діапазон)...</p>
-					</div>`;
+            // Показуємо анімацію завантаження перед запитом
+            scheduleList.innerHTML = `<div class="loader-container" id="schedule-loader"><div class="spinner"></div><p class="loader-text">Завантаження розкладу (новий діапазон)...</p></div>`;
 
-				try {
-                // 1. Розрахувати новий діапазон на основі обраної дати
+			try {
                 const newRange = getScheduleDateRange(date);
                 
-                // 2. Сформувати дати для API (ДД.ММ.РРРР)
                 const apiStartDate = formatDate(newRange.startDate);
                 const apiEndDate = formatDate(newRange.endDate);
 
-                // 3. Завантажити дані
                 const rawData = await fetchJsonp('GetScheduleDataX', {
                     aStudyGroupID: currentGroupID,
                     aStartDate: apiStartDate,
@@ -520,40 +666,76 @@ async function renderSchedule(date) {
                     aStudyTypeID: null
                 });
 
-                // 4. ОНОВИТИ СТАН
                 allScheduleData = transformScheduleData(rawData || []);
-                currentLoadedStartDate = newRange.startDate; // Зберігаємо нові межі
+                currentLoadedStartDate = newRange.startDate; 
                 currentLoadedEndDate = newRange.endDate;
+                currentLoadedGroupID = currentGroupID; 
 
                 if (allScheduleData.length > 0) {
                     currentGroupName = allScheduleData[0].group || currentGroupName;
+                    saveScheduleToLocalStorage(); 
                 } else {
                     currentGroupName = 'Група не знайдена';
                 }
-                
-                // Дані завантажено, allScheduleData оновлено.
-                // Тепер можна приступати до рендерингу (логіка нижче)
 
             } catch (err) {
                 console.error('Помилка завантаження розкладу (новий діапазон):', err);
-                scheduleList.innerHTML = '<p style="text-align:center;color:red;padding:40px;">Помилка під час завантаження розкладу.</p>';
-                return; // Зупинити виконання, якщо завантаження не вдалося
+                
+                const isLoadedFromLS = loadScheduleFromLocalStorage();
+                
+                if (!isLoadedFromLS || currentLoadedGroupID !== currentGroupID) {
+                    // Критична помилка, немає кешу для цієї групи
+                    scheduleList.innerHTML = '<p style="text-align:center;color:red;padding:40px;">Помилка під час завантаження розкладу.</p>';
+                    return; 
+                } else {
+                    // Успішне відновлення з кешу
+                    isCacheRecovery = true;
+                }
             }
         }
 
-        // 2. РЕНДЕРИНГ (виконується, якщо needsFetch=false АБО needsFetch=true і завантаження пройшло успішно)
+        // 2. РЕНДЕРИНГ
         
-        // Фільтруємо дані, які вже лежать у allScheduleData
+        scheduleList.innerHTML = ''; 
+        
         const daySchedule = allScheduleData.filter(l => l.date === selectedDateIso).sort((a,b)=> (a.time||'').localeCompare(b.time||''));
 
-		if (daySchedule.length === 0) {
-            // Перевіряємо, чи ми не знайшли дані саме тому, що не обрано групу
-            if (allScheduleData.length === 0 && !currentGroupID) {
-                 // АВТОМАТИЧНО ПЕРЕКЛЮЧАЄМО НА ВКЛАДКУ "ПОШУК"
-                 activateSearcherView();
-                 scheduleList.innerHTML = '<p style="text-align:center;color:var(--color-primary);opacity:0.8;padding:40px;">Будь ласка, оберіть групу.</p>';
+        const dayStartTimes = daySchedule.map(l => l.time);
+        
+        // Форматуємо дату для передачі
+        const formattedDate = formatDateForBellSchedule(date); 
+
+        // 1. Кешуємо цей масив та дату
+        lastDayScheduleTimes = { times: dayStartTimes, date: formattedDate }; 
+
+        // 2. Якщо time.card.js вже готовий, викликаємо його функцію
+        if (typeof window.updateBellScheduleVisibility === 'function') {
+            // ТЕПЕР ПЕРЕДАЄМО ОБ'ЄКТ З ЧАСОМ ТА ДАТОЮ
+            window.updateBellScheduleVisibility(dayStartTimes, formattedDate);
+        }
+        
+        // *Обробка повідомлень про відновлення з кешу*
+        if (isCacheRecovery) {
+            if (daySchedule.length > 0) {
+                // Випадок 1: Помилка мережі, але розклад для цього дня в кеші є.
+                scheduleList.innerHTML = `
+                    <p style="text-align:center;color:orange;padding:20px;">
+                        Помилка мережі. Показано останній збережений розклад.
+                    </p>`;
             } else {
-                 // Фінальне, покращене повідомлення про відсутність занять
+                // Випадок 2: Помилка мережі І розкладу для цього дня в кеші немає.
+                // *ВИПРАВЛЕНО: Баг 1* - Залишаємо лише одне, точне повідомлення.
+                scheduleList.innerHTML = `
+                    <div class="no-schedule-message">
+                        <p class="no-schedule-main-text">На жаль, у кеші немає занять на цю дату.</p>
+                    </div>`;
+                return; // Нічого більше рендерити не потрібно
+            }
+        }
+
+		if (daySchedule.length === 0) {
+            // Стандартне повідомлення, якщо не спрацював isCacheRecovery (тобто, був успішний fetch, але розклад порожній)
+            if (scheduleList.innerHTML === '') {
                  scheduleList.innerHTML = `
                     <div class="no-schedule-message">
                         <p class="no-schedule-main-text">Занять немає на цю дату.</p>
@@ -565,11 +747,10 @@ async function renderSchedule(date) {
             return;
         }
 
-        // (Уся ваша логіка для `now`, `isToday`, `groupedElements`, `pastStack`... залишається тут)
         const now = new Date();
         const isToday = isSameDay(date, now);
         const currentMinutesFromMidnight = now.getHours()*60 + now.getMinutes();
-        const isPastDayFlag = date.getTime() < new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+        const isPastDayFlag = date.getTime() < new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0).getTime();
 
         const groupedElements = [];
         let pastStack = [];
@@ -606,38 +787,38 @@ async function renderSchedule(date) {
             }
         });
 
-        scheduleList.innerHTML = groupedElements.join('');
+        const cardsHTML = groupedElements.join('');
+        
+        // Додаємо картки. Якщо scheduleList вже містить попередження, картки додаються після нього.
+        scheduleList.innerHTML += cardsHTML;
+        
         addStackClickListener();
     }
 
 // ===============================================================
-    // Обробник натискання кнопки "Вивести" (ОНОВЛЕНО)
+    // Обробник натискання кнопки "Вивести"
     // ===============================================================
     async function handleSearchSubmit() {
-        if (!currentGroupID && groupSelectHidden && groupSelectHidden.value) currentGroupID = groupSelectHidden.value;
         if (!currentGroupID) {
             alert('Будь ласка, оберіть навчальну групу.');
             return;
         }
 
-        // --- Логіка визначення діапазону ---
+        saveFiltersToLocalStorage(); 
+
         const startInputVal = startDateInput?.value;
         const endInputVal = endDateInput?.value;
         let apiStartDate, apiEndDate, rangeStartDate, rangeEndDate;
-        
-        // Дата, яку ми покажемо після завантаження
         let dateToRender; 
 
         if (startInputVal && endInputVal) {
-            // 1. Використовуємо дати з інпутів, якщо вони є
             apiStartDate = startInputVal.split('-').reverse().join('.');
             apiEndDate = endInputVal.split('-').reverse().join('.');
             rangeStartDate = new Date(startInputVal);
             rangeEndDate = new Date(endInputVal);
-            dateToRender = new Date(rangeStartDate); // Покажемо перший день обраного діапазону
+            dateToRender = new Date(rangeStartDate); 
         } else {
-            // 2. Якщо інпути порожні, розраховуємо діапазон від СЬОГОДНІ
-            dateToRender = new Date(); // Покажемо сьогодні
+            dateToRender = new Date(); 
             const newRange = getScheduleDateRange(dateToRender);
             
             apiStartDate = formatDate(newRange.startDate);
@@ -645,12 +826,12 @@ async function renderSchedule(date) {
             rangeStartDate = newRange.startDate;
             rangeEndDate = newRange.endDate;
         }
-        // --- Кінець логіки діапазону ---
 
-        // Скидаємо старі дані та показуємо лоадер
         allScheduleData = [];
-        currentLoadedStartDate = null; // Скидаємо межі
+        currentLoadedStartDate = null; 
         currentLoadedEndDate = null;
+        currentLoadedGroupID = null;
+        
         const scheduleView = document.getElementById('schedule-view');
         scheduleList.innerHTML = `
             <div class="loader-container">
@@ -659,7 +840,6 @@ async function renderSchedule(date) {
             </div>`;
 
         try {
-            // Завантажуємо дані з визначеним діапазоном
             const rawData = await fetchJsonp('GetScheduleDataX', {
                 aStudyGroupID: currentGroupID,
                 aStartDate: apiStartDate,
@@ -667,16 +847,21 @@ async function renderSchedule(date) {
                 aStudyTypeID: null
             });
 
-            // ЗБЕРІГАЄМО НОВИЙ СТАН
             allScheduleData = transformScheduleData(rawData || []);
-            currentLoadedStartDate = rangeStartDate; // Встановлюємо нові завантажені межі
+            currentLoadedStartDate = rangeStartDate; 
             currentLoadedEndDate = rangeEndDate;
+            currentLoadedGroupID = currentGroupID; 
             
-            // Оновлюємо поточні дати в інтерфейсі
+             if (allScheduleData.length > 0 && allScheduleData[0].group) {
+                currentGroupName = allScheduleData[0].group;
+                saveScheduleToLocalStorage(); 
+            } else {
+                 currentGroupName = 'Група не знайдена';
+            }
+
             currentDisplayDate = new Date(dateToRender); 
             currentCalendarDate = new Date(currentDisplayDate);
 
-            // Перемикаємося на вкладку розкладу
             document.querySelector('.view.active-view')?.classList.remove('active-view');
             scheduleView?.classList.add('active-view');
             appContainer?.classList.add('is-schedule');
@@ -684,24 +869,31 @@ async function renderSchedule(date) {
             document.querySelector('.nav-item.active-nav')?.classList.remove('active-nav');
             document.querySelector('.bottom-nav [data-icon="format_list_bulleted"]')?.closest('.nav-item')?.classList.add('active-nav');
 
-            // Тепер викликаємо renderSchedule. 
-            // Вона НЕ буде робити повторний fetch (needsFetch=false),
-            // бо ми щойно заповнили allScheduleData і currentLoadedStartDate/EndDate,
-            // а currentDisplayDate гарантовано входить у цей діапазон.
-            // Вона просто відфільтрує дані і покаже їх.
             await renderSchedule(currentDisplayDate);
 
         } catch (err) {
             console.error('Помилка при виводі розкладу:', err);
-            scheduleList.innerHTML = '<p class="error-message">Не вдалося завантажити розклад з новими параметрами.</p>';
-            // Скидаємо межі, якщо сталася помилка
-            currentLoadedStartDate = null;
-            currentLoadedEndDate = null;
+            
+            const isLoadedFromLS = loadScheduleFromLocalStorage();
+
+            if (!isLoadedFromLS || currentLoadedGroupID !== currentGroupID) {
+                // Критична помилка, немає кешу для цієї групи
+                scheduleList.innerHTML = '<p class="error-message">Не вдалося завантажити розклад з новими параметрами.</p>';
+            } else {
+                // Відновлення з кешу. Переходимо до в'ю та викликаємо renderSchedule.
+                // renderSchedule самостійно відобразить попередження про мережу.
+                currentDisplayDate = new Date(dateToRender); 
+                currentCalendarDate = new Date(currentDisplayDate);
+                document.querySelector('.view.active-view')?.classList.remove('active-view');
+                scheduleView?.classList.add('active-view');
+                appContainer?.classList.add('is-schedule');
+                await renderSchedule(currentDisplayDate);
+            }
         }
     }
 
     // ===============================================================
-    // Календар / нижня навігація (скорочено — збережено основні обробники)
+    // Календар / нижня навігація 
     // ===============================================================
     function renderCalendar() {
         if (!currentMonthYearElement || !calendarGrid) return;
@@ -713,7 +905,9 @@ async function renderSchedule(date) {
         const firstDayOfMonth = new Date(year, month, 1).getDay();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-        for (let i = 0; i < firstDayOfMonth; i++) calendarGrid.insertAdjacentHTML('beforeend', '<span class="calendar-day inactive"></span>');
+        const correctedFirstDay = (firstDayOfMonth === 0) ? 6 : firstDayOfMonth - 1; 
+
+        for (let i = 0; i < correctedFirstDay; i++) calendarGrid.insertAdjacentHTML('beforeend', '<span class="calendar-day inactive"></span>');
         for (let day = 1; day <= daysInMonth; day++) {
             const date = new Date(year, month, day);
             let classes = 'calendar-day';
@@ -724,10 +918,21 @@ async function renderSchedule(date) {
 
     function setupBottomNavigation() {
         if (!bottomNav || !appContainer) return;
+
+        let initialView = currentGroupID ? 'schedule-view' : 'search-view';
+
         document.querySelectorAll('.bottom-nav .active-nav').forEach(item => item.classList.remove('active-nav'));
-        const initialActiveNav = bottomNav.querySelector(`[data-icon="format_list_bulleted"]`)?.closest('.nav-item');
+        document.querySelector('.view.active-view')?.classList.remove('active-view');
+
+        const initialActiveNav = bottomNav.querySelector(`[data-icon="${initialView === 'schedule-view' ? 'format_list_bulleted' : 'search'}"]`)?.closest('.nav-item');
         if (initialActiveNav) initialActiveNav.classList.add('active-nav');
-        appContainer.classList.add('is-schedule');
+        document.getElementById(initialView)?.classList.add('active-view');
+
+        if (initialView === 'schedule-view') {
+            appContainer.classList.add('is-schedule');
+        } else {
+            appContainer.classList.remove('is-schedule');
+        }
 
         bottomNav.addEventListener('click', (event) => {
             const navItem = event.target.closest('.nav-item');
@@ -741,7 +946,7 @@ async function renderSchedule(date) {
             document.getElementById(targetViewId)?.classList.add('active-view');
             if (targetViewId === 'schedule-view') {
                 appContainer.classList.add('is-schedule');
-                renderSchedule(currentDisplayDate);
+                renderSchedule(currentDisplayDate); 
             } else {
                 appContainer.classList.remove('is-schedule');
             }
@@ -784,14 +989,23 @@ async function renderSchedule(date) {
 // ===============================================================
     // ПОЧАТКОВЕ ЗАВАНТАЖЕННЯ
     // ===============================================================
+    
+    // 1. Завантажуємо фільтри
+    loadFiltersFromLocalStorage(); 
+    // 2. Завантажуємо останній розклад (якщо є)
+    loadScheduleFromLocalStorage();
+
+    // 3. Налаштовуємо навігацію та слухачів
     setupBottomNavigation();
     setupFilterListeners();
+    
+    // 4. Завантажуємо опції фільтрів з API
     loadFilters(); 
     
-    // Цей виклик тепер спрацює коректно:
-    // 1. `currentDisplayDate` = new Date() (сьогодні)
-    // 2. `renderSchedule` буде викликано
-    // 3. `needsFetch` буде true (бо `currentLoadedStartDate` = null)
-    // 4. `currentGroupID` = null, тому функція викличе activateSearcherView() і вийде.
-    renderSchedule(currentDisplayDate); 
+    // 5. Запускаємо рендер розкладу, якщо група обрана
+    if (currentGroupID) {
+        renderSchedule(currentDisplayDate); 
+    } else {
+        scheduleList.innerHTML = '<p style="text-align:center;color:var(--color-primary);opacity:0.8;padding:40px;">Будь ласка, оберіть групу.</p>';
+    }
 });
