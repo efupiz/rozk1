@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Розклад Занять</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="style-news.css"> <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
     <div class="app-container">
@@ -51,7 +51,7 @@
             <div class="filter-stack-container" id="course-stack" data-filter-name="course">
                 <div class="filter-stack-header filter-item-base">
                     <span class="selected-display" data-key="">Оберіть курс:</span>
-                    <span class="material-icons expand-icon">expand_more</span>
+                    <span class="material-icons expand_icon">expand_more</span>
                 </div>
                 <div class="filter-stack-options" id="course-options">
                     </div>
@@ -239,9 +239,16 @@
     </div>
 </section>
 
-            <section id="grid-view" class="view">
-                <p class="placeholder-text">📰 Екран новин та погоди. Незабаром тут з'являться віджети.</p>
-            </section>
+<section id="grid-view" class="view">
+    <div class="news-blog-wrapper">
+        <h2 class="title">Новини та оголошення</h2>
+        <div id="list-view" class="view-blog">
+            <p class="loading-message" id="loading-msg">Завантаження новин...</p>
+            <ul id="news-list"></ul>
+            <p class="loading-message" id="load-more-msg" style="display: none;"></p>
+        </div>
+        </div>
+</section>
             
             <section id="menu-view" class="view">
                 <p class="placeholder-text">⚙️ Екран налаштувань. Тут будуть налаштування користувача.</p>
@@ -281,7 +288,12 @@
         <button id="close-modal-btn" class="close-btn">Закрити</button>
     </div>
 </div>
+<div id="image-modal" class="image-modal">
+    <span class="close-image material-icons">&times;</span>
+    <img class="image-content" id="modal-image">
+</div>
     <script src="script.js"></script>
 	<script src="time.card.js"></script>
+    <script src="news.js"></script> 
 </body>
 </html>
