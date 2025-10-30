@@ -28,9 +28,15 @@ document.addEventListener("DOMContentLoaded", () => {
         exampleActiveCard.querySelector('.time-new')?.classList.remove('time-new');
     }
 
-    const noBellsMessage = document.createElement('p');
-    noBellsMessage.className = 'placeholder-text';
-    noBellsMessage.textContent = 'Для обраного дня немає розкладу дзвінків.';
+    // 💥 ЗМІНА ТУТ: Створення нової структури для повідомлення про відсутність розкладу 💥
+    const noBellsMessage = document.createElement('div');
+    noBellsMessage.className = 'no-schedule-message no-clock-message';
+    const noScheduleMainText = document.createElement('p');
+    noScheduleMainText.className = 'no-schedule-main-text';
+    noScheduleMainText.textContent = 'Для обраного дня немає розкладу дзвінків.';
+    noBellsMessage.appendChild(noScheduleMainText);
+    // 💥 КІНЕЦЬ ЗМІНИ 💥
+
     noBellsMessage.style.display = 'none'; 
     if (scheduleWrapper) {
         scheduleWrapper.appendChild(noBellsMessage);
@@ -177,22 +183,42 @@ document.addEventListener("DOMContentLoaded", () => {
         const currentlyActiveCard = notificationsView.querySelector('.schedule-card.card-first');
         if (targetCardPeriod) {
             const targetCard = targetCardPeriod.card;
-            let statusText = getStatusLabel(targetCardPeriod, currentTimeInMinutes);
-            if (currentTimeInMinutes >= targetCardPeriod.overallEnd + 2) {
-                 const indexOfCurrent = cardPeriods.indexOf(targetCardPeriod);
-                 const nextPeriod = cardPeriods[indexOfCurrent + 1];
-                 if (nextPeriod && nextPeriod.card.style.display !== 'none') {
-                     const nextPreparationStart = nextPeriod.overallStart - 5;
-                     if (currentTimeInMinutes < nextPreparationStart) { statusText = "Перерва"; }
-                 }
+            
+            // 💥 ФІКС: Перевірка, чи це остання активна картка 💥
+            const indexOfCurrent = cardPeriods.indexOf(targetCardPeriod);
+            const nextPeriod = cardPeriods[indexOfCurrent + 1];
+            // Вважаємо картку останньою, якщо наступної пари немає або вона прихована
+            const isLastPeriod = !nextPeriod || nextPeriod.card.style.display === 'none'; 
+            
+            // 💥 ФІКС 1: Деактивація останньої картки через 5 хвилин після її кінця 💥
+            if (isLastPeriod && currentTimeInMinutes >= targetCardPeriod.overallEnd + 5) {
+                if (currentlyActiveCard) { deactivateCard(currentlyActiveCard); }
+                return; 
             }
+
+            let statusText = getStatusLabel(targetCardPeriod, currentTimeInMinutes);
+            
+            // 💥 ФІКС 2: Запобігання поверненню статусу до "Триває" для останньої картки 💥
+            if (isLastPeriod && currentTimeInMinutes >= targetCardPeriod.overallEnd + 2) {
+                 // Якщо час минув, і це останній елемент, тримаємо статус "Закінчилася"
+                 statusText = "Закінчилася"; 
+            }
+
+            // Оригінальна логіка для "Перерва" між парами (тільки якщо це не остання пара)
+            if (!isLastPeriod && currentTimeInMinutes >= targetCardPeriod.overallEnd + 2) {
+                 // nextPeriod існує і відображається
+                 const nextPreparationStart = nextPeriod.overallStart - 5;
+                 if (currentTimeInMinutes < nextPreparationStart) { statusText = "Перерва"; }
+            }
+            
             let countdownEndTime = null;
             const PStart = targetCardPeriod.overallStart; const PEnd = targetCardPeriod.overallEnd; const timePoints = targetCardPeriod.timePoints;
+            
             if (currentTimeInMinutes >= PStart - 5 && currentTimeInMinutes < PStart) {
                 countdownEndTime = PStart;
             } else if (currentTimeInMinutes >= PEnd || statusText === "Перерва") {
-                const indexOfCurrent = cardPeriods.indexOf(targetCardPeriod);
-                const nextPeriod = cardPeriods[indexOfCurrent + 1];
+                
+                // Внутрішня перерва
                 if (statusText === "Перерва" && targetCard === currentlyActiveCard) {
                     for (let i = 0; i < timePoints.length - 1; i++) {
                         const currentPoint = timePoints[i]; const nextPoint = timePoints[i + 1];
@@ -203,20 +229,26 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
                     }
                 }
-                if (countdownEndTime === null && nextPeriod && nextPeriod.card.style.display !== 'none') {
+
+                // Перерва між парами (тільки якщо є наступна пара)
+                if (countdownEndTime === null && !isLastPeriod && nextPeriod.card.style.display !== 'none') {
                     countdownEndTime = nextPeriod.overallStart;
                 }
+                // Якщо isLastPeriod, countdownEndTime залишається null (показується ---:---)
+                
             } else if (currentTimeInMinutes >= PStart && currentTimeInMinutes < PEnd) {
                 let foundNextTime = null;
                 for (const point of timePoints) { if (point.time > currentTimeInMinutes) { foundNextTime = point; break; } }
                 if (foundNextTime) { countdownEndTime = foundNextTime.time; } else { countdownEndTime = PEnd; }
             }
+
             if (!currentlyActiveCard || currentlyActiveCard !== targetCard) {
                 if (currentlyActiveCard) { deactivateCard(currentlyActiveCard); }
                 activateCard(targetCard, statusText, countdownEndTime);
             } else if (currentlyActiveCard === targetCard) {
                 updatePills(targetCard, statusText, countdownEndTime);
             }
+            
             let targetElementToHighlight = null;
             if (statusText === "Закінчилася" || statusText === "Перерва") { 
                 targetCard.querySelectorAll('.time-new').forEach(el => el.classList.remove('time-new'));
