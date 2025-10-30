@@ -970,7 +970,10 @@ body {
     margin-bottom: 10px;
     overflow: hidden;
 }
+.no-clock-message{
+        min-height: calc(90vh - var(--header-height, 100px) - var(--nav-height, 150px)) !important;
 
+}
 /* Великий, напівпрозорий "N/A" */
 .no-schedule-message::before {
     content: "N/A";
@@ -1012,7 +1015,7 @@ body {
     position: relative; 
     z-index: 1; 
     margin-bottom: 10px;
-    
+    max-width: 80%;
     /* Збереження вашого зміщення */
     transform: translateY(-5vh); 
 }
@@ -1050,14 +1053,7 @@ body {
 }
 
 /* Заголовок h1 */
-.title { /* Використовуємо існуючий .title в HTML */
-    text-align: center;
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: #2B322C;
-    margin-bottom: 25px;
-    margin-top: 0;
-}
+
 
 /* --- СТРУКТУРНІ СТИЛІ: КАРТКА --- */
 .schedule-card {
