@@ -1,0 +1,22 @@
+{
+  "name": "Назва Вашого PWA",
+  "short_name": "PWA-Сайт",
+  "description": "Короткий опис вашого прогресивного веб-додатку.",
+  "start_url": "/rozk1/", 
+  "scope": "/rozk1/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#007bff",
+  "icons": [
+    {
+      "src": "/images/clear_day.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/clear_day.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
