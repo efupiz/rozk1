@@ -10,18 +10,19 @@ const urlsToCache = [
   // 3. Стилі (CSS)
   '/rozk1/styles/style.css',
   '/rozk1/styles/style-news.css',
-  '/rozk1/styles/meteo.css',
+  '/rozk1/meteo.css',
   
   // 4. Скрипти (JS)
   '/rozk1/scripts/script.js',
   '/rozk1/scripts/news.js',
+  '/rozk1/meteo.js',
   '/rozk1/scripts/time.card.js',
   
   // 5. Маніфест
   '/rozk1/manifest.json',
   
   // 6. Критично важливі зображення/іконки (наприклад, іконка PWA)
-  '/rozk1/images/icon-192x192.png' // Приклад
+  '/rozk1/images/clear_day.png' // Приклад
   // Якщо у вас багато зображень, кешуйте лише ті, що потрібні для офлайн-оболонки
 ];
 
@@ -67,4 +68,5 @@ self.addEventListener('activate', event => {
       );
     })
   );
+
 });
