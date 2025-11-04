@@ -1,0 +1,817 @@
+/* Meteo.css */
+
+.container {
+    width: 100%;
+    max-width: 900px;
+}
+
+/* --- Пошук --- */
+.search-box {
+    display: flex;
+    margin: 10px;
+    gap: 6px;
+}
+
+#city-input {
+    flex-grow: 1;
+    font-size: 1.1em;
+    padding: 10px 15px;
+    color: var(--color-primary);
+    font-weight: 600;
+    border: 2px solid var(--color-btn-light);
+    border-radius: 10px;
+    background: var(--color-btn-light);
+    outline: none;
+}
+
+
+#city-input:focus {
+    border-color: var(--color-primary);
+}
+
+#fetch-weather-btn:hover {
+    background-color: var(--color-primary);
+    color: #fff;
+}
+
+#loading-msg {
+    text-align: center;
+    font-size: 1.2em;
+    color: #555;
+    padding: 20px;
+}
+
+.hidden {
+    display: none;
+}
+
+/* ------------------------------------------------------------------ */
+/* --- Блок 1: Вкладки (Compact Scrolling Redesign) --- */
+/* ------------------------------------------------------------------ */
+
+/* Головний контейнер тепер є обгорткою для горизонтальної прокрутки */
+.daily-tabs-container {
+    display: flex;
+    overflow-x: auto;
+    /* Дозволяє горизонтальну прокрутку */
+    gap: 8px;
+    margin-bottom: 15px;
+    padding: 10px;
+    padding-bottom: 5px;
+    /* Залишаємо місце для прокрутки */
+    -webkit-overflow-scrolling: touch;
+}
+
+/* --- СТИЛІ ДЛЯ КОМПАКТНИХ КАРТОК (daily-tab-compact) --- */
+.daily-tab-compact {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+
+    /* Фіксований розмір для квадратної форми */
+    width: 80px;
+    min-width: 80px;
+
+    background: var(--color-btn-light);
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 8px 5px;
+    text-align: center;
+    text-decoration: none;
+    color: var(--color-primary);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.daily-tab-compact:hover {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.daily-tab-compact.active {
+    background-color: var(--color-primary);
+    color: white;
+    transform: translateY(-2px);
+    border: 1px solid var(--color-primary);
+}
+
+.daily-tab-compact .tab-day {
+    font-size: 0.8em;
+    font-weight: 600;
+}
+
+.daily-tab-compact .tab-date {
+    font-size: 0.9em;
+    font-weight: 700;
+    margin: 3px 0;
+}
+
+.daily-tab-compact .tab-temp {
+    font-size: 0.9em;
+}
+
+.daily-tab-compact .tab-temp-min {
+    color: #888;
+    margin-left: 3px;
+}
+
+.daily-tab-compact.active .tab-temp-min {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+
+/* --- Блок 2: Детальний огляд --- */
+/* --- НОВІ СТИЛІ: Кнопка-стрілка в активній вкладці --- */
+.daily-tab-compact .tab-toggle-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Імітуємо розмір іконки погоди */
+    width: 45px;
+    height: 45px;
+    margin: 5px 0;
+}
+
+.daily-tab-compact .arrow-icon {
+    width: 12px;
+    height: 12px;
+    border-left: 3px solid white;
+    /* Колір стрілки (білий на синьому фоні) */
+    border-bottom: 3px solid white;
+    transform: rotate(-45deg);
+    /* Стрілка "вниз" */
+    transition: transform 0.3s ease;
+}
+
+/* Анімація стрілки при відкритих деталях */
+.daily-tab-compact.active.details-open .arrow-icon {
+    transform: rotate(135deg);
+    /* Стрілка "вгору" */
+}
+
+
+/* ------------------------------------------------------------------ */
+/* --- Блок 2: Детальний огляд --- */
+/* ------------------------------------------------------------------ */
+.detailed-day-view {
+    background: #fff;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+    /* --- НОВІ СТИЛІ: Анімація випадання --- */
+    transition: all 0.4s ease-in-out;
+    max-height: 3000px;
+    /* Достатньо велике значення для будь-якого вмісту */
+    overflow: hidden;
+    opacity: 1;
+    margin-top: 0;
+}
+
+.detailed-day-view.hidden-details {
+    /* Стан "Приховано" */
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+    margin-top: -10px;
+    /* Підтягуємо блок знизу */
+    border-top: none;
+    border-bottom: none;
+}
+
+/* --- Кінець стилів анімації --- */
+
+.detailed-main {
+    display: grid;
+    /* 1 колонка стандартом (Mobile First) */
+    grid-template-columns: 1fr;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+    text-align: center;
+}
+
+.detailed-time{
+    font-size: 1.4em;
+    color: #555;
+}
+
+#detailed-location {
+    font-size: 2em;
+    margin: 5px 0;
+    color: #000;
+}
+
+.detailed-sunrise-sunset, .detailed-date-info {
+    font-size: 0.9em;
+    color: #777;
+}
+
+.detailed-icon-temp {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.detailed-temp {
+    font-size: 4.5em;
+    font-weight: 700;
+    color: #000;
+    margin-left: 20px
+}
+
+.detailed-side-info {
+    font-size: 0.9em;
+    color: #333;
+    text-align: center;
+    margin-top: 15px;
+}
+
+.detailed-side-info p {
+    margin: 5px 0;
+}
+
+/* Погодинний прогноз (як у Sinoptik) */
+.hourly-forecast-container {
+    overflow-x: auto;
+    padding-top: 15px;
+}
+
+.hourly-forecast {
+    display: flex;
+    gap: 5px;
+}
+
+.hourly-card {
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    min-width: 90px;
+}
+
+.hourly-time {
+    font-weight: bold;
+    font-size: 0.9em;
+    color: #555;
+}
+
+.hourly-temp {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #000;
+}
+
+.hourly-precip {
+    font-size: 0.8em;
+    color: #36a2eb;
+}
+
+/* --- НОВІ СТИЛІ: Детальний огляд погоди (MSN-Style) --- */
+.details-title {
+    margin-top: 25px;
+    margin-bottom: 15px;
+    font-size: 1.4em;
+    font-weight: 700;
+    color: #333;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.weather-details-grid {
+    display: grid;
+    /* Створює адаптивну сітку з мінімальною шириною колонки 180px */
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px;
+}
+
+.detail-card {
+    background: #f7f9fc;
+    border-radius: 12px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 120px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: background 0.2s;
+    box-sizing: border-box;
+}
+
+.detail-card:hover {
+    background: #e9eff5;
+}
+
+.card-title {
+    font-size: 0.9em;
+    color: #555;
+    font-weight: 500;
+}
+
+.card-value {
+    font-size: 2.2em;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin: 5px 0;
+    display: inline-block;
+    /* Для вирівнювання з одиницями виміру */
+}
+
+.card-description {
+    font-size: 0.8em;
+    color: #777;
+    margin-top: auto;
+}
+
+/* Вітер */
+.wind-value-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    line-height: 1;
+    /* Вирівнювання тексту */
+}
+
+.wind-icon {
+    font-size: 2em;
+    transform: rotate(calc(var(--wind-direction, 0) + 90deg));
+    /* Початкова іконка (➡️) дивиться праворуч, тому +90deg */
+    transition: transform 0.5s;
+    color: var(--color-primary);
+}
+
+/* --- НОВИЙ СТИЛЬ: Індикатор Температурного Тренду --- */
+.temp-trend-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 5px;
+}
+
+.trend-indicator {
+    font-size: 0.8em;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 5px;
+    color: white;
+}
+
+.trend-rising {
+    background-color: #CC2635;
+}
+
+/* Червоний */
+.trend-falling {
+    background-color: #0d73d6;
+}
+
+/* Синій */
+.trend-steady {
+    background-color: #555;
+}
+
+/* Сірий */
+
+/* --- СТИЛІ ДЛЯ SVG ГРАФІКА (Залишено для повноти) --- */
+.temp-chart-container {
+    margin-top: 10px;
+    margin-bottom: 5px;
+    max-width: 244px;
+    width: 100%;
+    height: 115px;
+    overflow: hidden;
+}
+
+.temp-color-primary {
+    fill: #CC2635;
+    stroke: #CC2635;
+}
+
+.temp-chart-area {
+    opacity: 0.1;
+}
+
+.temp-chart-point {
+    fill: #CC2635;
+    stroke: white;
+    stroke-width: 3;
+}
+
+.temp-chart-text {
+    font-size: 1.2em;
+    font-weight: bold;
+    fill: white;
+    text-anchor: middle;
+}
+
+/* ------------------------------------------------ */
+/* --- 🖼️ СТИЛІ ДЛЯ ГРАФІЧНИХ/АНІМОВАНИХ ІКОНОК --- */
+/* ------------------------------------------------ */
+
+.weather-icon-large {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    font-size: 0;
+    line-height: 0;
+    width: 100px;
+    height: 100px;
+}
+
+.weather-icon-small {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    font-size: 0;
+    line-height: 0;
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    margin: 10px 0px 5px;
+}
+
+/* Стиль іконки в компактній картці */
+.daily-tab-compact .weather-icon-small {
+    width: 45px;
+    height: 45px;
+    margin: 5px 0;
+}
+
+/* Класи іконок */
+.icon-clear-day {
+    background-image: url('images/clear_day.png');
+}
+
+.icon-clear-night,
+.icon-partly-cloudy-night {
+    background-image: url('images/clear_night.png');
+}
+
+.icon-partly-cloudy-day {
+    background-image: url('images/partly_cloudy_day.png');
+}
+
+.icon-scattered-clouds-day {
+    background-image: url('images/scattered_clouds_day.png');
+}
+
+.icon-cloudy,
+.icon-scattered-clouds-night {
+    background-image: url('images/cloudy.png');
+}
+
+.icon-fog-day,
+.icon-fog-night {
+    background-image: url('images/fog.png');
+}
+
+.icon-drizzle {
+    background-image: url('images/drizzle.png');
+}
+
+.icon-light-rain {
+    background-image: url('images/light_rain.png');
+}
+
+.icon-rain,
+.icon-heavy-rain,
+.icon-freezing-rain {
+    background-image: url('images/rain.png');
+}
+
+.icon-light-snow {
+    background-image: url('images/light_snow.png');
+}
+
+.icon-snow {
+    background-image: url('images/snow.png');
+}
+
+.icon-heavy-snow,
+.icon-snow-grains {
+    background-image: url('images/heavy_snow.png');
+}
+
+.icon-showers-day,
+.icon-showers-night,
+.icon-heavy-showers {
+    background-image: url('images/heavy_showers.png');
+}
+
+.icon-snow-showers {
+    background-image: url('images/snow_showers.png');
+}
+
+.icon-thunderstorm {
+    background-image: url('images/thunderstorm.png');
+}
+
+.icon-thunderstorm-hail {
+    background-image: url('images/thunderstorm_hail.png');
+}
+
+.icon-unknown {
+    background-image: url('images/unknown.png');
+}
+
+/* Стилі для підпису у вкладках по днях */
+.tab-condition {
+    font-size: 0.85em;
+    text-align: center;
+    margin-bottom: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    line-height: 1.2;
+}
+
+/* Стилі для підпису в погодинних картках */
+.hourly-condition {
+    font-size: 0.8em;
+    text-align: center;
+    margin: 2px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+/* --- Активна погодинна картка --- */
+.hourly-card.active {
+    background-color: var(--color-primary);
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transform: translateY(-1px);
+}
+
+.hourly-card.active .hourly-time,
+.hourly-card.active .hourly-temp {
+    color: white;
+}
+
+.hourly-card.active .hourly-precip {
+    color: #b0e0ff;
+    /* Світло-блакитний для опадів */
+}
+
+/* --- НОВІ СТИЛІ: Кнопка-стрілка в активній вкладці --- */
+.daily-tab-compact .tab-toggle-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Імітуємо розмір іконки погоди */
+    width: 45px;
+    height: 45px;
+    margin: 5px 0;
+}
+
+.daily-tab-compact .arrow-icon {
+    width: 12px;
+    height: 12px;
+    border-left: 3px solid white;
+    /* Колір стрілки (білий на синьому фоні) */
+    border-bottom: 3px solid white;
+    transform: rotate(-45deg);
+    /* Стрілка "вниз" */
+    transition: transform 0.3s ease;
+}
+
+/* ================================================================== */
+/* === ДОДАЙТЕ ЦІ СТИЛІ в кінець вашого meteo.css === */
+/* ================================================================== */
+
+/* 1. Стилі для спливаючого вікна пошуку (Оверлей) */
+#search-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    /* Напівпрозорий фон */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 50px;
+    z-index: 1000;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+/* 2. Клас 'hidden' для оверлея (JS використовує його для приховування) */
+/* Ваш .hidden { display: none; } також спрацює, але opacity краще для анімації */
+#search-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+    display: none;
+    /* Гарантуємо приховування */
+}
+
+/* 3. Модифікація вашого .search-box всередині оверлея */
+#search-overlay .search-box,
+.search-modal {
+    margin: 0;
+    /* Прибираємо відступи за замовчуванням */
+    padding: 5px;
+    background: white;
+    border-radius: 12px;
+    max-width: 400px;
+}
+
+/* 4. Кнопка закриття (X) */
+.close-search-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 2.2em;
+    font-weight: bold;
+    color: white;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+}
+
+
+/* 5. Обгортка для Назви міста та Кнопки пошуку */
+.detailed-time-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+}
+
+/* 6. Кнопка-лупа (якщо ви її додали в HTML) */
+.search-toggle-btn {
+    background: transparent;
+    border: none;
+    font-size: 1.2em;
+    cursor: pointer;
+    color: #555;
+    padding: 0;
+    line-height: 1;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    margin-left: -30px;
+}
+
+.search-toggle-btn:hover {
+    opacity: 1;
+}
+
+/* 7. Стилі для стрілки "вниз/вгору" в активній вкладці */
+/* (Вони вже є у вашому CSS, але переконайтеся, що .tab-toggle-button - це <button>) */
+.daily-tab-compact .tab-toggle-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    margin: 5px 0;
+    padding: 0;
+    /* Скидання стилів кнопки */
+    background: transparent;
+    /* Скидання стилів кнопки */
+    border: none;
+    /* Скидання стилів кнопки */
+    color: white;
+    /* Щоб стрілка успадкувала колір */
+}
+
+.daily-tab-compact .arrow-icon {
+    width: 12px;
+    height: 12px;
+    border-left: 3px solid currentColor;
+    /* Використовує колір тексту (білий) */
+    border-bottom: 3px solid currentColor;
+    transform: rotate(-45deg);
+    /* Стрілка "вниз" */
+    transition: transform 0.3s ease;
+}
+
+.daily-tab-compact.active.details-open .arrow-icon {
+    transform: rotate(135deg);
+    /* Стрілка "вгору" */
+}
+
+/* --- ЗБЕРЕЖЕНІ МІСТА --- */
+
+.saved-cities-container {
+    padding: 5px;
+    border-top: 1px solid var(--color-btn-light);
+    margin-top: 10px;
+}
+
+.saved-cities-title {
+    font-size: 0.9em;
+    color: var(--color-primary);
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+#saved-cities-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.city-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: var(--color-btn-light);
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-size: 1em;
+    font-weight: 500;
+}
+
+.city-item:hover {
+    background-color: var(--color-border);
+}
+
+.city-info {
+    display: flex;
+    align-items: center;
+    /* Відступ між іконкою та текстом */
+    gap: 8px;
+    flex-grow: 1;
+}
+
+.city-icon {
+    font-size: 1.2em;
+}
+
+/* Іконки для типів міст */
+.city-item[data-type="geo"] .city-icon {
+    color: var(--color-danger);
+    /* Геолокація (червоний) */
+}
+
+.city-item[data-type="manual"] .city-icon {
+    color: var(--color-accent);
+    /* Введене вручну (синій) */
+}
+
+.city-item[data-type="default"] {
+    font-style: italic;
+    background: #e0e0e0;
+    /* Сірий для стандартного */
+    cursor: default;
+    opacity: 0.8;
+}
+
+.city-item[data-type="default"] .city-icon {
+    color: var(--color-text);
+    /* Карта (чорний) */
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    /* color: var(--color-primary); */
+    font-size: 1.5em;
+    cursor: pointer;
+    margin-left: 10px;
+    padding: 0 5px;
+    transition: color 0.2s;
+    font-weight: 600;
+}
+
+.delete-btn:hover {
+    color: var(--color-danger);
+}
+
+/* --- Стилі для нової кнопки геолокації --- */
+.secondary-btn,
+#fetch-weather-btn {
+    /* width: calc(100% - 30px); */
+    /* margin: 10px 15px 15px 15px; */
+    font-size: 1em;
+    /* font-weight: 600; */
+    padding: 0px 15px;
+    background-color: var(--color-btn-light);
+    color: var(--color-primary);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    /* display: flex; */
+    /* align-items: center; */
+    /* justify-content: center; */
+    /* gap: 8px; */
+}
+
+.secondary-btn:hover {
+    background-color: var(--color-primary);
+    color: #fff;
+}

@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Розклад Занять</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="styles/style-news.css">
+    <link rel="stylesheet" href="meteo.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#007bff">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<body>    <div class="app-container">
+        <header class="header">
+            <nav class="day-selector"></nav>
+            <h1 class="main-day"></h1>
+            <p class="date"></p>
+        </header>
+
+        <main class="content-wrapper">
+            <section id="schedule-view" class="view active-view">
+                <div class="schedule-list">
+                </div>
+            </section>
+
+            <section id="search-view" class="view">
+                <div class="search-form-container">
+                    <h2 class="title">Розклад занять</h2>
+
+                    <div class="filter-card">
+                        <h3 class="filter-header">Фільтри:</h3>
+
+                        <div class="filter-stack-container" id="faculty-stack" data-filter-name="faculty">
+                            <div class="filter-stack-header filter-item-base">
+                                <span class="selected-display" data-key="">Оберіть факультет:</span>
+                                <span class="material-icons expand-icon">expand_more</span>
+                            </div>
+                            <div class="filter-stack-options" id="faculty-options">
+                            </div>
+                            <input type="hidden" id="faculty-select" name="faculty-id">
+                        </div>
+
+                        <div class="filter-stack-container" id="education-form-stack" data-filter-name="education-form">
+                            <div class="filter-stack-header filter-item-base">
+                                <span class="selected-display" data-key="">Оберіть форму</span>
+                                <span class="material-icons expand-icon">expand_more</span>
+                            </div>
+                            <div class="filter-stack-options" id="education-form-options">
+                            </div>
+                            <input type="hidden" id="education-form-select" name="education-form-id">
+                        </div>
+
+                        <div class="filter-stack-container" id="course-stack" data-filter-name="course">
+                            <div class="filter-stack-header filter-item-base">
+                                <span class="selected-display" data-key="">Оберіть курс:</span>
+                                <span class="material-icons expand_icon">expand_more</span>
+                            </div>
+                            <div class="filter-stack-options" id="course-options">
+                            </div>
+                            <input type="hidden" id="course-select" name="course-id">
+                        </div>
+                    </div>
+
+                    <div class="filter-card">
+                        <h3 class="filter-header">Навчальна група:</h3>
+                        <div class="filter-stack-container" id="group-stack" data-filter-name="group">
+                            <div class="filter-stack-header filter-item-base">
+                                <span class="selected-display" data-key="">Оберіть групу:</span>
+                                <span class="material-icons expand-icon">expand_more</span>
+                            </div>
+                            <div class="filter-stack-options" id="group-options">
+                            </div>
+                            <input type="hidden" id="group-select" name="group-id">
+                        </div>
+                    </div>
+
+                    <button class="search-submit-btn">Вивести</button>
+                </div>
+            </section>
+
+            <section id="notifications-view" class="view">
+                <div class="schedule-wrapper">
+                    <h1 class="title">Розклад дзвінків</h1>
+                    <div id="bell-schedule-controls" class="controls-bar">
+                        <div id="current-bell-date" class="date-display">--/--/----</div>
+
+                        <button id="toggle-bells-btn" class="toggle-filter-btn" data-mode="filtered">
+                            <span class="material-icons">visibility_off</span>
+                            <span>Показати всі дзвінки</span>
+                        </button>
+                    </div>
+                    <div class="schedule-card card-first">
+                        <div class="card-info-header">
+                            <div class="card-info">
+                                <h2>I пара</h2>
+                            </div>
+
+                            <div class="status-container">
+                                <div class="status-time-pill status-time-pill-animated">9<div class="animated-clok">:
+                                    </div>15</div>
+                                <div class="status-label-pill">Триває</div>
+                            </div>
+                        </div>
+
+                        <div class="card-times">
+                            <div class="time-row">
+                                <span class="time-start time-new">08:30</span>
+                                <span class="time-pouse-start">09:07</span>
+                                <span class="time-pouse-end">09:12</span>
+                                <span class="time-end">09:50</span>
+                            </div>
+                        </div>
+
+                        <svg class="svg-pattern" width="150" height="140" viewBox="0 0 95 71" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <g clip-path="url(#clip0_948_150)">
+                                <path
+                                    d="M26.1534 0.841832C-4.79197 19.0312 -9.75135 36.0255 -2.99146 74.7182C-2.99146 74.7182 19.6562 59.909 25.9061 44.5635C31.7633 30.1823 27.1514 5.67497 26.1534 0.841832Z"
+                                    fill="#DDF3D6" />
+                                <path
+                                    d="M69.8178 13.0689C35.517 22.5987 26.6651 37.76 23.9918 76.9951C23.9918 76.9951 49.4519 68.5708 59.1606 55.3434C68.2592 42.9472 69.6326 18.01 69.8178 13.0689Z"
+                                    fill="#DDF3D6" />
+                                <path
+                                    d="M91.5349 56.1011C56.048 56.3444 43.8558 68.7055 31.8952 105.993C31.8952 105.993 58.5583 104.505 71.1181 94.2406C82.8887 84.6214 90.1753 60.8366 91.5349 56.1011Z"
+                                    fill="#DDF3D6" />
+                            </g>
+                            <defs>
+                                <clipPath id="clip0_948_150">
+                                    <rect width="150" height="140" rx="7" transform="matrix(-1 0 0 1 95 0)"
+                                        fill="white" />
+                                </clipPath>
+                            </defs>
+                        </svg>
+
+
+                    </div>
+
+                    <div class="schedule-card card-second">
+                        <div class="card-info-header">
+                            <div class="card-info">
+                                <h2>II пара</h2>
+                            </div>
+                        </div>
+                        <div class="card-times">
+                            <div class="time-row">
+                                <span class="time-start">10:10</span>
+                                <span class="time-pouse-start">10:47</span>
+                                <span class="time-pouse-end">10:52</span>
+                                <span class="time-end">11:30</span>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="schedule-card card-second">
+                        <div class="card-info-header">
+                            <div class="card-info">
+                                <h2>III пара</h2>
+                            </div>
+                        </div>
+                        <div class="card-times">
+                            <div class="time-row">
+                                <span class="time-start">12:00</span>
+                                <span class="time-pouse-start">12:37</span>
+                                <span class="time-pouse-end">12:42</span>
+                                <span class="time-end">13:20</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="schedule-card card-second">
+                        <div class="card-info-header">
+                            <div class="card-info">
+                                <h2>IV пара</h2>
+                            </div>
+                        </div>
+                        <div class="card-times">
+                            <div class="time-row">
+                                <span class="time-start">13:30</span>
+                                <span class="time-pouse-start">14:07</span>
+                                <span class="time-pouse-end">14:12</span>
+                                <span class="time-end">14:50</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="schedule-card card-second">
+                        <div class="card-info-header">
+                            <div class="card-info">
+                                <h2>V пара</h2>
+                            </div>
+                        </div>
+                        <div class="card-times">
+                            <div class="time-row">
+                                <span class="time-start">15:00</span>
+                                <span class="time-pouse-start">15:37</span>
+                                <span class="time-pouse-end">15:42</span>
+                                <span class="time-end">16:20</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="schedule-card card-second">
+                        <div class="card-info-header">
+                            <div class="card-info">
+                                <h2>VI пара</h2>
+                            </div>
+                        </div>
+                        <div class="card-times">
+                            <div class="time-row">
+                                <span class="time-start">16:30</span>
+                                <span class="time-pouse-start">17:07</span>
+                                <span class="time-pouse-end">17:12</span>
+                                <span class="time-end">17:50</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="schedule-card card-second">
+                        <div class="card-info-header">
+                            <div class="card-info">
+                                <h2>VII пара</h2>
+                            </div>
+                        </div>
+                        <div class="card-times">
+                            <div class="time-row">
+                                <span class="time-start">18:00</span>
+                                <span class="time-pouse-start">18:37</span>
+                                <span class="time-pouse-end">18:42</span>
+                                <span class="time-end">19:20</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="schedule-card card-second">
+                        <div class="card-info-header">
+                            <div class="card-info">
+                                <h2>VIII пара</h2>
+                            </div>
+                        </div>
+                        <div class="card-times">
+                            <div class="time-row">
+                                <span class="time-start">19:30</span>
+                                <span class="time-pouse-start">20:07</span>
+                                <span class="time-pouse-end">20:12</span>
+                                <span class="time-end">20:50</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <section id="grid-view" class="view">
+                <div class="news-blog-wrapper">
+                    <h2 class="title">Новини та оголошення</h2>
+                    <div class="container">
+                        <div id="loading-weather-msg" style="display: none;">Завантаження...</div>
+                        <div id="search-overlay" class="hidden">
+                            <div class="search-modal">
+                                <div class="search-box">
+                                    <input type="text" id="city-input" placeholder="Введіть назву міста...">
+                                    <button id="fetch-weather-btn">🔍</button>
+                                    <button id="geo-locate-btn" class="secondary-btn">🗺️</button>
+                                </div>
+                                <div class="saved-cities-container">
+                                    <div class="saved-cities-title">Збережені міста:</div>
+                                    <div id="saved-cities-list">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="weather-container" class="hidden">
+                            <div id="daily-tabs-container" class="daily-tabs-container">
+                            </div>
+                            <div id="detailed-day-view" class="detailed-day-view hidden-details">
+                                <div class="detailed-main">
+                                    <div class="detailed-info-left">
+                                        <div class="detailed-time-wrapper">
+                                            <button id="search-toggle-btn" class="search-toggle-btn" aria-label="Відкрити пошук">✎</button>
+                                            <div id="detailed-time" class="detailed-time">--:--</div>
+                                        </div>
+                                        
+                                        <div id="detailed-date-info" class="detailed-date-info">--</div>
+                                        <div id="detailed-sunrise-sunset" class="detailed-sunrise-sunset">--</div>
+                                    </div>
+                                    <div class="detailed-icon-temp">
+                                        <div id="detailed-icon" class="weather-icon-large sun"></div>
+                                        <div id="detailed-temp" class="detailed-temp">--°</div>
+                                    </div>
+                                    <h1 id="detailed-condition">--</h1>
+
+                                </div>
+                                <div class="hourly-forecast-container">
+                                    <div id="hourly-forecast" class="hourly-forecast">
+                                    </div>
+                                </div>
+                                <h2 class="details-title">Детальний огляд погоди</h2>
+                                <div id="weather-details-grid" class="weather-details-grid">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="list-view" class="view-blog">
+                        <p class="loading-message" id="loading-msg">Завантаження новин...</p>
+                        <ul id="news-list"></ul>
+                        <p class="loading-message" id="load-more-msg" style="display: none;"></p>
+                    </div>
+                </div>
+            </section>
+            <section id="menu-view" class="view">
+                <p class="placeholder-text">⚙️ Екран налаштувань. Тут будуть налаштування користувача.</p>
+            </section>
+        </main>
+
+        <footer class="bottom-nav">
+            <div class="nav-item" data-icon="search">
+                <span class="material-icons">search</span>
+            </div>
+            <div class="nav-item" data-icon="format_list_bulleted">
+                <span class="material-icons">format_list_bulleted</span>
+            </div>
+            <div class="nav-item" data-icon="notifications">
+                <span class="material-icons">notifications</span>
+            </div>
+            <div class="nav-item" data-icon="grid_view">
+                <span class="material-icons">grid_view</span>
+            </div>
+            <div class="nav-item" data-icon="menu">
+                <span class="material-icons">menu</span>
+            </div>
+        </footer>
+    </div>
+    <div id="calendar-modal" class="modal">
+        <div class="modal-content">
+            <div class="calendar-header">
+                <span id="prev-month" class="material-icons calendar-nav-btn">chevron_left</span>
+                <h2 id="current-month-year">Листопад 2025</h2>
+                <span id="next-month" class="material-icons calendar-nav-btn">chevron_right</span>
+            </div>
+            <div class="calendar-grid-header">
+                <span>Нд</span><span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span>
+            </div>
+            <div id="calendar-grid" class="calendar-grid"> </div>
+            <button id="close-modal-btn" class="close-btn">Закрити</button>
+        </div>
+    </div>
+    <div id="image-modal" class="image-modal">
+        <span class="close-image material-icons">&times;</span><img class="image-content" id="modal-image">
+    </div>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                // УВАГА: /rozk1/ перед service-worker.js
+                navigator.serviceWorker.register('/rozk1/service-worker.js')
+                    .then(registration => console.log('ServiceWorker registered:', registration.scope))
+                    .catch(error => console.log('ServiceWorker registration failed:', error));
+            });
+        }
+    </script>
+    <script src="scripts/script.js"></script>
+    <script src="scripts/time.card.js"></script>
+    <script src="scripts/news.js"></script>
+    <script src="meteo.js"></script>
+
+</body>
+
+</html>
