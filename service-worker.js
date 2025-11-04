@@ -14,7 +14,7 @@ const urlsToCache = [
   
   // 4. Скрипти (JS)
   '/rozk1/scripts/script.js',
-  '/rozk1/scripts/news.js',
+  '/rozk1/news.js',
   '/rozk1/meteo.js',
   '/rozk1/scripts/time.card.js',
   
@@ -70,4 +70,5 @@ self.addEventListener('activate', event => {
   );
 
 });
+
 
