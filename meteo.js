@@ -175,7 +175,8 @@ function getSavedCities() {
 function saveCities(cities) {
     try {
         localStorage.setItem('savedCities', JSON.stringify(cities));
-        renderSavedCities();
+        // renderSavedCities() тут викликати не можна, бо вона визначена пізніше
+        // Виклик renderSavedCities() перенесено у manageSavedCities та removeSavedCity
     } catch (e) {
         console.error("Помилка збереження міст у localStorage:", e);
     }
@@ -210,16 +211,20 @@ function manageSavedCities(cityData) {
         savedCities.unshift(movedCity);
         saveCities(savedCities);
     }
+    // Оновлюємо список після збереження
+    if (typeof renderSavedCities === 'function') {
+        renderSavedCities(); 
+    }
 }
 
 function removeSavedCity(indexToRemove) {
     const savedCities = getSavedCities();
     savedCities.splice(indexToRemove, 1);
     saveCities(savedCities);
-}
-
-function initSavedCities() {
-    renderSavedCities(); 
+    // Оновлюємо список після видалення
+    if (typeof renderSavedCities === 'function') {
+        renderSavedCities(); 
+    }
 }
 
 
@@ -600,6 +605,12 @@ document.addEventListener('DOMContentLoaded', () => {
             searchOverlayEl.classList.add('hidden');
         }
     }
+    
+    // --- ВИПРАВЛЕНО: Функція перенесена всередину DOMContentLoaded ---
+    function initSavedCities() {
+        renderSavedCities(); 
+    }
+    // -----------------------------------------------------------------
 
     function renderSavedCities() {
         if (!savedCitiesListEl) return;
