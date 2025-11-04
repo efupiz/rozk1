@@ -8,15 +8,15 @@ const urlsToCache = [
   '/rozk1/index.html',
 
   // 3. Стилі (CSS)
-  '/rozk1/styles/style.css',
-  '/rozk1/styles/style-news.css',
+  '/rozk1/style.css',
+  '/rozk1/style-news.css',
   '/rozk1/meteo.css',
   
   // 4. Скрипти (JS)
-  '/rozk1/scripts/script.js',
+  '/rozk1/script.js',
   '/rozk1/news.js',
   '/rozk1/meteo.js',
-  '/rozk1/scripts/time.card.js',
+  '/rozk1/time.card.js',
   
   // 5. Маніфест
   '/rozk1/manifest.json',
@@ -70,5 +70,6 @@ self.addEventListener('activate', event => {
   );
 
 });
+
 
 
