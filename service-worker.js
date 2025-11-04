@@ -22,7 +22,7 @@ const urlsToCache = [
   '/rozk1/manifest.json',
   
   // 6. Критично важливі зображення/іконки (наприклад, іконка PWA)
-  '/rozk1/images/clear_day.png' // Приклад
+  './images/clear_day.png' // Приклад
   // Якщо у вас багато зображень, кешуйте лише ті, що потрібні для офлайн-оболонки
 ];
 
@@ -70,3 +70,4 @@ self.addEventListener('activate', event => {
   );
 
 });
+
