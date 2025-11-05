@@ -3,7 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#38765E">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/rozk1/images/icon-192x192.png">
     <title>Розклад Занять</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="style-news.css">
@@ -333,6 +338,10 @@
             </div>
         </footer>
     </div>
+    <div id="install-banner" class="install-banner" style="display: none;">
+        <p>Завантажте "Розклад Занять"<br> як окремий застосунок!</p>
+        <button id="install-btn" class="install-btn">Встановити</button>
+    </div>
     <div id="calendar-modal" class="modal">
         <div class="modal-content">
             <div class="calendar-header">
@@ -364,8 +373,9 @@
     <script src="time.card.js"></script>
     <script src="news.js"></script>
     <script src="meteo.js"></script>
-
+    <script src="install.js"></script>
 </body>
 
 
 </html>
+
