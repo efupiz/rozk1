@@ -28,6 +28,10 @@
     /*font-family: "Segoe UI", Roboto, Helvetica, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", 'Nunito', sans-serif;*/
     font-family: 'Nunito', sans-serif;
     -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;  /* Safari, Chrome */
+    -moz-user-select: none;     /* Firefox */
+    -ms-user-select: none;      /* IE/Edge */
+    user-select: none;          /* Стандарт */
 }
 
 body {
@@ -726,7 +730,7 @@ body {
     opacity: 1;
     color: var(--color-primary);
     transform: scale(1.1);
-    background-color: rgb(34 139 98 / 18%);
+    background-color: var(--color-btn-light);
 }
 
 .bottom-nav .nav-item.active-nav .material-icons {
@@ -1392,4 +1396,70 @@ body {
 #toggle-bells-btn {
     /* Видаляємо старий margin, оскільки тепер flex ним керує */
     margin: 0;
+}
+
+/* --- СТИЛІ ДЛЯ БАНЕРА ВСТАНОВЛЕННЯ (PWA) --- */
+/* Цей блок замінює попередні версії і використовує :root змінні */
+
+.install-banner {
+    position: fixed;
+    bottom: 67px;
+    /* left: 0; */
+    /* right: 0; */
+    height: 65px;
+    border-radius: 20px;
+    /* width: 100%; */
+    max-width: 380px;
+    margin: 10px;
+    /* margin: 0 auto; */
+    background-color: var(--color-card-light);
+    color: var(--color-primary);
+    box-shadow: 0 -4px 12px var(--color-shadow);
+    display: flex;
+    /* justify-content: space-between; */
+    align-items: center;
+    padding: 15px;
+    transform: translateY(130px);
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    z-index: 98;
+}
+
+/* Клас .visible додається через JavaScript 
+   для запуску анімації
+*/
+.install-banner.visible {
+    /* Кінцевий стан: банер на місці */
+    transform: translateY(0);
+}
+
+.install-banner p {
+    flex-grow: 1;
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500; /* Добре виглядає з 'Nunito' */
+    padding-right: 15px; /* Відступ від кнопок */
+}
+
+/* Стиль кнопки "Встановити" */
+.install-btn {
+    /* Інвертований стиль: 
+       біла кнопка (як картка) на зеленому фоні
+    */
+    background-color: var(--color-btn-light);
+    color: var(--color-primary);
+    border: none;
+    padding: 8px 16px;
+    /* Використовуємо скруглення, як у інших елементах (напр., .filter-option-item) */
+    border-radius: 20px; 
+    font-weight: 700; /* 'Nunito' жирний */
+    cursor: pointer;
+    font-size: 14px;
+    flex-shrink: 0; /* Щоб кнопка не стискалася */
+    transition: background-color 0.2s;
+}
+
+.install-btn:hover {
+    /* При наведенні використовуємо світлий фон, як у .nav-item:hover */
+    background-color: var(--color-primary);
+    color: var(--color-text-light);
 }
