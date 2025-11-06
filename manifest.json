@@ -1,7 +1,7 @@
 {
-  "name": "Назва Вашого PWA",
-  "short_name": "PWA-Сайт",
-  "description": "Короткий опис вашого прогресивного веб-додатку.",
+  "name": "Розклад Занять КПНУ",
+  "short_name": "РЗ-КПНУ",
+  "description": "Розклад Занять КПНУ",
   "start_url": "/rozk1/", 
   "scope": "/rozk1/",
   "display": "standalone",
@@ -21,6 +21,7 @@
   ]
 
 }
+
 
 
 
