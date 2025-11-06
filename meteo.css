@@ -16,7 +16,7 @@
     flex-grow: 1;
     font-size: 1.1em;
     padding: 10px 15px;
-    color: var(--color-primary);
+    color: var(--color-text-dark);
     font-weight: 600;
     border: 2px solid var(--color-btn-light);
     border-radius: 10px;
@@ -31,13 +31,13 @@
 
 #fetch-weather-btn:hover {
     background-color: var(--color-primary);
-    color: #fff;
+    color: var(--color-text-light); /* ЗАМІНЕНО: #fff -> var(--color-text-light) */
 }
 
 #loading-msg {
     text-align: center;
     font-size: 1.2em;
-    color: #555;
+    color: var(--color-text-dark);
     padding: 20px;
 }
 
@@ -74,12 +74,12 @@
     min-width: 80px;
 
     background: var(--color-btn-light);
-    border: 1px solid #ddd;
+    border: 1px solid var(--color-card-light); /* #ddd замінено на var(--color-card-light) */
     border-radius: 12px;
     padding: 8px 5px;
     text-align: center;
     text-decoration: none;
-    color: var(--color-primary);
+    color: var(--color-text-dark);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     transition: all 0.2s ease;
     cursor: pointer;
@@ -90,10 +90,10 @@
 }
 
 .daily-tab-compact.active {
-    background-color: var(--color-primary);
-    color: white;
+    background-color: var(--color-card-dark);
+    color: var(--color-btn-card-light); /* ЗАМІНЕНО: white -> var(--color-text-light) */
     transform: translateY(-2px);
-    border: 1px solid var(--color-primary);
+    border: 1px solid var(--color-card-dark);
 }
 
 .daily-tab-compact .tab-day {
@@ -112,7 +112,8 @@
 }
 
 .daily-tab-compact .tab-temp-min {
-    color: #888;
+    color: var(--color-text-dark); /* ЗАМІНЕНО: #888 -> var(--color-text-dark) */
+    opacity: 0.6;
     margin-left: 3px;
 }
 
@@ -123,42 +124,30 @@
 
 /* --- Блок 2: Детальний огляд --- */
 /* --- НОВІ СТИЛІ: Кнопка-стрілка в активній вкладці --- */
-.daily-tab-compact .tab-toggle-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* Імітуємо розмір іконки погоди */
-    width: 45px;
-    height: 45px;
-    margin: 5px 0;
-}
+
 
 .daily-tab-compact .arrow-icon {
     width: 12px;
     height: 12px;
-    border-left: 3px solid white;
+    border-left: 3px solid var(--color-text-light); /* ЗАМІНЕНО: white -> var(--color-text-light) */
     /* Колір стрілки (білий на синьому фоні) */
-    border-bottom: 3px solid white;
+    border-bottom: 3px solid var(--color-text-light); /* ЗАМІНЕНО: white -> var(--color-text-light) */
     transform: rotate(-45deg);
     /* Стрілка "вниз" */
     transition: transform 0.3s ease;
 }
 
-/* Анімація стрілки при відкритих деталях */
-.daily-tab-compact.active.details-open .arrow-icon {
-    transform: rotate(135deg);
-    /* Стрілка "вгору" */
-}
 
 
 /* ------------------------------------------------------------------ */
 /* --- Блок 2: Детальний огляд --- */
 /* ------------------------------------------------------------------ */
 .detailed-day-view {
-    background: #fff;
+    background: var(--color-background);
+	color: var(--color-text-dark);
     border-radius: 15px;
     padding: 20px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 5px 15px var(--color-shadow);
     margin: 10px;
     /* --- НОВІ СТИЛІ: Анімація випадання --- */
     transition: all 0.4s ease-in-out;
@@ -189,25 +178,26 @@
     grid-template-columns: 1fr;
     align-items: center;
     gap: 15px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--color-card-light); /* #eee замінено на var(--color-card-light) */
     padding-bottom: 20px;
     text-align: center;
 }
 
 .detailed-time{
     font-size: 1.4em;
-    color: #555;
+    color: var(--color-text-dark); /* #555 замінено на var(--color-text-dark) */
 }
 
 #detailed-location {
     font-size: 2em;
     margin: 5px 0;
-    color: #000;
+    color: var(--color-text-dark); /* #000 замінено на var(--color-text-dark) */
 }
 
 .detailed-sunrise-sunset, .detailed-date-info {
     font-size: 0.9em;
-    color: #777;
+    color: var(--color-text-dark); /* #777 замінено на var(--color-text-dark) */
+    opacity: 0.7;
 }
 
 .detailed-icon-temp {
@@ -220,13 +210,13 @@
 .detailed-temp {
     font-size: 4.5em;
     font-weight: 700;
-    color: #000;
+    color: var(--color-text-dark); /* #000 замінено на var(--color-text-dark) */
     margin-left: 20px
 }
 
 .detailed-side-info {
     font-size: 0.9em;
-    color: #333;
+    color: var(--color-text-dark); /* #333 замінено на var(--color-text-dark) */
     text-align: center;
     margin-top: 15px;
 }
@@ -247,7 +237,7 @@
 }
 
 .hourly-card {
-    border: 1px solid #eee;
+    border: 1px solid var(--color-card-light); /* #eee замінено на var(--color-card-light) */
     border-radius: 10px;
     padding: 10px;
     text-align: center;
@@ -257,18 +247,18 @@
 .hourly-time {
     font-weight: bold;
     font-size: 0.9em;
-    color: #555;
+    color: var(--color-text-dark); /* #555 замінено на var(--color-text-dark) */
 }
 
 .hourly-temp {
     font-size: 1.1em;
     font-weight: 600;
-    color: #000;
+    color: var(--color-text-dark); /* #000 замінено на var(--color-text-dark) */
 }
 
 .hourly-precip {
     font-size: 0.8em;
-    color: #36a2eb;
+    color: #36a2eb; /* Зберігаємо синій для опадів, якщо немає змінної для цього */
 }
 
 /* --- НОВІ СТИЛІ: Детальний огляд погоди (MSN-Style) --- */
@@ -277,8 +267,8 @@
     margin-bottom: 15px;
     font-size: 1.4em;
     font-weight: 700;
-    color: #333;
-    border-top: 1px solid #eee;
+    color: var(--color-text-dark); /* #333 замінено на var(--color-text-dark) */
+    border-top: 1px solid var(--color-card-light); /* #eee замінено на var(--color-card-light) */
     padding-top: 15px;
 }
 
@@ -290,7 +280,7 @@
 }
 
 .detail-card {
-    background: #f7f9fc;
+    background: var(--color-card-light); /* ЗАМІНЕНО: #f7f9fc -> var(--color-card-light) */
     border-radius: 12px;
     padding: 15px;
     display: flex;
@@ -303,12 +293,12 @@
 }
 
 .detail-card:hover {
-    background: #e9eff5;
+    background: var(--color-btn-light); /* ЗАМІНЕНО: #e9eff5 -> var(--color-btn-light) */
 }
 
 .card-title {
     font-size: 0.9em;
-    color: #555;
+    color: var(--color-text-dark); /* #555 замінено на var(--color-text-dark) */
     font-weight: 500;
 }
 
@@ -323,7 +313,8 @@
 
 .card-description {
     font-size: 0.8em;
-    color: #777;
+    color: var(--color-text-dark); /* #777 замінено на var(--color-text-dark) */
+    opacity: 0.8;
     margin-top: auto;
 }
 
@@ -357,21 +348,22 @@
     font-weight: bold;
     padding: 2px 8px;
     border-radius: 5px;
-    color: white;
+    color: var(--color-btn-card-light);
+	font-weight: 700;
 }
 
 .trend-rising {
-    background-color: #CC2635;
+    background-color: var( --color-shadow); /* ЗАМІНЕНО: #CC2635. Якщо такої змінної немає, залиште #CC2635 */
 }
 
 /* Червоний */
 .trend-falling {
-    background-color: #0d73d6;
+    background-color: var(--color-danger); /* ЗАМІНЕНО: #0d73d6. Якщо такої змінної немає, залиште #0d73d6 */
 }
 
 /* Синій */
 .trend-steady {
-    background-color: #555;
+    background-color: var(--color-info); /* ЗАМІНЕНО: #555 -> var(--color-text-dark) */
 }
 
 /* Сірий */
@@ -397,14 +389,14 @@
 
 .temp-chart-point {
     fill: #CC2635;
-    stroke: white;
+    stroke: var(--color-background); /* ЗАМІНЕНО: white -> var(--color-background) */
     stroke-width: 3;
 }
 
 .temp-chart-text {
     font-size: 1.2em;
     font-weight: bold;
-    fill: white;
+    fill: var(--color-text-light); /* ЗАМІНЕНО: white -> var(--color-text-light) */
     text-anchor: middle;
 }
 
@@ -543,15 +535,15 @@
 
 /* --- Активна погодинна картка --- */
 .hourly-card.active {
-    background-color: var(--color-primary);
-    color: white;
+    background-color: var(--color-card-dark);
+    color: var(--color-btn-card-light); /* ЗАМІНЕНО: white -> var(--color-text-light) */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     transform: translateY(-1px);
 }
 
 .hourly-card.active .hourly-time,
 .hourly-card.active .hourly-temp {
-    color: white;
+    color: var(--color-btn-card-light); /* ЗАМІНЕНО: white -> var(--color-text-light) */
 }
 
 .hourly-card.active .hourly-precip {
@@ -560,29 +552,21 @@
 }
 
 /* --- НОВІ СТИЛІ: Кнопка-стрілка в активній вкладці --- */
-.daily-tab-compact .tab-toggle-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* Імітуємо розмір іконки погоди */
-    width: 45px;
-    height: 45px;
-    margin: 5px 0;
-}
+
 
 .daily-tab-compact .arrow-icon {
     width: 12px;
     height: 12px;
-    border-left: 3px solid white;
+    border-left: 3px solid var(--color-text-light); /* ЗАМІНЕНО: white -> var(--color-text-light) */
     /* Колір стрілки (білий на синьому фоні) */
-    border-bottom: 3px solid white;
+    border-bottom: 3px solid var(--color-text-light); /* ЗАМІНЕНО: white -> var(--color-text-light) */
     transform: rotate(-45deg);
     /* Стрілка "вниз" */
     transition: transform 0.3s ease;
 }
 
 /* ================================================================== */
-/* === ДОДАЙТЕ ЦІ СТИЛІ в кінець вашого meteo.css === */
+/* === ДОДАТКОВІ СТИЛІ: Пошук та Збережені міста === */
 /* ================================================================== */
 
 /* 1. Стилі для спливаючого вікна пошуку (Оверлей) */
@@ -605,7 +589,6 @@
 }
 
 /* 2. Клас 'hidden' для оверлея (JS використовує його для приховування) */
-/* Ваш .hidden { display: none; } також спрацює, але opacity краще для анімації */
 #search-overlay.hidden {
     opacity: 0;
     pointer-events: none;
@@ -619,7 +602,7 @@
     margin: 0;
     /* Прибираємо відступи за замовчуванням */
     padding: 5px;
-    background: white;
+    background: var(--color-background); /* ЗАМІНЕНО: white -> var(--color-background) */
     border-radius: 12px;
     max-width: 400px;
 }
@@ -631,7 +614,7 @@
     right: 15px;
     font-size: 2.2em;
     font-weight: bold;
-    color: white;
+    color: var(--color-text-light); /* ЗАМІНЕНО: white -> var(--color-text-light) */
     background: transparent;
     border: none;
     cursor: pointer;
@@ -654,9 +637,7 @@
     border: none;
     font-size: 1.2em;
     cursor: pointer;
-    color: #555;
-    padding: 0;
-    line-height: 1;
+    color: var(--color-text-dark); /* #555 замінено на var(--color-text-dark) */
     opacity: 0.7;
     transition: opacity 0.2s;
     margin-left: -30px;
@@ -667,7 +648,6 @@
 }
 
 /* 7. Стилі для стрілки "вниз/вгору" в активній вкладці */
-/* (Вони вже є у вашому CSS, але переконайтеся, що .tab-toggle-button - це <button>) */
 .daily-tab-compact .tab-toggle-button {
     display: flex;
     align-items: center;
@@ -681,7 +661,7 @@
     /* Скидання стилів кнопки */
     border: none;
     /* Скидання стилів кнопки */
-    color: white;
+    color: var(--color-btn-card-light); /* ЗАМІНЕНО: white -> var(--color-text-light) */
     /* Щоб стрілка успадкувала колір */
 }
 
@@ -729,6 +709,7 @@
     padding: 8px 12px;
     border-radius: 8px;
     background: var(--color-btn-light);
+    color: var(--color-text-dark); /* Додано для забезпечення кольору тексту */
     cursor: pointer;
     transition: background-color 0.2s;
     font-size: 1em;
@@ -736,7 +717,7 @@
 }
 
 .city-item:hover {
-    background-color: var(--color-border);
+    background-color: var(--color-card-light); /* var(--color-border) замінено на var(--color-card-light) як більш близьку за змістом змінну */
 }
 
 .city-info {
@@ -759,26 +740,25 @@
 
 .city-item[data-type="manual"] .city-icon {
     color: var(--color-accent);
-    /* Введене вручну (синій) */
+    /* Введене вручну (синій). Припускаємо, що --color-accent = #0d73d6 */
 }
 
 .city-item[data-type="default"] {
     font-style: italic;
-    background: #e0e0e0;
-    /* Сірий для стандартного */
+    background: var(--color-card-light); /* ЗАМІНЕНО: #e0e0e0 -> var(--color-card-light) */
     cursor: default;
     opacity: 0.8;
 }
 
 .city-item[data-type="default"] .city-icon {
-    color: var(--color-text);
+    color: var(--color-text-dark); /* ЗАМІНЕНО: var(--color-text) -> var(--color-text-dark) */
     /* Карта (чорний) */
 }
 
 .delete-btn {
     background: none;
     border: none;
-    /* color: var(--color-primary); */
+    color: var(--color-primary); 
     font-size: 1.5em;
     cursor: pointer;
     margin-left: 10px;
@@ -813,5 +793,25 @@
 
 .secondary-btn:hover {
     background-color: var(--color-primary);
-    color: #fff;
+    color: var(--color-text-light); /* ЗАМІНЕНО: #fff -> var(--color-text-light) */
+}
+
+
+/* ================================================================== */
+/* === Додаткові корекції для темної теми (узгодження рамок) === */
+/* ================================================================== */
+
+body.dark-mode .daily-tab-compact {
+    /* Робимо рамку менш помітною у темній темі */
+    border: 1px solid var(--color-card-dark);
+}
+
+body.dark-mode .detailed-main {
+    /* Робимо роздільник менш помітним у темній темі */
+    border-bottom: 1px solid var(--color-card-dark);
+}
+
+body.dark-mode .hourly-card {
+    /* Робимо рамку менш помітною у темній темі */
+    border: 1px solid var(--color-card-dark);
 }

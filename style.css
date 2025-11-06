@@ -7,17 +7,27 @@
     --color-secondary: #E3F2E3;
     /* Дуже світлий фон */
     --color-background: #F8FFF8;
-    /* Білий фон додатку (Використовується для future) */
+    /* Білий фон додатку */
     --color-card-light: #E9F4E9;
-    /* Світла картка (Використовується для past) */
+    /* Світла картка (Неактивні елементи) */
     --color-card-dark: #5C8C7F;
-    /* Темна картка (Використовується для current) */
+    /* Темна картка (Активні елементи) */
     --color-text-dark: #1F332C;
     /* Майже чорний текст */
     --color-text-light: #F0F5F0;
-    /* Світлий текст на темному фоні */
     --color-btn-light: #c5e1d1;
-    --color-shadow: rgba(0, 0, 0, 0.1);
+    /* Світлий текст на темному фоні */
+    --color-btn-card-light: #E9F4E9;
+    --color-shadow: #00000036;
+    --color-danger: #CC2635;
+    /* Червоний (для видалення/помилок) */
+    --color-info: #0d73d6;
+    /* Синій (для дощу/інформації) */
+
+    /* Додаткова змінна для тіні поточної картки */
+    --color-current-shadow: rgba(56, 118, 94, 0.01);
+
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Вимкнення синього (або іншого) підсвічування при торканні */
@@ -28,10 +38,16 @@
     /*font-family: "Segoe UI", Roboto, Helvetica, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", 'Nunito', sans-serif;*/
     font-family: 'Nunito', sans-serif;
     -webkit-tap-highlight-color: transparent;
-    -webkit-user-select: none;  /* Safari, Chrome */
-    -moz-user-select: none;     /* Firefox */
-    -ms-user-select: none;      /* IE/Edge */
-    user-select: none;          /* Стандарт */
+    -webkit-user-select: none;
+    /* Safari, Chrome */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* IE/Edge */
+    user-select: none;
+    /* Стандарт */
+
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 body {
@@ -40,6 +56,101 @@ body {
     justify-content: center;
     align-items: flex-start;
     min-height: 100vh;
+}
+
+body.dark-mode {
+    /* Перевизначаємо основні змінні теми */
+    --color-primary: #5C8C7F;
+    /* Трохи світліший зелений акцент */
+    --color-secondary: #1F332C;
+    /* Темний фон (колишній текст) */
+    --color-background: #1A2823;
+    /* Ще темніший фон */
+    --color-card-light: #2A4039;
+    /* Фон карток (темний) */
+    --color-card-dark: #38765E;
+    /* Фон "поточної" картки */
+    --color-text-dark: #E3F2E3;
+    /* Світлий текст (колишній фон) */
+    --color-text-light: #1A2823;
+    /* Темний текст на світлих картках (для контрасту) */
+    --color-btn-light: #2A4039;
+}
+
+/* Специфічні корекції для темної теми */
+body.dark-mode .app-container {
+    background-color: var(--color-secondary);
+    /* Використовуємо secondary для фону контейнера */
+}
+
+body.dark-mode .header {
+    background-color: var(--color-secondary);
+    /* Використовуємо secondary для фону контейнера */
+}
+
+body.dark-mode .bottom-nav {
+    background-color: var(--color-secondary);
+    box-shadow: 0 -4px 12px var(--color-shadow);
+}
+
+body.dark-mode .lesson-card.future {
+    background-color: var(--color-card-light);
+    /* Картки "майбутні" */
+}
+
+/* Налаштування */
+body.dark-mode .settings-list {
+    background: var(--color-background);
+    border-color: var(--color-card-light);
+}
+
+body.dark-mode .settings-item {
+    background: var(--color-background);
+    /* Використовуємо background для картки, щоб border-bottom був помітним */
+    border-bottom-color: var(--color-card-light);
+    /* Використовуємо card-light для роздільника */
+}
+
+body.dark-mode .settings-item .text {
+    color: var(--color-text-dark);
+}
+
+body.dark-mode .settings-item .material-icons {
+    color: var(--color-primary);
+}
+
+/* Перемикач */
+body.dark-mode .slider {
+    background-color: var(--color-card-light);
+    /* Використовуємо card-light для неактивного */
+}
+
+body.dark-mode input:checked + .slider {
+    background-color: var(--color-primary);
+}
+
+body.dark-mode .slider:before {
+    background-color: var(--color-text-dark);
+    /* Ручка перемикача (світла) */
+}
+
+body.dark-mode input:checked + .slider:before {
+    background-color: var(--color-text-light);
+    /* Ручка перемикача на активному (темна) */
+}
+
+/* Календар */
+body.dark-mode .modal-content {
+    background-color: var(--color-secondary);
+}
+
+body.dark-mode .calendar-day:not(.inactive):hover {
+    background-color: var(--color-card-light);
+}
+
+body.dark-mode .calendar-day.inactive {
+    /* Світлий текст з низькою прозорістю */
+    color: rgba(var(--color-text-dark), 0.3);
 }
 
 .app-container {
@@ -75,7 +186,7 @@ body {
     top: 50px;
     left: 0;
     right: 0;
-    color: var(--color-primary);
+    color: var(--color-text-dark);
     opacity: 0.5;
     font-size: 16px;
     font-weight: 500;
@@ -142,26 +253,24 @@ body {
 
 .lesson-card.past .details-row.secondary span {
     color: var(--color-text-dark);
-    opacity: 0.8;
+ 
 }
 
 /* 2. CURRENT: Поточна подія (темно-зелена) */
 .lesson-card.current {
     background-color: var(--color-card-dark);
-    color: var(--color-text-light);
-    box-shadow: 0 4px 15px rgba(56, 118, 94, 0.4);
-    /* Більш помітна тінь */
+    color: var(--color-btn-card-light);
+    box-shadow: 0 4px 15px var(--color-current-shadow);
+    /* Використовуємо змінну тіні */
     opacity: 1;
 }
 
 .lesson-card.current .details-row span {
-    color: var(--color-text-light);
-    opacity: 0.8;
+    color: var(--color-btn-card-light);
 }
 
 .lesson-card.current .details-row.secondary span {
-    color: var(--color-text-light);
-    opacity: 0.7;
+    color: var(--color-btn-card-light);
 }
 
 /* 3. FUTURE: Майбутні події (білі/дефолтні) */
@@ -174,12 +283,7 @@ body {
 }
 
 .lesson-card.future .details-row span {
-    color: var(--color-primary);
-}
-
-.lesson-card.future .details-row.secondary span {
-    color: var(--color-text-dark);
-    opacity: 0.8;
+    color: var(---color-text-dark);
 }
 
 /* Декоративні форми (коригування для new styles) */
@@ -194,7 +298,8 @@ body {
 .lesson-card.past .decorative-shape-2,
 .lesson-card.future .decorative-shape-1,
 .lesson-card.future .decorative-shape-2 {
-    background-color: rgba(56, 118, 94, 0.1);
+    /* Використовуємо Primary з прозорістю */
+    background-color: rgba(var(--color-primary), 0.1);
     /* Світлий відтінок для past/future */
 }
 
@@ -250,23 +355,6 @@ body {
     font-weight: 400;
 }
 
-.details-row.secondary span {
-    color: var(--color-text-dark);
-    opacity: 0.8;
-}
-
-/* Стилі для світлих елементів на темній картці */
-.lesson-card.current .details-row span {
-    color: var(--color-text-light);
-    opacity: 0.8;
-}
-
-.lesson-card.current .details-row.secondary span {
-    color: var(--color-text-light);
-    opacity: 0.7;
-}
-
-
 /* --- BOTTOM NAV СТИЛІ --- */
 .bottom-nav {
     position: fixed;
@@ -311,7 +399,8 @@ body {
 }
 
 .nav-item.active-nav {
-    color: white;
+    color: var(--color-text-light);
+    /* ЗАМІНЕНО: white -> var(--color-text-light) */
 }
 
 
@@ -391,8 +480,9 @@ body {
     font-weight: 500;
 }
 
-.calendar-day.inactive {
-    color: #ccc;
+/* Світла тема: тьмяний чорний */
+body:not(.dark-mode) .calendar-day.inactive {
+    color: rgba(31, 51, 44, 0.3);
     cursor: default;
     background: none;
 }
@@ -412,110 +502,8 @@ body {
     padding: 12px;
     margin-top: 20px;
     background-color: var(--color-primary);
-    color: white;
-    border: none;
-    border-radius: 15px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-/* --- СТИЛІ МОДАЛЬНОГО КАЛЕНДАРЯ --- */
-.modal {
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-    display: none;
-    /* Приховано за замовчуванням */
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-}
-
-.modal.open {
-    display: flex;
-    /* Показати при відкритті */
-}
-
-.modal-content {
-    background-color: var(--color-background);
-    padding: 20px;
-    border-radius: 25px;
-    width: 100%;
-    max-width: 350px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    color: var(--color-text-dark);
-}
-
-.calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    color: var(--color-primary);
-}
-
-#current-month-year {
-    font-size: 20px;
-    font-weight: 700;
-}
-
-.calendar-nav-btn {
-    cursor: pointer;
-    font-size: 28px;
-    opacity: 0.8;
-}
-
-.calendar-grid-header,
-.calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    text-align: center;
-    gap: 5px;
-}
-
-.calendar-grid-header span {
-    font-weight: 500;
-    color: var(--color-primary);
-    opacity: 0.7;
-    font-size: 14px;
-}
-
-.calendar-day {
-    padding: 8px 0;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: background-color 0.2s, color 0.2s;
-    font-size: 16px;
-    font-weight: 500;
-}
-
-.calendar-day.inactive {
-    color: #ccc;
-    cursor: default;
-    background: none;
-}
-
-.calendar-day:not(.inactive):hover {
-    background-color: var(--color-card-light);
-}
-
-.calendar-day.selected {
-    background-color: var(--color-primary);
     color: var(--color-text-light);
-    font-weight: 700;
-}
-
-.close-btn {
-    width: 100%;
-    padding: 12px;
-    margin-top: 20px;
-    background-color: var(--color-primary);
-    color: white;
+    /* ЗАМІНЕНО: white -> var(--color-text-light) */
     border: none;
     border-radius: 15px;
     font-size: 16px;
@@ -573,7 +561,8 @@ body {
 /* Стек: візуальний ефект накладання */
 .past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card {
     position: absolute;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 3px 10px var(--color-shadow);
+    /* ЗАМІНЕНО: rgba(0, 0, 0, 0.05) -> var(--color-shadow) */
     transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
     opacity: 0;
     visibility: hidden;
@@ -589,48 +578,18 @@ body {
 }
 
 /* Ефект тіні для стеку - додаємо трансформацію до другої та третьої картки знизу */
-.past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card:nth-last-child(2) {
-    transform: translateY(8px) scale(0.96);
-    opacity: 0.3;
-    /* Забезпечуємо візуальний натяк на наявність */
-    visibility: visible;
-}
-
-.past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card:nth-last-child(3) {
-    transform: translateY(8px) scale(0.96);
-    opacity: 0.3;
-    visibility: visible;
-}
-
-.past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card:nth-last-child(4) {
-    transform: translateY(8px) scale(0.96);
-    opacity: 0.3;
-    visibility: visible;
-}
-
-.past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card:nth-last-child(5) {
-    transform: translateY(8px) scale(0.96);
-    opacity: 0.3;
-    visibility: visible;
-}
-
-.past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card:nth-last-child(6) {
-    transform: translateY(8px) scale(0.96);
-    opacity: 0.3;
-    visibility: visible;
-}
-
-.past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card:nth-last-child(7) {
-    transform: translateY(8px) scale(0.96);
-    opacity: 0.3;
-    visibility: visible;
-}
-
+.past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card:nth-last-child(2),
+.past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card:nth-last-child(3),
+.past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card:nth-last-child(4),
+.past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card:nth-last-child(5),
+.past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card:nth-last-child(6),
+.past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card:nth-last-child(7),
 .past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card:nth-last-child(8) {
     transform: translateY(8px) scale(0.96);
     opacity: 0.3;
     visibility: visible;
 }
+
 
 /* СТАН РОЗГОРНУТОГО СТЕКУ (EXPANDED) */
 .past-stack-container.expanded {
@@ -659,12 +618,14 @@ body {
     padding: 15px 20px;
     box-shadow: none;
     border-radius: 0;
-    border-bottom: 1px solid rgba(56, 118, 94, 0.1);
+    /* Використовуємо Primary з прозорістю */
+    border-bottom: 1px solid rgba(var(--color-primary), 0.1);
     /* Роздільник */
     opacity: 1;
     visibility: visible;
     transform: none;
-    color: #5c8c7f;
+    color: var(--color-primary);
+    /* ЗАМІНЕНО: #5c8c7f -> var(--color-primary) */
 }
 
 .past-stack-container.expanded .stack-cards-wrapper .lesson-card:last-child {
@@ -802,6 +763,7 @@ body {
     border-radius: 20px;
     padding: 15px 20px;
     margin-bottom: 20px;
+    box-shadow: 0 0px 3px var(--color-shadow);
 }
 
 .filter-header {
@@ -819,7 +781,8 @@ body {
     font-size: 18px;
     font-weight: 500;
     color: var(--color-text-dark);
-    border-bottom: 1px solid rgba(56, 118, 94, 0.2);
+    /* Використовуємо Primary з прозорістю */
+    border-bottom: 1px solid rgba(var(--color-primary), 0.2);
     /* Світла лінія-роздільник */
     cursor: pointer;
 }
@@ -956,11 +919,13 @@ body {
 /* Окрема опція (імітує картку у стеку) */
 .filter-option-item {
     background-color: var(--color-background);
+    /* ЗАМІНЕНО: #fff -> var(--color-background) */
     /* Білий фон */
     border-radius: 12px;
     padding: 12px 15px;
     margin-top: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    /* ЗБЕРЕЖЕНО: залишаємо тонку тінь */
     color: var(--color-text-dark);
     font-size: 16px;
     font-weight: 400;
@@ -1013,7 +978,8 @@ body {
     align-items: center;
     justify-content: center;
     /* Використовуємо колір з вашого дизайну, якщо є */
-    color: var(--color-primary, #666);
+    color: var(--color-primary);
+    /* ЗАМІНЕНО: var(--color-primary, #666) -> var(--color-primary) */
     opacity: 0.8;
 }
 
@@ -1031,10 +997,12 @@ body {
     width: 30px;
     /* Той самий розмір, що й у GIF */
     height: 30px;
-    border: 4px solid rgba(0, 0, 0, 0.1);
+    /* Використовуємо var(--color-text-dark) з прозорістю */
+    border: 4px solid rgba(var(--color-text-dark), 0.1);
     /* Світлий колір кільця */
     /* Колір "активної" частини, беремо з вашої теми */
-    border-top-color: var(--color-primary, #007bff);
+    border-top-color: var(--color-primary);
+    /* ЗАМІНЕНО: var(--color-primary, #007bff) -> var(--color-primary) */
     border-radius: 50%;
     /* Запускаємо анімацію */
     animation: spin 1s linear infinite;
@@ -1077,7 +1045,10 @@ body {
     /* Залишаємо vw для адаптивного розміру на мобільних */
     font-size: 40vw;
     font-weight: 700;
-    color: var(--color-placeholder, rgb(56 118 94 / 5%));
+    /* Використовуємо Primary з дуже низькою прозорістю */
+   color: #38765e66;
+
+    /* ЗАМІНЕНО: var(--color-placeholder, rgb(56 118 94 / 5%)) -> var(--color-primary) */
     position: absolute;
     top: 50%;
     left: 50%;
@@ -1110,7 +1081,8 @@ body {
 .no-schedule-main-text {
     font-size: 1.3em;
     font-weight: bold;
-    color: var(--color-primary, #6a6a6a);
+    color: var(--color-primary);
+    /* ЗАМІНЕНО: var(--color-primary, #6a6a6a) -> var(--color-primary) */
     position: relative;
     z-index: 1;
     margin-bottom: 10px;
@@ -1122,7 +1094,8 @@ body {
 /* Додаткова підказка (На жаль, інформація...) */
 .no-schedule-sub-text {
     font-size: 1em;
-    color: var(--color-text-secondary, #999);
+    color: var(--color-text-dark);
+    /* ЗАМІНЕНО: var(--color-text-secondary, #999) -> var(--color-text-dark) */
     opacity: 0.8;
     position: relative;
     z-index: 1;
@@ -1178,13 +1151,23 @@ body {
 }
 
 .card-first {
-    background-color: #ECFCE5;
+    background-color: var(--color-card-dark);
+	color: var(--color-btn-card-light);
+    /* ЗАМІНЕНО: #ECFCE5 -> var(--color-secondary) */
     min-height: auto;
     /* Встановлюємо auto або видаляємо, оскільки висота зміниться */
 }
-
+.card-first .card-info h2 {
+    font-size: 24px;
+    font-weight: 800;
+    margin: 0;
+    color: var(---color-btn-card-light);
+    /* ЗАМІНЕНО: #222 -> var(--color-text-dark) */
+}
 .card-second {
-    background-color: #ffffff;
+    background-color: var(--color-background);
+	color: var(--color-text-dark);
+    /* ЗАМІНЕНО: #ffffff -> var(--color-background) */
 }
 
 /* Контейнер назви пари (I пара, II пара...) */
@@ -1199,7 +1182,8 @@ body {
     font-size: 24px;
     font-weight: 800;
     margin: 0;
-    color: #222;
+    color: var(--color-text-dark);
+    /* ЗАМІНЕНО: #222 -> var(--color-text-dark) */
 }
 
 /* Контейнер статусу */
@@ -1232,8 +1216,10 @@ body {
     left: auto;
     /* Видаляємо left: 0; */
 
-    background-color: #D1ECC7;
-    color: #263F27;
+    background-color: var(--color-btn-light);
+    /* ЗАМІНЕНО: #D1ECC7 -> var(--color-btn-light) */
+    color: var(--color-text-dark);
+    /* ЗАМІНЕНО: #263F27 -> var(--color-text-dark) */
     padding: 0px 14px;
     z-index: 2;
     justify-content: center;
@@ -1244,8 +1230,10 @@ body {
     /* Видаляємо left: 0; */
     right: 0;
     /* Прикріплюємо до правого краю контейнера статусу */
-    background-color: #FCFCF7;
-    color: #263F27;
+    background-color: var(--color-background);
+    /* ЗАМІНЕНО: #FCFCF7 -> var(--color-background) */
+    color: var(--color-text-dark);
+    /* ЗАМІНЕНО: #263F27 -> var(--color-text-dark) */
     z-index: 1;
     padding: 0 20px 0 80px;
 }
@@ -1275,7 +1263,8 @@ body {
     font-size: 18px;
     letter-spacing: 0.5px;
     font-weight: 600;
-    color: #555;
+    
+    /* ЗАМІНЕНО: #555 -> var(--color-text-dark) */
     white-space: nowrap;
     /* Запобігає переносу часу на новий рядок */
     display: contents;
@@ -1285,12 +1274,17 @@ body {
 .time-row .time-new {
     font-weight: 800 !important;
     font-size: 20px !important;
-    color: #555 !important;
+    /* ЗАМІНЕНО: #555 -> var(--color-text-dark) */
 }
-
-.time-row .time-pouse-start,
+.time-pouse-start {
+    
+    /* ЗАМІНЕНО: #919191 -> var(--color-text-dark) */
+    opacity: 0.7;
+}
 .time-pouse-end {
-    color: #919191;
+    
+    /* ЗАМІНЕНО: #919191 -> var(--color-text-dark) */
+    opacity: 0.7;
 }
 
 /* 1. Створення Keyframes для імітації миготіння */
@@ -1325,13 +1319,14 @@ body {
     top: 50%;
     left: 0px;
     transform: translateY(-45%);
-    opacity: 0.7;
+    opacity: 0.2;
     z-index: 0;
 }
 
 /* Налаштовуємо кольори для відповідності фону картки */
 .svg-pattern path {
-    fill: #DDF3D6;
+    fill: var(--color-secondary);
+    /* ЗАМІНЕНО: #DDF3D6 -> var(--color-secondary) */
 }
 
 /*
@@ -1342,7 +1337,8 @@ body {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    background-color: #c5e1d1;
+    background-color: var(--color-btn-light);
+    /* ЗАМІНЕНО: #c5e1d1 -> var(--color-btn-light) */
     color: var(--color-primary);
     border: none;
     border-radius: 20px;
@@ -1365,7 +1361,8 @@ body {
 
 /* Стиль для режиму "Показати всі" */
 #toggle-bells-btn[data-mode="all"] {
-    background-color: #c5e1d1;
+    background-color: var(--color-btn-light);
+    /* ЗАМІНЕНО: #c5e1d1 -> var(--color-btn-light) */
     color: var(--color-primary);
     border-color: transparent;
 }
@@ -1386,7 +1383,9 @@ body {
 .controls-bar .date-display {
     font-size: 16px;
     font-weight: 600;
-    color: var(--color-text-secondary);
+    color: var(--color-text-dark);
+    /* ЗАМІНЕНО: var(--color-text-secondary) -> var(--color-text-dark) */
+    opacity: 0.8;
     /* Трохи світліший колір */
     flex-shrink: 0;
     /* Щоб дата не стискалася */
@@ -1412,7 +1411,7 @@ body {
     max-width: 380px;
     margin: 10px;
     /* margin: 0 auto; */
-    background-color: var(--color-card-light);
+    background-color: var(--color-secondary);
     color: var(--color-primary);
     box-shadow: 0 -4px 12px var(--color-shadow);
     display: flex;
@@ -1436,8 +1435,10 @@ body {
     flex-grow: 1;
     margin: 0;
     font-size: 14px;
-    font-weight: 500; /* Добре виглядає з 'Nunito' */
-    padding-right: 15px; /* Відступ від кнопок */
+    font-weight: 500;
+    /* Добре виглядає з 'Nunito' */
+    padding-right: 15px;
+    /* Відступ від кнопок */
 }
 
 /* Стиль кнопки "Встановити" */
@@ -1445,16 +1446,19 @@ body {
     /* Інвертований стиль: 
        біла кнопка (як картка) на зеленому фоні
     */
+    
     background-color: var(--color-btn-light);
     color: var(--color-primary);
     border: none;
     padding: 8px 16px;
     /* Використовуємо скруглення, як у інших елементах (напр., .filter-option-item) */
-    border-radius: 20px; 
-    font-weight: 700; /* 'Nunito' жирний */
+    border-radius: 20px;
+    font-weight: 700;
+    /* 'Nunito' жирний */
     cursor: pointer;
     font-size: 14px;
-    flex-shrink: 0; /* Щоб кнопка не стискалася */
+    flex-shrink: 0;
+    /* Щоб кнопка не стискалася */
     transition: background-color 0.2s;
 }
 
@@ -1462,4 +1466,173 @@ body {
     /* При наведенні використовуємо світлий фон, як у .nav-item:hover */
     background-color: var(--color-primary);
     color: var(--color-text-light);
+}
+
+
+/* --- СТИЛІ ДЛЯ ЕКРАНА НАЛАШТУВАНЬ (menu-view) --- */
+.settings-container {
+    padding: 20px;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.settings-list {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+    background: var(--color-background);
+    /* ЗАМІНЕНО: var(--color-surface, #f9f9f9) -> var(--color-background) */
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--color-card-light);
+    /* ЗАМІНЕНО: var(--color-border, #eee) -> var(--color-card-light) */
+}
+
+.settings-item {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    background: var(--color-background);
+    /* ЗАМІНЕНО: var(--color-card, #fff) -> var(--color-background) */
+    border-bottom: 1px solid var(--color-card-light);
+    /* ЗАМІНЕНО: var(--color-border, #eee) -> var(--color-card-light) */
+    cursor: pointer;
+    transition: background-color 0.2s;
+    min-width: 0;
+}
+
+.settings-item:last-child {
+    border-bottom: none;
+}
+
+.settings-item:active {
+    background-color: var(--color-btn-light);
+    /* ЗАМІНЕНО: var(--color-surface-active, #f0f0f0) -> var(--color-btn-light) */
+}
+
+.settings-item .material-icons {
+    color: var(--color-primary);
+    margin-right: 16px;
+    font-size: 24px;
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+.settings-item span {
+    flex-grow: 1;
+    font-size: 1.1em;
+    color: var(--color-text-dark);
+    /* ЗАМІНЕНО: var(--color-text) -> var(--color-text-dark) */
+}
+
+/* Іконка "стрілка вправо" */
+.settings-item .chevron {
+    color: var(--color-text-dark);
+    /* ЗАМІНЕНО: var(--color-text-light, #aaa) -> var(--color-text-dark) */
+    opacity: 0.6;
+    /* ДОДАНО: прозорість для тьмяного вигляду */
+    margin-right: 0;
+    margin-left: 10px;
+    /* Відступ від тексту */
+    flex-grow: 0;
+    /* <-- ВИПРАВЛЕННЯ */
+    flex-shrink: 0;
+    /* <-- ВИПРАВЛЕННЯ */
+}
+
+.settings-item .text {
+    flex-grow: 1;
+    /* <-- Текст займає весь вільний простір */
+    flex-shrink: 1;
+    /* Дозволяємо стискатися, якщо потрібно */
+    min-width: 0;
+    /* Для коректної роботи flex */
+
+    font-size: 1.1em;
+    color: var(--color-text-dark);
+    /* ЗАМІНЕНО: var(--color-text) -> var(--color-text-dark) */
+    text-align: left;
+    /* <-- КЛЮЧОВЕ ВИРІВНЮВАННЯ */
+
+    /* Якщо текст буде задовгим, він не зламає верстку */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* Додаємо '...' якщо текст не влазить */
+}
+
+.settings-item .text::-webkit-scrollbar {
+    display: none;
+}
+
+/* --- СТИЛІ ДЛЯ ПЕРЕМИКАЧА (TOGGLE SWITCH) --- */
+
+.settings-item.install-banner-toggle-item .chevron {
+    display: none;
+    /* Приховуємо chevron для елемента з перемикачем */
+}
+
+/* Контейнер перемикача */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 45px;
+    height: 25px;
+    margin-left: auto;
+    /* Притискає перемикач до правого краю */
+    flex-shrink: 0;
+    /* <-- КЛЮЧОВЕ ВИПРАВЛЕННЯ */
+}
+
+/* Приховуємо стандартний чекбокс */
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* Стиль "повзунка" */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--color-card-light);
+    /* ЗАМІНЕНО: var(--color-card-light) */
+    transition: 0.4s;
+}
+
+/* "Ручка" повзунка */
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 17px;
+    width: 17px;
+    left: 4px;
+    bottom: 4px;
+    background-color: var(--color-background);
+    /* ЗАМІНЕНО: white -> var(--color-background) */
+    transition: 0.4s;
+}
+
+/* Активний стан (увімкнено) */
+input:checked + .slider {
+    background-color: var(--color-primary);
+    /* Активний колір (зелений) */
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+    /* Зміщення "ручки" */
+}
+
+/* Заокруглення */
+.slider.round {
+    border-radius: 25px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
 }

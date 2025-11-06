@@ -720,7 +720,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const { daily, current, hourly } = fullForecastData;
         const dateStr = daily.time[index];
         
-        const dayName = (index === 0) ? "Сьогодні" : formatDay(dateStr).substring(0, 3);
+        const dayName = (index === 0) ? "Сьогодні" : formatDay(dateStr).substring(0, 10);
         const dateNum = formatDate(dateStr);
 
         let innerHTML;
@@ -895,11 +895,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const cards = [
             { content: `<div class="card-title">Температура</div><div class="temp-trend-box" style="padding-top: 10px;"><div class="card-value temp-value">${tempAnalysis.currentTemp}°</div><span class="trend-indicator ${tempAnalysis.trendClass}">${tempAnalysis.trend}</span></div><div class="card-description">Пік: ${tempAnalysis.maxTemp}° о ${tempAnalysis.maxTime}. Нічний мінімум: ${tempAnalysis.minTemp}° о ${tempAnalysis.minTime}.</div>` },
             { content: `<div class="card-title">Відчувається як</div><div class="card-value">${feelsLikeValue}°</div><div class="card-description">${(tempAnalysis.currentTemp - feelsLikeValue > 1) ? 'Відчутно холодніше' : (tempAnalysis.currentTemp - feelsLikeValue < -1) ? 'Відчутно тепліше' : 'Комфортно'}.</div>` },
-            { content: `<div class="card-title">Вітер</div><div class="wind-value-box"><div class="wind-icon" style="--wind-direction: ${windDirAngle}deg;">➜</div><span class="card-value">${windSpeed}</span><span style="font-size:1em; color: #555;"> м/с</span></div><div class="card-description">${windDirText} (пориви: ${windGusts} м/с)</div>` },
+            { content: `<div class="card-title">Вітер</div><div class="wind-value-box"><div class="wind-icon" style="--wind-direction: ${windDirAngle}deg;">➜</div><span class="card-value">${windSpeed}</span><span> м/с</span></div><div class="card-description">${windDirText} (пориви: ${windGusts} м/с)</div>` },
             { content: `<div class="card-title">Хмарність</div><div class="card-value percentage">${cloudCoverValue}%</div><div class="card-description">${cloudStatus} покриття неба</div>` },
             { content: `<div class="card-title">Вологість</div><div class="card-value percentage">${humidityValue}%</div><div class="card-description">Точка роси: ${dewPointValue}°C (${humidityLevel})</div>` },
             { content: `<div class="card-title">Опади (сума за добу)</div><div class="card-value">${precipSum} мм</div><div class="card-description">${precipDesc}</div>` },
-            { content: `<div class="card-title">Тиск</div><div class="card-value">${pressure_mmHg}</div><span style="font-size:1em; color: #555;"> мм рт. ст.</span><div class="card-description">${pressureStatus} (прибл. ${Math.round(pressure_hPa)} гПа)</div>` },
+            { content: `<div class="card-title">Тиск</div><div class="card-value">${pressure_mmHg}</div><span> мм рт. ст.</span><div class="card-description">${pressureStatus} (прибл. ${Math.round(pressure_hPa)} гПа)</div>` },
         ];
 
         weatherDetailsGridEl.innerHTML = cards.map(card =>

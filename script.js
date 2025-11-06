@@ -1,4 +1,4 @@
-// ПОВНИЙ, ВИПРАВЛЕНИЙ script.js — Версія з надійним кешуванням розкладу та виправленням Багів 1 і 2
+// ПОВНИЙ, ВИПРАВЛЕНИЙ script.js — Версія з динамічною навігацією
 document.addEventListener('DOMContentLoaded', () => {
     // ===============================================================
     // КОНФІГУРАЦІЯ API
@@ -21,6 +21,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const prevMonthBtn = document.getElementById('prev-month');
     const nextMonthBtn = document.getElementById('next-month');
     const closeModalBtn = document.getElementById('close-modal-btn');
+
+    // Тема (глобальна підтримка для settings.js)
+    const THEME_STORAGE_KEY = 'scheduleAppTheme';
+    function applyTheme(theme) {
+        if (theme === 'dark') {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
+        }
+    }
+    // Ініціалізація теми при завантаженні
+    try {
+        const storedTheme = localStorage.getItem(THEME_STORAGE_KEY) || 'light';
+        applyTheme(storedTheme);
+    } catch (e) {
+        applyTheme('light');
+    }
 
     // Фільтри (стекові елементи)
     const facultyStack = document.getElementById('faculty-stack');
@@ -46,6 +63,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Кнопка пошуку
     const searchSubmitBtn = document.querySelector('.search-submit-btn');
+    
+    // Елементи навігації (НОВІ)
+    const searchNavItem = document.querySelector('.bottom-nav [data-icon="search"]')?.closest('.nav-item');
+    const scheduleNavItem = document.querySelector('.bottom-nav [data-icon="format_list_bulleted"]')?.closest('.nav-item');
 
     // Навігація, локалізація
     const navMap = {
@@ -75,12 +96,10 @@ document.addEventListener('DOMContentLoaded', () => {
 	let currentLoadedStartDate = null; 
 	let currentLoadedEndDate = null;   
     let currentLoadedGroupID = null; 
-    // Кеш для часу розкладу поточного дня (для time.card.js)
     let lastDayScheduleTimes = null;
-    // Слухач на випадок, якщо time.card.js завантажиться пізніше
+
     document.addEventListener('bellScheduleReady', () => {
         if (lastDayScheduleTimes && typeof window.updateBellScheduleVisibility === 'function') {
-            // ТЕПЕР ПЕРЕДАЄМО ОБ'ЄКТ З ЧАСОМ ТА ДАТОЮ
             window.updateBellScheduleVisibility(lastDayScheduleTimes.times, lastDayScheduleTimes.date);
         }
     });
@@ -191,20 +210,46 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return false;
     }
+
+    // ===============================================================
+    // ХЕЛПЕРИ НАВІГАЦІЇ (ОНОВЛЕНО)
+    // ===============================================================
+
+    /**
+     * (НОВА ФУНКЦІЯ)
+     * Оновлює видимість іконок "Пошук" та "Розклад".
+     * @param {boolean} showSchedule - True, щоб показати "Розклад" (і сховати "Пошук").
+     */
+    function updateNavVisibility(showSchedule) {
+        if (!searchNavItem || !scheduleNavItem) return; 
+
+        if (showSchedule) {
+            // Показуємо Розклад, ховаємо Пошук
+            scheduleNavItem.style.display = '';
+            searchNavItem.style.display = 'none';
+        } else {
+            // Показуємо Пошук, ховаємо Розклад
+            scheduleNavItem.style.display = 'none';
+            searchNavItem.style.display = '';
+        }
+    }
     
-    // ===============================================================
-    // ХЕЛПЕР ДЛЯ АКТИВАЦІЇ В'Ю ПОШУКУ
-    // ===============================================================
+    /**
+     * (ОНОВЛЕНО)
+     * Активує вкладку "Пошук" і оновлює навігацію.
+     */
     function activateSearcherView() {
         const searchView = document.getElementById('search-view');
-        const searchNavItem = document.querySelector('.bottom-nav [data-icon="search"]')?.closest('.nav-item');
-
+        
         document.querySelector('.view.active-view')?.classList.remove('active-view');
         document.querySelector('.nav-item.active-nav')?.classList.remove('active-nav');
         appContainer?.classList.remove('is-schedule');
 
         searchView?.classList.add('active-view');
         searchNavItem?.classList.add('active-nav');
+        
+        // Викликаємо нову функцію, щоб показати "Пошук"
+        updateNavVisibility(false);
     }
     
     // ===============================================================
@@ -322,6 +367,42 @@ document.addEventListener('DOMContentLoaded', () => {
         stackElement.classList.remove('expanded');
         if (expandIcon) expandIcon.textContent = 'expand_more';
     }
+
+    // ===============================================================
+    // ХЕЛПЕРИ НАВІГАЦІЇ / АКТИВАЦІЇ В'Ю (ОНОВЛЕНО)
+    // ===============================================================
+
+    /**
+     * Активація в'ю та відповідного елементу навігації.
+     * @param {string} viewId - ID в'ю (наприклад, 'schedule-view', 'search-view', 'menu-view').
+     */
+    function activateViewById(viewId) {
+        document.querySelector('.view.active-view')?.classList.remove('active-view');
+        document.getElementById(viewId)?.classList.add('active-view');
+
+        const iconName = Object.keys(navMap).find(key => navMap[key] === viewId);
+        
+        document.querySelector('.nav-item.active-nav')?.classList.remove('active-nav');
+        if (iconName) {
+             const navItem = document.querySelector(`.bottom-nav [data-icon="${iconName}"]`)?.closest('.nav-item');
+             if (navItem) {
+                navItem.classList.add('active-nav');
+             }
+        }
+
+        if (viewId === 'schedule-view') {
+            appContainer?.classList.add('is-schedule');
+            // Перерендеримо розклад при переході на це в'ю
+            renderSchedule(currentDisplayDate); 
+        } else {
+            appContainer?.classList.remove('is-schedule');
+        }
+    }
+
+    // Експортуємо потрібні ядрові функції/константи для settings.js
+    window.activateViewById = activateViewById;
+    window.applyTheme = applyTheme;
+    window.THEME_STORAGE_KEY = THEME_STORAGE_KEY;
 
     // ===============================================================
     // ФУНКЦІЇ ДЛЯ ОТРИМАННЯ ДАНИХ З API
@@ -617,15 +698,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function formatDateForBellSchedule(date) {
         const options = { weekday: 'short', month: 'short', day: 'numeric' };
-        // Додаємо рік, тільки якщо це не поточний рік, щоб не захаращувати інтерфейс
         if (date.getFullYear() !== new Date().getFullYear()) {
              options.year = 'numeric';
         }
-        
-        // Використовуємо українську локаль для форматування
         const formattedDate = date.toLocaleDateString('uk-UA', options);
-        
-        // Робимо першу літеру великою
         return formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
     }
 
@@ -639,10 +715,8 @@ document.addEventListener('DOMContentLoaded', () => {
                            date.getTime() > currentLoadedEndDate.getTime() ||
                            currentLoadedGroupID !== currentGroupID; 
 
-        // Змінна, що відстежує, чи відновлено дані з кешу після помилки мережі
         let isCacheRecovery = false;
 
-        // 1. ПЕРЕВІРКА І ЗАВАНТАЖЕННЯ З АРІ АБО LOCAL STORAGE
         if (needsFetch) {
             if (!currentGroupID) {
                 activateSearcherView();
@@ -650,7 +724,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return; 
             }
 
-            // Показуємо анімацію завантаження перед запитом
             scheduleList.innerHTML = `<div class="loader-container" id="schedule-loader"><div class="spinner"></div><p class="loader-text">Завантаження розкладу (новий діапазон)...</p></div>`;
 
 			try {
@@ -684,57 +757,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 const isLoadedFromLS = loadScheduleFromLocalStorage();
                 
                 if (!isLoadedFromLS || currentLoadedGroupID !== currentGroupID) {
-                    // Критична помилка, немає кешу для цієї групи
                     scheduleList.innerHTML = '<p style="text-align:center;color:red;padding:40px;">Помилка під час завантаження розкладу.</p>';
                     return; 
                 } else {
-                    // Успішне відновлення з кешу
                     isCacheRecovery = true;
                 }
             }
         }
 
-        // 2. РЕНДЕРИНГ
-        
         scheduleList.innerHTML = ''; 
         
         const daySchedule = allScheduleData.filter(l => l.date === selectedDateIso).sort((a,b)=> (a.time||'').localeCompare(b.time||''));
-
         const dayStartTimes = daySchedule.map(l => l.time);
-        
-        // Форматуємо дату для передачі
         const formattedDate = formatDateForBellSchedule(date); 
 
-        // 1. Кешуємо цей масив та дату
         lastDayScheduleTimes = { times: dayStartTimes, date: formattedDate }; 
 
-        // 2. Якщо time.card.js вже готовий, викликаємо його функцію
         if (typeof window.updateBellScheduleVisibility === 'function') {
-            // ТЕПЕР ПЕРЕДАЄМО ОБ'ЄКТ З ЧАСОМ ТА ДАТОЮ
             window.updateBellScheduleVisibility(dayStartTimes, formattedDate);
         }
         
-        // *Обробка повідомлень про відновлення з кешу*
         if (isCacheRecovery) {
             if (daySchedule.length > 0) {
-                // Випадок 1: Помилка мережі, але розклад для цього дня в кеші є.
                 scheduleList.innerHTML = `
                     <p style="text-align:center;color:orange;padding:20px;">
                         Помилка мережі. Показано останній збережений розклад.
                     </p>`;
             } else {
-                // Випадок 2: Помилка мережі І розкладу для цього дня в кеші немає.
-                // *ВИПРАВЛЕНО: Баг 1* - Залишаємо лише одне, точне повідомлення.
                 scheduleList.innerHTML = `
                     <div class="no-schedule-message">
                         <p class="no-schedule-main-text">На жаль, у кеші немає занять на цю дату.</p>
                     </div>`;
-                return; // Нічого більше рендерити не потрібно
+                return; 
             }
         }
 
 		if (daySchedule.length === 0) {
-            // Стандартне повідомлення, якщо не спрацював isCacheRecovery (тобто, був успішний fetch, але розклад порожній)
             if (scheduleList.innerHTML === '') {
                  scheduleList.innerHTML = `
                     <div class="no-schedule-message">
@@ -788,15 +846,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const cardsHTML = groupedElements.join('');
-        
-        // Додаємо картки. Якщо scheduleList вже містить попередження, картки додаються після нього.
         scheduleList.innerHTML += cardsHTML;
-        
         addStackClickListener();
     }
 
 // ===============================================================
-    // Обробник натискання кнопки "Вивести"
+    // Обробник натискання кнопки "Вивести" (ОНОВЛЕНО)
     // ===============================================================
     async function handleSearchSubmit() {
         if (!currentGroupID) {
@@ -862,14 +917,21 @@ document.addEventListener('DOMContentLoaded', () => {
             currentDisplayDate = new Date(dateToRender); 
             currentCalendarDate = new Date(currentDisplayDate);
 
+            // Перемикаємо в'ю
             document.querySelector('.view.active-view')?.classList.remove('active-view');
             scheduleView?.classList.add('active-view');
             appContainer?.classList.add('is-schedule');
 
+            // Перемикаємо навігацію
             document.querySelector('.nav-item.active-nav')?.classList.remove('active-nav');
-            document.querySelector('.bottom-nav [data-icon="format_list_bulleted"]')?.closest('.nav-item')?.classList.add('active-nav');
+            scheduleNavItem?.classList.add('active-nav');
+            
+            // ОНОВЛЮЄМО ВИДИМІСТЬ НАВІГАЦІЇ
+            updateNavVisibility(true);
 
+            // ВИПРАВЛЕНО: Переходимо на вкладку розкладу після успішного завантаження
             await renderSchedule(currentDisplayDate);
+            activateViewById('schedule-view');
 
         } catch (err) {
             console.error('Помилка при виводі розкладу:', err);
@@ -877,23 +939,26 @@ document.addEventListener('DOMContentLoaded', () => {
             const isLoadedFromLS = loadScheduleFromLocalStorage();
 
             if (!isLoadedFromLS || currentLoadedGroupID !== currentGroupID) {
-                // Критична помилка, немає кешу для цієї групи
                 scheduleList.innerHTML = '<p class="error-message">Не вдалося завантажити розклад з новими параметрами.</p>';
             } else {
-                // Відновлення з кешу. Переходимо до в'ю та викликаємо renderSchedule.
-                // renderSchedule самостійно відобразить попередження про мережу.
                 currentDisplayDate = new Date(dateToRender); 
                 currentCalendarDate = new Date(currentDisplayDate);
                 document.querySelector('.view.active-view')?.classList.remove('active-view');
                 scheduleView?.classList.add('active-view');
                 appContainer?.classList.add('is-schedule');
+                
+               // ОНОВЛЮЄМО ВИДИМІСТЬ НАВІГАЦІЇ (навіть при помилці, бо є кеш)
+                updateNavVisibility(true);
                 await renderSchedule(currentDisplayDate);
+                
+                // ВИПРАВЛЕНО: Переходимо на вкладку розкладу, якщо завантажено з кешу
+                activateViewById('schedule-view'); 
             }
         }
     }
 
     // ===============================================================
-    // Календар / нижня навігація 
+    // Календар / нижня навігація (ОНОВЛЕНО)
     // ===============================================================
     function renderCalendar() {
         if (!currentMonthYearElement || !calendarGrid) return;
@@ -921,11 +986,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let initialView = currentGroupID ? 'schedule-view' : 'search-view';
 
+        // 1. ОНОВЛЮЄМО ВИДИМІСТЬ НАВІГАЦІЇ
+        updateNavVisibility(initialView === 'schedule-view');
+
+        // 2. Встановлюємо активне в'ю
         document.querySelectorAll('.bottom-nav .active-nav').forEach(item => item.classList.remove('active-nav'));
         document.querySelector('.view.active-view')?.classList.remove('active-view');
 
-        const initialActiveNav = bottomNav.querySelector(`[data-icon="${initialView === 'schedule-view' ? 'format_list_bulleted' : 'search'}"]`)?.closest('.nav-item');
+        const initialActiveNav = (initialView === 'schedule-view') ? scheduleNavItem : searchNavItem;
         if (initialActiveNav) initialActiveNav.classList.add('active-nav');
+        
         document.getElementById(initialView)?.classList.add('active-view');
 
         if (initialView === 'schedule-view') {
@@ -934,16 +1004,23 @@ document.addEventListener('DOMContentLoaded', () => {
             appContainer.classList.remove('is-schedule');
         }
 
+        // 3. Додаємо слухач кліків
         bottomNav.addEventListener('click', (event) => {
             const navItem = event.target.closest('.nav-item');
             if (!navItem || navItem.classList.contains('active-nav')) return;
+            
+            // Перевіряємо, чи елемент видимий (щоб уникнути кліку на прихований елемент)
+            if (navItem.style.display === 'none') return;
+
             const iconName = navItem.querySelector('.material-icons')?.textContent.trim();
             const targetViewId = navMap[iconName];
             if (!targetViewId) return;
+            
             document.querySelector('.nav-item.active-nav')?.classList.remove('active-nav');
             navItem.classList.add('active-nav');
             document.querySelector('.view.active-view')?.classList.remove('active-view');
             document.getElementById(targetViewId)?.classList.add('active-view');
+
             if (targetViewId === 'schedule-view') {
                 appContainer.classList.add('is-schedule');
                 renderSchedule(currentDisplayDate); 
@@ -952,6 +1029,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // ... (інші слухачі: daySelector, dateElement, calendar...)
         daySelector?.addEventListener('click', (event) => {
             const item = event.target.closest('.day-item');
             if (item && (item.classList.contains('prev-day') || item.classList.contains('next-day'))) {
@@ -987,7 +1065,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 // ===============================================================
-    // ПОЧАТКОВЕ ЗАВАНТАЖЕННЯ
+    // ПОЧАТКОВЕ ЗАВАНТАЖЕННЯ (ОНОВЛЕНО)
     // ===============================================================
     
     // 1. Завантажуємо фільтри
@@ -1002,10 +1080,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // 4. Завантажуємо опції фільтрів з API
     loadFilters(); 
     
-    // 5. Запускаємо рендер розкладу, якщо група обрана
+    // 5. Запускаємо рендер
     if (currentGroupID) {
-        renderSchedule(currentDisplayDate); 
+        // Якщо група обрана, активуємо вкладку розкладу
+        activateViewById('schedule-view'); 
     } else {
+        // Якщо група НЕ обрана, активуємо вкладку пошуку
+        activateViewById('search-view');
+        
+        // Скидаємо placeholder у schedule-view
         scheduleList.innerHTML = '<p style="text-align:center;color:var(--color-primary);opacity:0.8;padding:40px;">Будь ласка, оберіть групу.</p>';
     }
 });
