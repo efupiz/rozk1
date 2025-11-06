@@ -18,7 +18,8 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
-<body>    <div class="app-container">
+<body>
+    <div class="app-container">
         <header class="header">
             <nav class="day-selector"></nav>
             <h1 class="main-day"></h1>
@@ -284,10 +285,11 @@
                                 <div class="detailed-main">
                                     <div class="detailed-info-left">
                                         <div class="detailed-time-wrapper">
-                                            <button id="search-toggle-btn" class="search-toggle-btn" aria-label="Відкрити пошук">✎</button>
+                                            <button id="search-toggle-btn" class="search-toggle-btn"
+                                                aria-label="Відкрити пошук">✎</button>
                                             <div id="detailed-time" class="detailed-time">--:--</div>
                                         </div>
-                                        
+
                                         <div id="detailed-date-info" class="detailed-date-info">--</div>
                                         <div id="detailed-sunrise-sunset" class="detailed-sunrise-sunset">--</div>
                                     </div>
@@ -316,7 +318,40 @@
                 </div>
             </section>
             <section id="menu-view" class="view">
-                <p class="placeholder-text">⚙️ Екран налаштувань. Тут будуть налаштування користувача.</p>
+                <div class="settings-container">
+                    <h2 class="title">Налаштування</h2>
+                    <ul class="settings-list">
+                        <li class="settings-item" id="nav-to-search-btn">
+                            <span class="material-icons">edit_calendar</span>
+                            <span class="text">Змінити групу / розклад</span>
+                            <span class="material-icons chevron">chevron_right</span>
+                        </li>
+
+                        <li class="settings-item install-banner-toggle-item">
+                            <span class="material-icons">install_mobile</span>
+                            <span class="text">Банер встановлення</span>
+                            <label class="switch">
+                                <input type="checkbox" id="toggle-install-banner">
+                                <span class="slider round"></span>
+                            </label>
+                        </li>
+                        <li class="settings-item theme-toggle-item">
+                            <span class="material-icons">dark_mode</span>
+                            <span class="text">Темна тема</span>
+                            <label class="switch">
+                                <input type="checkbox" id="dark-mode-toggle">
+                                <span class="slider round"></span>
+                            </label>
+                        </li>
+                    </ul>
+                    <ul class="settings-list">
+                        <li class="settings-item" id="clear-cache-btn">
+                            <span class="material-icons">delete_sweep</span>
+                            <span class="text">Очистити кеш та дані</span>
+                            <span class="material-icons chevron">chevron_right</span>
+                        </li>
+                    </ul>
+                </div>
             </section>
         </main>
 
@@ -374,8 +409,7 @@
     <script src="news.js"></script>
     <script src="meteo.js"></script>
     <script src="install.js"></script>
+    <script src="settings.js"></script>
 </body>
 
-
 </html>
-
