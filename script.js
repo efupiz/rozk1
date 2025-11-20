@@ -73,6 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'search': 'search-view',
         'format_list_bulleted': 'schedule-view',
         'notifications': 'notifications-view',
+		'chat': 'chat',
         'grid_view': 'grid-view',
         'menu': 'menu-view'
     };
