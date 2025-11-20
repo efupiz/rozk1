@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dark Chat App</title>
+    <link rel="stylesheet" href="chat.css">
+</head>
+<body class="chat-body">
+
+<div class="chat-app">
+    
+    <div id="chat-view-login" class="chat-view chat-active">
+        <div class="chat-login-logo">
+            <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+        </div>
+        <h2 class="chat-login-title">Chat App</h2>
+        <button class="chat-btn-primary" id="chat-btn-google">Sign in with Google</button>
+    </div>
+
+    <div id="chat-view-chats" class="chat-view">
+        <header class="chat-topbar">
+            <h1 class="chat-title">Chats</h1>
+            <div class="chat-top-actions">
+                <button class="chat-icon-btn chat-menu" id="chat-chats-list-menu-btn" aria-label="Menu">
+                    <svg viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg>
+                </button>
+                
+                <div class="chat-dropdown-menu" id="chat-chats-list-dropdown">
+                    <button class="chat-dropdown-item" id="chat-btn-open-folder-config">
+                        <svg viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"></path></svg>
+                        Manage Folders
+                    </button>
+                    <button class="chat-dropdown-item chat-danger" id="chat-btn-logout">
+                        <svg viewBox="0 0 24 24"><path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path></svg>
+                        Log out
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <nav class="chat-tabs" role="tablist" id="chat-chat-filters"></nav>
+
+        <main class="chat-list-container" id="chat-chats-list-container">
+            <div class="chat-loading-placeholder">Loading chats...</div>
+        </main>
+
+        <div class="chat-fab-menu" id="chat-fab-menu">
+            <button class="chat-fab-menu-item" id="chat-fab-create-chat">
+                <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h4l3 3 3-3h4c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+                Створити чат
+            </button>
+            <button class="chat-fab-menu-item" id="chat-fab-create-group">
+                <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                Створити групу
+            </button>
+        </div>
+
+        <button class="chat-fab" id="chat-fab-main">
+            <svg class="chat-fab-icon-edit" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg>
+            <svg class="chat-fab-icon-close" style="display:none;" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+        <footer class="chat-bottom-nav">
+            <button class="chat-nav-btn chat-active" id="chat-nav-chats-btn" style="width: 100%;">
+                <div class="chat-nav-icon-container">
+                    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+                    <span class="chat-nav-badge" id="chat-bottom-nav-badge">0</span>
+                </div>
+                <span class="chat-nav-label">Chats</span>
+            </button>
+        </footer>
+    </div>
+
+    <div id="chat-view-config" class="chat-view">
+        <header class="chat-topbar">
+            <div class="chat-header-left">
+                <button class="chat-icon-btn" id="chat-btn-back-config">
+                    <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                </button>
+                <h1 class="chat-title" id="chat-config-title">Configuration</h1>
+            </div>
+        </header>
+        <main class="chat-list-container chat-no-bottom-nav" id="chat-config-body"></main>
+        <div class="chat-actions-view" id="chat-config-footer"></div>
+    </div>
+
+    <div id="chat-view-contacts" class="chat-view">
+        <header class="chat-topbar">
+            <div id="chat-contacts-header-normal" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                <div class="chat-header-left">
+                    <button class="chat-icon-btn" id="chat-btn-back-contacts">
+                        <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
+                    </button>
+                    <h1 class="chat-title" style="margin-left: 4px;">Contacts</h1>
+                </div>
+                <button class="chat-icon-btn chat-search" id="chat-btn-open-search" aria-label="Search">
+                    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
+                </button>
+            </div>
+
+            <div id="chat-contacts-header-search" style="display: none; align-items: center; width: 100%; gap: 4px;">
+                <button class="chat-icon-btn" id="chat-btn-close-search">
+                     <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
+                </button>
+                <input type="text" id="chat-contact-search" placeholder="Search users..." 
+                       style="width: 100%; background: transparent; border: none; color: white; font-size: 16px; padding: 8px; outline: none; height: 100%;">
+            </div>
+        </header>
+        
+        <main class="chat-list-container" id="chat-contacts-list-container">
+            <div class="chat-loading-placeholder">Loading contacts...</div>
+        </main>
+        
+        </div>
+
+    <div id="chat-view-chat-room" class="chat-view">
+        <header class="chat-topbar chat-view-header">
+            <div class="chat-header-left">
+                <button class="chat-icon-btn" id="chat-btn-back-chat">
+                    <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                </button>
+                <img src="" class="chat-header-avatar" id="chat-chat-room-avatar" style="display: none;">
+                <div class="chat-header-info">
+                    <div class="chat-header-name-row">
+                        <span class="chat-header-name" id="chat-chat-room-name">User</span>
+                        <svg id="chat-header-mute-icon" style="display:none;" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"></path></svg>
+                    </div>
+                    <span class="chat-header-status" id="chat-chat-room-status"></span>
+                </div>
+            </div>
+            
+            <div class="chat-top-actions">
+                <button class="chat-icon-btn chat-menu" id="chat-chat-menu-btn" aria-label="Menu">
+                    <svg viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg>
+                </button>
+                
+                <div class="chat-dropdown-menu" id="chat-chat-dropdown">
+                    <button class="chat-dropdown-item" id="chat-btn-mute-chat">
+                        <svg viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"></path></svg>
+                        <span>Mute Chat</span>
+                    </button>
+                    <button class="chat-dropdown-item" id="chat-btn-pin-chat">
+                        <svg viewBox="0 0 24 24"><path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"></path></svg>
+                        <span>Pin Chat</span>
+                    </button>
+                    <button class="chat-dropdown-item chat-danger" id="chat-btn-delete-chat">
+                        <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path></svg>
+                        <span>Delete Chat</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="chat-messages-container" id="chat-messages-list"></div>
+
+        <div class="chat-input-area">
+            <input type="text" class="chat-input-field" id="chat-msg-input" placeholder="Message">
+            <button class="chat-btn-send" id="chat-btn-send" disabled>
+                <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            </button>
+        </div>
+    </div>
+    
+    <div class="chat-emoji-picker-modal" id="chat-emoji-picker-modal">
+        <div class="chat-emoji-picker-content">
+            <div class="chat-emoji-picker-header">
+                <span>Choose Icon</span>
+                <button class="chat-icon-btn" id="chat-close-emoji-picker"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+            </div>
+            <div class="chat-emoji-grid" id="chat-emoji-grid"></div>
+        </div>
+    </div>
+
+</div>
+<script type="module" src="chat.js"></script>
+</body>
+</html>
