@@ -1,370 +1,237 @@
-// 💻 JAVASCRIPT ЛОГІКА ДЛЯ БЛОКУ НОВИН (news.js)
+document.addEventListener('DOMContentLoaded', () => {
+    const API_URL = 'https://meridian.kpnu.edu.ua/wp-json/wp/v2/posts?_embed&per_page=5';
+    const feedContainer = document.getElementById('news-feed');
+    const scrollContainer = document.getElementById('scroll-container');
+    const loader = document.getElementById('loading-indicator');
 
-const BASE_API_URL = 'https://meridian.kpnu.edu.ua/wp-json/wp/v2/posts';
-const newsList = document.getElementById('news-list');
-const loadingMessage = document.getElementById('loading-msg');
-const loadMoreMessage = document.getElementById('load-more-msg'); 
-let currentPage = 1;
-const PER_PAGE = 5; 
-let isLoading = false;
-let allPostsLoaded = false;
-const CACHE_KEY = 'meridian_news_cache';
-const imageModal = document.getElementById('image-modal');
-const modalImage = document.getElementById('modal-image');
-const closeModalBtn = document.querySelector('#image-modal .close-image');
-// --- Допоміжні функції (залишаються без змін) ---
+    let page = 1;
+    let isLoading = false;
+    let hasMore = true;
+    const LAST_SEEN_KEY = 'meridian_last_seen_id';
+    let lastSeenId = parseInt(localStorage.getItem(LAST_SEEN_KEY)) || 0;
 
-function formatNewsDate(dateString) {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('uk-UA', options);
-}
+    // --- ДОПОМІЖНІ ФУНКЦІЇ ---
 
-function getThumbnailUrl(post) {
-    try {
-        const featuredMedia = post._embedded && post._embedded['wp:featuredmedia'];
-        if (featuredMedia && featuredMedia[0]) {
-            const sizes = featuredMedia[0].media_details.sizes;
-            return (sizes.large || sizes.medium_large || sizes.full).source_url;
-        }
-        return 'https://via.placeholder.com/600x400?text=No+Image';
-    } catch (e) {
-        return 'https://via.placeholder.com/600x400?text=Error';
+    function formatDate(dateString) {
+        const d = new Date(dateString);
+        return d.toLocaleDateString('uk-UA', { day: 'numeric', month: 'long' });
     }
-}
 
-// --- Функції кешування Local Storage (змінена логіка збереження) ---
-
-function saveToCache(posts, page) {
-    try {
-        const cachedData = localStorage.getItem(CACHE_KEY);
-        let existingPosts = cachedData ? JSON.parse(cachedData) : [];
-        
-        // Якщо це перша сторінка, ми повністю оновлюємо кеш, 
-        // або вставляємо нові пости на початок, зберігаючи старі
-        if (page === 1) {
-            // Для фонового оновлення ми додаємо нові пости на початок
-            if (existingPosts.length > 0) {
-                 const newPostIds = new Set(posts.map(p => p.id));
-                 // Фільтруємо нові пости, яких ще немає в кеші
-                 const uniqueNewPosts = posts.filter(p => !existingPosts.some(ep => ep.id === p.id));
-                 existingPosts = [...uniqueNewPosts, ...existingPosts]; // Додаємо нові на початок
-            } else {
-                 existingPosts = posts; // Якщо кеш порожній
-            }
-            
-        } else {
-            // Пагінація: додаємо нові пости в кінець
-            const uniqueNewPosts = posts.filter(p => !existingPosts.some(ep => ep.id === p.id));
-            existingPosts = [...existingPosts, ...uniqueNewPosts];
+    function getImageUrl(post) {
+        try {
+            const media = post._embedded['wp:featuredmedia'][0].media_details.sizes;
+            return (media.large || media.full || media.medium_large).source_url;
+        } catch (e) {
+            return 'https://placehold.co/600x600/18181b/3f3f46?text=Meridian';
         }
-
-        // Обмежуємо розмір кешу, наприклад, 50-ма останніми постами, щоб не забивати storage
-        const MAX_CACHE_SIZE = 50; 
-        if (existingPosts.length > MAX_CACHE_SIZE) {
-            existingPosts = existingPosts.slice(0, MAX_CACHE_SIZE);
-        }
-
-        localStorage.setItem(CACHE_KEY, JSON.stringify(existingPosts));
-        
-    } catch (e) {
-        console.error('Помилка збереження в кеш:', e);
     }
-}
 
-function loadFromCache() {
-    try {
-        const cachedData = localStorage.getItem(CACHE_KEY);
-        if (cachedData) {
-            return JSON.parse(cachedData);
-        }
-        return null;
-    } catch (e) {
-        console.error('Помилка завантаження з кешу:', e);
-        return null;
+    function estimateReadingTime(contentHtml) {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = contentHtml;
+        const text = tempDiv.textContent || tempDiv.innerText || "";
+        return `${Math.ceil(text.split(/\s+/).length / 200)} хв`;
     }
-}
 
-function createNewsCard(post) {
-    const listItem = document.createElement('li');
-    listItem.className = 'news-card';
-    listItem.id = `post-${post.id}`; 
-    const thumbnailUrl = getThumbnailUrl(post);
+    function getRelativeTime(dateString) {
+        const now = new Date();
+        const published = new Date(dateString);
+        const diffMs = now - published;
+        const diffMins = Math.round(diffMs / 60000);
+        const diffHours = Math.round(diffMins / 60);
+        const diffDays = Math.round(diffHours / 24);
 
-    listItem.innerHTML = `
-        <img src="${thumbnailUrl}" alt="${post.title.rendered}" class="news-card-thumbnail">
-        
-        <div class="news-card-footer">
-            <span class="news-card-meta">${formatNewsDate(post.date)}</span>
-            <button class="read-more-btn">
-                <span>Читати статтю</span>
-                <span class="material-icons expand-icon">expand_more</span>
-            </button>
-        </div>
-        
-        <div class="news-card-content">
-            <h3 class="article-title">${post.title.rendered}</h3>
-            <div class="article-body">${post.content.rendered}</div>
-        </div>
-    `;
-    
-    // 1. Обробник для розгортання/згортання картки (СПРОЩЕНО)
-    const footer = listItem.querySelector('.news-card-footer');
-    footer.addEventListener('click', () => {
-        
-        // **Видалено:** closeAllExpandedCards()
-        // **Видалено:** Вся логіка прокручування scrollIntoView()
-        
-        // Тільки перемикання класу, що запускає CSS-анімацію max-height
-        listItem.classList.toggle('expanded'); 
-    });
+        if (diffMins < 1) return 'Щойно';
+        if (diffMins < 60) return `Опубліковано ${diffMins} хв тому`;
+        if (diffHours < 24) return `Опубліковано ${diffHours} год тому`;
+        return `Опубліковано ${diffDays} дн. тому`;
+    }
 
-    // 2. Обробник для перегляду зображень (Без змін)
-    const contentContainer = listItem.querySelector('.news-card-content');
-    contentContainer.addEventListener('click', (e) => {
-        if (e.target.tagName === 'IMG') {
-            e.preventDefault(); 
-            e.stopPropagation(); 
-            openImageModal(e.target.src);
+    // --- ФУНКЦІЯ ОНОВЛЕННЯ ВІДЖЕТА ---
+    function updateWidget(post) {
+        const wTitle = document.getElementById('widget-last-news-title');
+        const wDesc = document.getElementById('widget-last-news-desc');
+        const wTime = document.getElementById('widget-last-news-time');
+
+        if (wTitle && post.title) {
+            wTitle.innerHTML = post.title.rendered;
         }
-    });
 
-    // 3. Обробник для титульного зображення (Без змін)
-    const thumbnail = listItem.querySelector('.news-card-thumbnail');
-    if (thumbnail) {
-        thumbnail.addEventListener('click', (e) => {
+        if (wDesc && post.excerpt) {
+            // Очищаємо HTML теги з уривка
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = post.excerpt.rendered;
+            // Обрізаємо до 120 символів
+            let text = tempDiv.textContent || tempDiv.innerText || '';
+            if (text.length > 170) text = text.substring(0, 170) + '...';
+            wDesc.innerText = text;
+        }
+
+        if (wTime && post.date) {
+            wTime.innerText = getRelativeTime(post.date);
+        }
+    }
+
+    // --- ЛОГІКА НОВИН ---
+
+    window.openArticle = function (post, date) {
+        const overlay = document.getElementById('article-overlay');
+        const viewTitle = document.getElementById('view-title');
+        const viewBody = document.getElementById('view-body');
+        const viewDate = document.getElementById('view-date');
+        const viewReadTime = document.getElementById('view-read-time');
+        const articleScroll = document.getElementById('article-scroll');
+
+        if (!overlay) return;
+
+        if (viewTitle) viewTitle.innerHTML = post.title.rendered;
+        if (viewDate) viewDate.innerText = date;
+
+        const text = post.content.rendered.replace(/<[^>]*>/g, '');
+        const minutes = Math.ceil(text.split(/\s+/).length / 200);
+        if (viewReadTime) viewReadTime.innerText = `${minutes} хв`;
+
+        if (viewBody) {
+            viewBody.innerHTML = post.content.rendered;
+            viewBody.querySelectorAll('a').forEach(a => {
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+            });
+            viewBody.querySelectorAll('p').forEach(p => {
+                if (!p.innerText.trim() && !p.querySelector('img')) p.remove();
+            });
+        }
+
+        if (articleScroll) articleScroll.scrollTop = 0;
+
+        requestAnimationFrame(() => {
+            overlay.classList.add('active');
+        });
+    };
+
+    window.closeArticle = function () {
+        const overlay = document.getElementById('article-overlay');
+        const viewBody = document.getElementById('view-body');
+        if (overlay) {
+            overlay.classList.remove('active');
+            setTimeout(() => {
+                if (viewBody) viewBody.innerHTML = '';
+            }, 400);
+        }
+    };
+
+    function createPostCard(post, isNew) {
+        const imgUrl = getImageUrl(post);
+        const date = formatDate(post.date);
+        const readTime = estimateReadingTime(post.content.rendered);
+
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = post.excerpt.rendered;
+        const plainText = (tempDiv.textContent || '').substring(0, 100) + '...';
+
+        const card = document.createElement('article');
+        card.className = 'glass-card rounded-[24px] p-2 m-1 transition-transform duration-300 active:scale-[0.98] cursor-pointer group';
+
+        const badgeHtml = isNew
+            ? `<div class="flex items-center gap-2 mr-3">
+                 <span class="w-1.5 h-1.5 rounded-full bg-brand-cyan shadow-[0_0_8px_rgba(0,242,234,0.6)] animate-pulse"></span>
+                 <span class="text-[10px] font-bold text-brand-cyan tracking-wider font-display uppercase">НОВЕ</span>
+               </div>` : ``;
+
+        card.innerHTML = `
+            <div class="relative w-full overflow-hidden rounded-2xl mb-3 border border-white/5 bg-black/20">
+                <img src="${imgUrl}" loading="lazy" class="w-full h-auto max-h-[550px] object-contain mx-auto transition-transform duration-500 group-hover:scale-105" alt="News">
+            </div>
+            <div class="px-2 pb-2">
+                <div class="flex items-center mb-3 min-h-[24px]">
+                    ${badgeHtml} 
+                    <div class="flex items-center gap-1 text-white/50">
+                        <i class="fa-regular fa-clock text-[12px]"></i>
+                        <span class="text-[11px] font-medium font-display">${readTime}</span>
+                    </div>
+                    <div class="px-2 py-1 bg-white/5 rounded-lg border border-white/5 text-[11px] font-bold text-white/80 font-display ml-auto">
+                        ${date}
+                    </div>
+                </div>
+                <p class="text-[15px] text-white/70 leading-relaxed font-light mb-4">
+                    <span class="text-white font-medium">@meridian</span> ${plainText}
+                </p>
+                <button class="w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-sm font-medium text-brand-white transition-colors flex items-center justify-center gap-2 pointer-events-none">
+                    <span>Читати повністю</span>
+                    <i class="fa-solid fa-arrow-right text-sm"></i>
+                </button>
+            </div>
+        `;
+
+        card.addEventListener('click', (e) => {
             e.preventDefault();
-            openImageModal(e.target.src);
+            window.openArticle(post, date);
+        });
+
+        return card;
+    }
+
+    async function loadNews() {
+        if (isLoading || !hasMore) return;
+        isLoading = true;
+
+        // Показуємо лоадер тільки якщо є контейнер і це не перше завантаження "в фоні"
+        if (page > 1 && loader) loader.classList.remove('hidden');
+
+        try {
+            const res = await fetch(`${API_URL}&page=${page}`);
+            if (!res.ok) throw new Error('Failed');
+            const posts = await res.json();
+
+            // 1. ОНОВЛЕННЯ ВІДЖЕТА (Тільки для першої сторінки)
+            if (page === 1 && posts.length > 0) {
+                updateWidget(posts[0]);
+            }
+
+            // Якщо немає контейнера стрічки (наприклад, ми на іншому екрані), 
+            // але ми оновили віджет - виходимо, не малюємо картки
+            if (!feedContainer) {
+                isLoading = false;
+                return;
+            }
+
+            if (page === 1) {
+                const skeletons = document.getElementById('skeletons');
+                if (skeletons) skeletons.remove();
+            } else {
+                if (loader) loader.classList.add('hidden');
+            }
+
+            if (posts.length === 0) {
+                hasMore = false;
+                return;
+            }
+
+            let newestId = posts[0].id;
+            posts.forEach(post => {
+                feedContainer.appendChild(createPostCard(post, post.id > lastSeenId));
+            });
+
+            if (page === 1 && newestId > lastSeenId) {
+                localStorage.setItem(LAST_SEEN_KEY, newestId);
+                lastSeenId = newestId;
+            }
+            page++;
+        } catch (err) {
+            console.error(err);
+        } finally {
+            isLoading = false;
+        }
+    }
+
+    // Запускаємо завантаження
+    loadNews();
+
+    if (scrollContainer) {
+        scrollContainer.addEventListener('scroll', () => {
+            if (scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight - 400) {
+                loadNews();
+            }
         });
     }
-
-    return listItem;
-}
-// --- НОВА ФУНКЦІЯ: Відкриття модального вікна ---
-
-function openImageModal(imageUrl) {
-    modalImage.src = imageUrl;
-    imageModal.style.display = 'block';
-}
-
-// --- НОВА ФУНКЦІЯ: Ініціалізація модального вікна (один раз) ---
-
-function initializeImageModal() {
-    // Закриття по кліку на кнопку "х"
-    closeModalBtn.onclick = function() {
-        imageModal.style.display = "none";
-    }
-
-    // Закриття по кліку поза межами зображення
-    window.onclick = function(event) {
-        if (event.target == imageModal) {
-            imageModal.style.display = "none";
-        }
-    }
-    
-    // Закриття по натисканню клавіші ESC
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape') {
-            imageModal.style.display = "none";
-        }
-    });
-}
-
-function renderPosts(posts, append = false, prepend = false) {
-    if (!append && !prepend) {
-        newsList.innerHTML = '';
-    }
-    
-    posts.forEach(post => {
-        // Перевіряємо, чи пост вже є на сторінці
-        if (!document.getElementById(`post-${post.id}`)) {
-            const card = createNewsCard(post);
-            if (prepend) {
-                 newsList.prepend(card); // Додаємо на початок (для нових статей)
-                 card.classList.add('new-post-highlight'); // Опціонально: підсвічування
-            } else {
-                 newsList.appendChild(card); // Додаємо в кінець (для пагінації)
-            }
-        }
-    });
-
-    // Прибираємо клас підсвічування через кілька секунд
-    setTimeout(() => {
-        document.querySelectorAll('.new-post-highlight').forEach(el => el.classList.remove('new-post-highlight'));
-    }, 5000);
-
-    
-}
-
-// --- Функція легкого запиту для перевірки оновлень ---
-
-async function fetchLatestPostMetadata() {
-    // Отримуємо лише ID та Date для швидкої перевірки
-    const LATEST_POST_URL = `${BASE_API_URL}?per_page=1&fields=id,date`; 
-    
-    try {
-        const response = await fetch(LATEST_POST_URL);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        
-        const posts = await response.json();
-        return posts.length > 0 ? posts[0] : null; 
-    } catch (error) {
-        console.warn('Не вдалося отримати метадані останньої новини. Фонова перевірка провалена.', error);
-        return null; 
-    }
-}
-
-// --- Головна функція завантаження та рендерингу ---
-
-async function fetchAndRenderNews(page = 1, append = false) {
-    if (isLoading || (allPostsLoaded && append)) return;
-    isLoading = true;
-    
-    // Показуємо індикатор тільки при пагінації, початкове завантаження приховано за кешем
-    if (append) {
-       loadMoreMessage.style.display = 'block';
-    }
-
-    const API_URL = `${BASE_API_URL}?_embed&per_page=${PER_PAGE}&page=${page}`;
-
-    try {
-        const response = await fetch(API_URL);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        
-        const posts = await response.json();
-        
-        // Зберігаємо в кеш (змінена логіка saveToCache тепер обробляє вставку на початок)
-        saveToCache(posts, page);
-        
-        loadMoreMessage.style.display = 'none';
-
-        if (posts.length === 0 && page > 1) {
-            allPostsLoaded = true;
-            console.log('Усі новини завантажено.');
-        } else {
-            // Для пагінації (append=true) або якщо це перше завантаження, але кеш був порожній
-            if (append || newsList.children.length === 0) {
-                 renderPosts(posts, append);
-            }
-            // Якщо це повне оновлення, але не пагінація, нові пости будуть вставлені на початок
-            else if (page === 1) {
-                 renderPosts(posts, false, true); // Вставка на початок
-            }
-             
-            currentPage = page; 
-        }
-
-    } catch (error) {
-        console.error('Помилка при завантаженні новин з сервера:', error);
-        
-        loadMoreMessage.style.display = 'none';
-        
-        // Резерв при невдачі пагінації або першого завантаження без кешу
-        if (page === 1 && newsList.children.length === 0) {
-            newsList.innerHTML = `<p class="placeholder-text" style="color: red;">Не вдалося завантажити новини. Спробуйте пізніше.</p>`;
-        }
-    }
-    
-    isLoading = false;
-}
-
-// --- Логіка фонової перевірки та початкове відображення ---
-
-async function checkNewsUpdates() {
-    const cachedPosts = loadFromCache();
-    
-    // 1. Миттєве відображення кешу (для безшовності)
-    if (cachedPosts && cachedPosts.length > 0) {
-        renderPosts(cachedPosts);
-        
-        // Встановлюємо поточну сторінку для коректної пагінації
-        currentPage = Math.ceil(cachedPosts.length / PER_PAGE);
-        allPostsLoaded = cachedPosts.length < PER_PAGE; 
-        loadingMessage.style.display = 'none';
-        
-        // Запускаємо фонову перевірку
-        await backgroundUpdateCheck(cachedPosts[0].id);
-
-    } else {
-        // Якщо кешу немає взагалі, робимо повний запит, показуючи індикатор
-        loadingMessage.style.display = 'block';
-        await fetchAndRenderNews(1);
-    }
-}
-
-async function backgroundUpdateCheck(latestCachedId) {
-     console.log('Початок фонової перевірки оновлень...');
-     const latestServerPost = await fetchLatestPostMetadata();
-     
-     if (latestServerPost && latestServerPost.id !== latestCachedId) {
-         console.log('Знайдено нову новину! Динамічне оновлення UI...');
-         
-         // Запускаємо повне завантаження першої сторінки. 
-         // Нова логіка renderPosts вставить нові статті на початок.
-         await fetchAndRenderNews(1, false); 
-         
-         newsList.insertAdjacentHTML('afterbegin', '<p class="update-message" style="color: green; padding: 10px 15px;">З’явились нові статті!</p>');
-     } else {
-         console.log('Кеш актуальний. Фонова перевірка завершена.');
-     }
-}
-
-// --- Логіка "Нескінченної Стрічки" з раннім завантаженням ---
-
-function handleScroll() {
-    const newsCards = newsList.querySelectorAll('.news-card');
-    
-    // Треба завантажувати, коли користувач бачить передостанній елемент (n-1)
-    if (newsCards.length > 1) {
-        // Визначаємо передостанній елемент
-        const secondToLastCard = newsCards[newsCards.length - 2];
-        
-        // Визначаємо його позицію відносно viewport
-        const rect = secondToLastCard.getBoundingClientRect();
-
-        // Запускаємо завантаження, якщо передостанній елемент видно в межах вікна
-        // (наприклад, верхня частина елемента вище 80% висоти вікна)
-        if (rect.top <= window.innerHeight * 0.8 && !isLoading && !allPostsLoaded) {
-            fetchAndRenderNews(currentPage + 1, true);
-        }
-    }
-}
-function closeAllExpandedCards() {
-    // Шукаємо всі картки, які мають клас 'expanded'
-    document.querySelectorAll('.news-card.expanded').forEach(card => {
-        card.classList.remove('expanded');
-    });
-}
-
-
-// --- ГЛОБАЛЬНА ЛОГІКА ЗАКРИТТЯ ПРИ ЗМІНІ РОЗДІЛУ ---
-
-// знаходимо футер навігації
-const bottomNavFooter = document.querySelector('.bottom-nav'); 
-// Іконка для розділу новин/прогнозу - 'grid_view'
-const NEWS_ICON = 'grid_view'; 
-
-if (bottomNavFooter) {
-    bottomNavFooter.addEventListener('click', (e) => {
-        const clickedNav = e.target.closest('.nav-item');
-        
-        if (clickedNav) {
-            const targetIcon = clickedNav.getAttribute('data-icon');
-            
-            // Якщо користувач натиснув на будь-яку кнопку, окрім кнопки новин/прогнозу,
-            // ми згортаємо всі відкриті статті та закриваємо деталі прогнозу.
-            if (targetIcon !== NEWS_ICON) {
-                closeAllExpandedCards(); 
-                
-                // >>> НОВИЙ ВИКЛИК: Закриття детального перегляду погоди
-                if (typeof closeWeatherDetails === 'function') {
-                    closeWeatherDetails();
-                }
-            }
-        }
-    });
-}
-// --- Ініціалізація ---
-initializeImageModal();
-
-window.addEventListener('scroll', handleScroll);
-checkNewsUpdates(); // Початкове відображення кешу + фонова перевірка
+});

@@ -1,665 +1,75 @@
-/* Основні кольори */
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;700;800&display=swap');
-
-:root {
-    --color-primary: #38765E;
-    /* Темно-зелений для активного стану/тексту */
-    --color-secondary: #E3F2E3;
-    /* Дуже світлий фон */
-    --color-background: #F8FFF8;
-    /* Білий фон додатку */
-    --color-card-light: #E9F4E9;
-    /* Світла картка (Неактивні елементи) */
-    --color-card-dark: #5C8C7F;
-    /* Темна картка (Активні елементи) */
-    --color-text-dark: #1F332C;
-    /* Майже чорний текст */
-    --color-text-light: #F0F5F0;
-    --color-btn-light: #c5e1d1;
-    /* Світлий текст на темному фоні */
-    --color-btn-card-light: #E9F4E9;
-    --color-shadow: #00000036;
-    --color-danger: #CC2635;
-    /* Червоний (для видалення/помилок) */
-    --color-info: #0d73d6;
-    /* Синій (для дощу/інформації) */
-
-    /* Додаткова змінна для тіні поточної картки */
-    --color-current-shadow: rgba(56, 118, 94, 0.01);
-
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-/* Вимкнення синього (або іншого) підсвічування при торканні */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    /*font-family: "Segoe UI", Roboto, Helvetica, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", 'Nunito', sans-serif;*/
-    font-family: 'Nunito', sans-serif;
-    -webkit-tap-highlight-color: transparent;
-    -webkit-user-select: none;
-    /* Safari, Chrome */
-    -moz-user-select: none;
-    /* Firefox */
-    -ms-user-select: none;
-    /* IE/Edge */
-    user-select: none;
-    /* Стандарт */
-
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+/* Root element for rem-based scaling */
+html {
+    font-size: var(--base-font-size, 16px);
 }
 
 body {
-    background-color: var(--color-background);
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
-}
-
-body.dark-mode {
-    /* Перевизначаємо основні змінні теми */
-    --color-primary: #5C8C7F;
-    /* Трохи світліший зелений акцент */
-    --color-secondary: #1F332C;
-    /* Темний фон (колишній текст) */
-    --color-background: #1A2823;
-    /* Ще темніший фон */
-    --color-card-light: #2A4039;
-    /* Фон карток (темний) */
-    --color-card-dark: #38765E;
-    /* Фон "поточної" картки */
-    --color-text-dark: #E3F2E3;
-    /* Світлий текст (колишній фон) */
-    --color-text-light: #1A2823;
-    /* Темний текст на світлих картках (для контрасту) */
-    --color-btn-light: #2A4039;
-}
-
-/* Специфічні корекції для темної теми */
-body.dark-mode .app-container {
-    background-color: var(--color-secondary);
-    /* Використовуємо secondary для фону контейнера */
-}
-
-body.dark-mode .header {
-    background-color: var(--color-secondary);
-    /* Використовуємо secondary для фону контейнера */
-}
-
-body.dark-mode .bottom-nav {
-    background-color: var(--color-secondary);
-    box-shadow: 0 -4px 12px var(--color-shadow);
-}
-
-body.dark-mode .lesson-card.future {
-    background-color: var(--color-card-light);
-    /* Картки "майбутні" */
-}
-
-/* Налаштування */
-body.dark-mode .settings-list {
-    background: var(--color-background);
-    border-color: var(--color-card-light);
-}
-
-body.dark-mode .settings-item {
-    background: var(--color-background);
-    /* Використовуємо background для картки, щоб border-bottom був помітним */
-    border-bottom-color: var(--color-card-light);
-    /* Використовуємо card-light для роздільника */
-}
-
-body.dark-mode .settings-item .text {
-    color: var(--color-text-dark);
-}
-
-body.dark-mode .settings-item .material-icons {
-    color: var(--color-primary);
-}
-
-/* Перемикач */
-body.dark-mode .slider {
-    background-color: var(--color-card-light);
-    /* Використовуємо card-light для неактивного */
-}
-
-body.dark-mode input:checked + .slider {
-    background-color: var(--color-primary);
-}
-
-body.dark-mode .slider:before {
-    background-color: var(--color-text-dark);
-    /* Ручка перемикача (світла) */
-}
-
-body.dark-mode input:checked + .slider:before {
-    background-color: var(--color-text-light);
-    /* Ручка перемикача на активному (темна) */
-}
-
-/* Календар */
-body.dark-mode .modal-content {
-    background-color: var(--color-secondary);
-}
-
-body.dark-mode .calendar-day:not(.inactive):hover {
-    background-color: var(--color-card-light);
-}
-
-body.dark-mode .calendar-day.inactive {
-    /* Світлий текст з низькою прозорістю */
-    color: rgba(var(--color-text-dark), 0.3);
-}
-
-.app-container {
-    width: 100%;
-    max-width: 400px;
-    /* Типова ширина мобільного екрану */
-    min-height: 100vh;
-    background-color: var(--color-secondary);
-    /* Світло-зелений фон */
-    position: relative;
-    padding-bottom: 80px;
-    /* Місце для нижнього меню */
-    overflow-x: hidden;
-}
-
-/* --- HEADER СТИЛІ --- */
-.header {
-    text-align: center;
-    padding: 30px 0 20px 0;
-    background-color: var(--color-secondary);
-}
-
-.day-item {
-    cursor: pointer;
-}
-
-.day-selector {
-    display: flex;
-    justify-content: space-between;
-    padding: 0 10px;
-    position: absolute;
-    /* Для накладання */
-    top: 50px;
-    left: 0;
-    right: 0;
-    color: var(--color-text-dark);
-    opacity: 0.5;
-    font-size: 16px;
-    font-weight: 500;
-    user-select: none;
-    -webkit-user-select: none;
-    /* Safari, Chrome, Opera, Edge */
-    -moz-user-select: none;
-    /* Firefox */
-    -ms-user-select: none;
-    /* Internet Explorer 10+ */
-}
-
-.day-selector .active {
-    opacity: 1;
-}
-
-.main-day {
-    font-size: 38px;
-    font-weight: 900;
-    color: var(--color-primary);
-    margin-top: 10px;
-}
-
-.date {
-    font-size: 16px;
-    color: var(--color-primary);
-    opacity: 0.8;
-    margin-top: 5px;
-    cursor: pointer;
-    /* Додано для кліку на дату */
-}
-
-/* --- СПИСОК ЗАНЯТЬ --- */
-.schedule-list {
-    padding: 20px 15px 15px 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.lesson-card {
-    position: relative;
-    padding: 20px;
-    border-radius: 20px;
-    box-shadow: 0 4px 12px var(--color-shadow);
-    overflow: hidden;
-    color: var(--color-text-dark);
-    /* Додано transition для плавного переходу між станами */
-    transition: opacity 0.3s, background-color 0.3s, box-shadow 0.3s;
-}
-
-/* 1. PAST: Минулі події (напів прозорі, світло-зелені) */
-.lesson-card.past {
-    background-color: var(--color-card-light);
-    opacity: 0.7;
-    /* Напів прозорий */
-    box-shadow: none;
-    /* Прибрати тінь */
-}
-
-.lesson-card.past .details-row span {
-    color: var(--color-primary);
-}
-
-.lesson-card.past .details-row.secondary span {
-    color: var(--color-text-dark);
- 
-}
-
-/* 2. CURRENT: Поточна подія (темно-зелена) */
-.lesson-card.current {
-    background-color: var(--color-card-dark);
-    color: var(--color-btn-card-light);
-    box-shadow: 0 4px 15px var(--color-current-shadow);
-    /* Використовуємо змінну тіні */
-    opacity: 1;
-}
-
-.lesson-card.current .details-row span {
-    color: var(--color-btn-card-light);
-}
-
-.lesson-card.current .details-row.secondary span {
-    color: var(--color-btn-card-light);
-}
-
-/* 3. FUTURE: Майбутні події (білі/дефолтні) */
-.lesson-card.future {
-    background-color: var(--color-background);
-    /* Білий фон */
-    opacity: 1;
-    box-shadow: 0 4px 12px var(--color-shadow);
-    /* Звичайна тінь */
-}
-
-.lesson-card.future .details-row span {
-    color: var(---color-text-dark);
-}
-
-/* Декоративні форми (коригування для new styles) */
-.decorative-shape-1,
-.decorative-shape-2 {
-    position: absolute;
-    border-radius: 50%;
-    z-index: 0;
-}
-
-.lesson-card.past .decorative-shape-1,
-.lesson-card.past .decorative-shape-2,
-.lesson-card.future .decorative-shape-1,
-.lesson-card.future .decorative-shape-2 {
-    /* Використовуємо Primary з прозорістю */
-    background-color: rgba(var(--color-primary), 0.1);
-    /* Світлий відтінок для past/future */
-}
-
-.lesson-card.current .decorative-shape-1,
-.lesson-card.current .decorative-shape-2 {
-    background-color: rgba(255, 255, 255, 0.1);
-    /* Світлий відтінок на темному фоні */
-}
-
-.decorative-shape-1 {
-    width: 150px;
-    height: 150px;
-    top: -50px;
-    right: -80px;
-    transform: rotate(30deg);
-}
-
-.decorative-shape-2 {
-    width: 80px;
-    height: 80px;
-    bottom: -30px;
-    left: -40px;
-    transform: rotate(-20deg);
-}
-
-/* Контент картки */
-.subject {
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 15px;
-    position: relative;
-    z-index: 1;
-    /* Поверх декоративних форм */
-}
-
-.details-row {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 5px;
-    font-size: 14px;
-    font-weight: 500;
-    position: relative;
-    z-index: 1;
-}
-
-.details-row span {
-    color: var(--color-primary);
-}
-
-.details-row.secondary {
-    margin-top: 10px;
-    font-size: 14px;
-    font-weight: 400;
-}
-
-/* --- BOTTOM NAV СТИЛІ --- */
-.bottom-nav {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    max-width: 400px;
-    height: 70px;
-    background-color: var(--color-card-light);
-    border-top-left-radius: 25px;
-    border-top-right-radius: 25px;
-    box-shadow: 0 -4px 12px var(--color-shadow);
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 0 10px;
-    z-index: 99;
-    /* Запобігає виділенню тексту більшістю браузерів */
-    -webkit-user-select: none;
-    /* Chrome, Safari, Opera */
-    -moz-user-select: none;
-    /* Firefox */
-    -ms-user-select: none;
-    /* Internet Explorer/Edge */
-    user-select: none;
-    /* Стандартна властивість */
-
-    /* Додатково може допомогти, якщо іконка є посиланням або інтерактивним елементом */
-    cursor: default;
-    /* Встановлює звичайний курсор, щоб уникнути вигляду "тексту" */
-}
-
-.nav-item {
-    padding: 8px 15px;
-    border-radius: 12px;
-    color: var(--color-primary);
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.nav-item:hover {
-    background-color: rgba(56, 118, 94, 0.1);
-}
-
-.nav-item.active-nav {
-    color: var(--color-text-light);
-    /* ЗАМІНЕНО: white -> var(--color-text-light) */
-}
-
-
-/* style.css */
-
-/* --- СТИЛІ МОДАЛЬНОГО КАЛЕНДАРЯ --- */
-.modal {
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-    display: none;
-    /* Приховано за замовчуванням */
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-}
-
-.modal.open {
-    display: flex;
-    /* Показати при відкритті */
-}
-
-.modal-content {
-    background-color: var(--color-background);
-    padding: 20px;
-    border-radius: 25px;
-    width: 100%;
-    max-width: 350px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    color: var(--color-text-dark);
-}
-
-.calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    color: var(--color-primary);
-}
-
-#current-month-year {
-    font-size: 20px;
-    font-weight: 700;
-}
-
-.calendar-nav-btn {
-    cursor: pointer;
-    font-size: 28px;
-    opacity: 0.8;
-}
-
-.calendar-grid-header,
-.calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    text-align: center;
-    gap: 5px;
-}
-
-.calendar-grid-header span {
-    font-weight: 500;
-    color: var(--color-primary);
-    opacity: 0.7;
-    font-size: 14px;
-}
-
-.calendar-day {
-    padding: 8px 0;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: background-color 0.2s, color 0.2s;
-    font-size: 16px;
-    font-weight: 500;
-}
-
-/* Світла тема: тьмяний чорний */
-body:not(.dark-mode) .calendar-day.inactive {
-    color: rgba(31, 51, 44, 0.3);
-    cursor: default;
-    background: none;
-}
-
-.calendar-day:not(.inactive):hover {
-    background-color: var(--color-card-light);
-}
-
-.calendar-day.selected {
-    background-color: var(--color-primary);
-    color: var(--color-text-light);
-    font-weight: 700;
-}
-
-.close-btn {
-    width: 100%;
-    padding: 12px;
-    margin-top: 20px;
-    background-color: var(--color-primary);
-    color: var(--color-text-light);
-    /* ЗАМІНЕНО: white -> var(--color-text-light) */
-    border: none;
-    border-radius: 15px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-
-/* ... (Ваші попередні стилі) ... */
-
-/* --- СТИЛІ СТЕКУ ПРОЙДЕНИХ ЗАНЯТЬ (past-stack-container) --- */
-
-.past-stack-container {
-    cursor: pointer;
-    background-color: var(--color-card-light);
-    border-radius: 20px;
-    box-shadow: 0 5px 15px var(--color-shadow);
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease-in-out;
-}
-
-.stack-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px 20px;
-    background-color: var(--color-secondary);
-    /* Світліший фон, ніж картка */
-    color: var(--color-primary);
-    font-weight: 500;
-    border-radius: 20px;
-    position: relative;
-    z-index: 10;
-    transition: border-radius 0.3s ease;
-}
-
-.stack-header span:first-child {
-    font-size: 20px;
-    margin-right: 10px;
-}
-
-.expand-icon {
-    transition: transform 0.3s ease;
-}
-
-.stack-cards-wrapper {
-    position: relative;
-    top: -10px;
-    /* Висота стеку: 1 картка + невелика тінь */
-    transition: max-height 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    /* Плавне розгортання */
-}
-
-/* Стек: візуальний ефект накладання */
-.past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card {
-    position: absolute;
-    box-shadow: 0 3px 10px var(--color-shadow);
-    /* ЗАМІНЕНО: rgba(0, 0, 0, 0.05) -> var(--color-shadow) */
-    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-    opacity: 0;
-    visibility: hidden;
-}
-
-/* Відображаємо тільки верхню картку (остання в масиві) */
-.past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card:first-child {
-    position: relative;
-    transform: translateY(0);
-    visibility: visible;
-    opacity: 1;
-    margin-bottom: 0;
-}
-
-/* Ефект тіні для стеку - додаємо трансформацію до другої та третьої картки знизу */
-.past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card:nth-last-child(2),
-.past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card:nth-last-child(3),
-.past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card:nth-last-child(4),
-.past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card:nth-last-child(5),
-.past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card:nth-last-child(6),
-.past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card:nth-last-child(7),
-.past-stack-container:not(.expanded) .stack-cards-wrapper .lesson-card:nth-last-child(8) {
-    transform: translateY(8px) scale(0.96);
-    opacity: 0.3;
-    visibility: visible;
-}
-
-
-/* СТАН РОЗГОРНУТОГО СТЕКУ (EXPANDED) */
-.past-stack-container.expanded {
-    border-radius: 20px;
-}
-
-.past-stack-container.expanded .stack-header {
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-}
-
-.past-stack-container.expanded .expand-icon {
-    transform: rotate(180deg);
-}
-
-.past-stack-container.expanded .stack-cards-wrapper {
-    max-height: 1000px;
-    /* Достатньо велике значення для відображення всіх карток */
-}
-
-.past-stack-container.expanded .stack-cards-wrapper .lesson-card {
-    /* Картки відображаються нормально, одна під одною */
-    position: relative;
-    width: 100%;
+    background-color: #020617;
+    color: #f0f0f0;
     margin: 0;
-    padding: 15px 20px;
-    box-shadow: none;
-    border-radius: 0;
-    /* Використовуємо Primary з прозорістю */
-    border-bottom: 1px solid rgba(var(--color-primary), 0.1);
-    /* Роздільник */
-    opacity: 1;
-    visibility: visible;
-    transform: none;
-    color: var(--color-primary);
-    /* ЗАМІНЕНО: #5c8c7f -> var(--color-primary) */
+    overflow-x: hidden;
+    font-family: 'Inter', sans-serif;
+    -webkit-tap-highlight-color: transparent;
 }
 
-.past-stack-container.expanded .stack-cards-wrapper .lesson-card:last-child {
-    border-bottom: none;
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
+
+
+/* --- AURORA BACKGROUND CANVAS --- */
+#aurora-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease-out;
+    filter: blur(60px) contrast(1.2);
+    transform: scale(1.1);
 }
 
-/* Приховуємо декоративні форми в стеку, щоб вони не заважали */
-.past-stack-container .decorative-shape-1,
-.past-stack-container .decorative-shape-2 {
+.texture-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    opacity: 0.05;
+    background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
+    pointer-events: none;
+}
+
+/* --- GLASS COMPONENTS --- */
+.glass-panel {
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    border-radius: 24px;
+    transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.glass-panel:active {
+    transform: scale(0.98);
+    background: rgba(30, 41, 59, 0.6);
+}
+
+/* --- NAVIGATION TRANSITIONS --- */
+.app-view {
     display: none;
+    opacity: 0;
+    min-height: 100vh;
+    padding-bottom: 40px;
+    animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
-/* ... (Ваші попередні стилі для lesson-card.past) ... */
-
-/* --- СТИЛІ ПЕРЕМИКАННЯ ЕКРАНІВ --- */
-.content-wrapper {
-    width: 100%;
-}
-
-.view {
-    display: none;
-    animation: fadeIn 0.3s ease-out;
-}
-
-.view.active-view {
+.app-view.active-view {
     display: block;
 }
 
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(10px);
+        transform: translateY(20px);
     }
 
     to {
@@ -668,971 +78,1443 @@ body:not(.dark-mode) .calendar-day.inactive {
     }
 }
 
-.placeholder-text {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--color-text-dark);
-    opacity: 0.6;
-    font-size: 16px;
-    line-height: 1.5;
+.back-nav-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 
-/* --- BOTTOM NAV СТИЛІ (ОНОВЛЕННЯ) --- */
-.bottom-nav .nav-item {
-    cursor: pointer;
+/* --- WEATHER VIEW STYLES --- */
+.weather-hero-card {
+    padding: 24px;
+    margin: 15px 0;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
     text-align: center;
-    flex-grow: 0.12;
-    color: var(--color-primary);
-    opacity: 0.6;
+    border-radius: 32px;
+    /* Super rounded for modern mobile feel */
+    /* GLASS EFFECT */
+    background: rgba(20, 20, 35, 0.65);
+    /* Semi-transparent dark */
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    /* BORDERS */
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+    /* SHADOWS & GLOW */
+    box-shadow:
+        0 20px 40px -5px rgba(0, 0, 0, 0.6),
+        /* Depth */
+        0 0 30px rgba(127, 0, 255, 0.15),
+        /* Brand Glow */
+        inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+    /* Inner bevel */
     transition: all 0.3s ease;
 }
 
-.bottom-nav .nav-item.active-nav {
-    opacity: 1;
-    color: var(--color-primary);
-    transform: scale(1.1);
-    background-color: var(--color-btn-light);
+.weather-hero-card::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    z-index: 0;
 }
 
-.bottom-nav .nav-item.active-nav .material-icons {
-    padding: 4px;
-}
-
-.bottom-nav .material-icons {
-    font-size: 24px;
-}
-
-/* --- СТИЛІ HEADER ДЛЯ ПЕРЕМИКАННЯ ЕКРАНІВ --- */
-
-/* Захоплення Header, коли активний будь-який інший екран, крім Розкладу */
-.app-container:not(.is-schedule) .header {
-    /* Приховуємо header */
-    transform: translateY(-100%);
-    opacity: 0;
-    visibility: hidden;
-    height: 0;
-    /* Це важливо, щоб контент не займав місце заголовка */
-    padding-top: 0;
-    padding-bottom: 0;
-}
-
-.app-container.is-schedule .header {
-    /* Показуємо header, коли активний екран Розкладу */
-    transform: translateY(0);
-    opacity: 1;
-    visibility: visible;
+.weather-icon-hero {
+    width: 120px;
     height: 120px;
-    /* Повертаємо початкову висоту */
-    padding: 20px 20px 10px;
-    /* Повертаємо початкові відступи */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: drop-shadow(0 0 20px rgba(0, 242, 234, 0.3));
 }
 
-/* Переконайтеся, що transition є на самому .header */
-.header {
-    transition: all 0.3s ease-in-out;
-    /* Додайте цю властивість, якщо її ще немає, для плавної анімації */
-}
-
-/* Оновлення main container для адаптації до відсутності/наявності header */
-.content-wrapper {
-    /* Встановлюємо transition для плавного переміщення контенту */
-    transition: padding-top 0.3s ease-in-out;
-}
-
-.app-container:not(.is-schedule) .content-wrapper {
-    /* Коли header прихований, зменшуємо верхній відступ (або видаляємо, якщо він не потрібен) */
-    padding-top: 20px;
-}
-
-/* --- СТИЛІ ФОРМИ ПОШУКУ --- */
-.search-form-container {
-    padding: 20px 15px;
-}
-
-.title {
-    font-size: 38px;
-    font-weight: 900;
-    color: var(--color-primary);
-    margin-bottom: 40px;
-    text-align: center;
-
-}
-
-.filter-card {
-    background-color: var(--color-card-light);
+/* --- HERO CARD V4 (TWO COLUMN LAYOUT) --- */
+.weather-hero-card-v4 {
+    padding: 16px;
+    margin: 12px 0;
+    color: white;
     border-radius: 20px;
-    padding: 15px 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 0px 3px var(--color-shadow);
+    background: rgba(20, 20, 35, 0.55);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
 }
 
-.filter-header {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--color-text-dark);
-    margin-bottom: 15px;
-}
-
-.filter-item {
+.hero-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 0;
-    font-size: 18px;
-    font-weight: 500;
-    color: var(--color-text-dark);
-    /* Використовуємо Primary з прозорістю */
-    border-bottom: 1px solid rgba(var(--color-primary), 0.2);
-    /* Світла лінія-роздільник */
-    cursor: pointer;
+    margin-bottom: 12px;
 }
 
-.filter-item:hover {
-    opacity: 0.8;
-}
-
-.filter-item .material-icons {
-    color: var(--color-primary);
-    font-size: 24px;
-}
-
-.filter-item.no-border {
-    border-bottom: none;
-}
-
-.date-range-container {
+.hero-location {
     display: flex;
-    justify-content: space-between;
-    gap: 15px;
-    margin-bottom: 40px;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
 }
 
-.date-card {
+.hero-location i {
+    font-size: 11px;
+    color: var(--accent-color, #0ea5e9);
+}
+
+.hero-date {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 500;
+}
+
+/* Two Column Layout */
+.hero-two-columns {
+    display: flex;
+    gap: 16px;
+}
+
+/* Left Column: Weather (50%) */
+.hero-weather-col {
     flex: 1;
-    background-color: var(--color-card-light);
-    border-radius: 15px;
-    padding: 15px;
     display: flex;
     flex-direction: column;
+    align-items: center;
     text-align: center;
 }
 
-.date-label {
-    font-size: 14px;
+.hero-date-inline {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 8px;
+}
+
+.hero-weather-icon-lg {
+    width: 72px;
+    height: 72px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: drop-shadow(0 0 10px rgba(0, 242, 234, 0.2));
+    margin-bottom: 4px;
+}
+
+.hero-temp-lg {
+    font-size: 2.5rem;
+    font-weight: 700;
+    font-family: 'Outfit', sans-serif;
+    line-height: 1;
+    color: white;
+}
+
+.hero-condition-lg {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.6);
     font-weight: 500;
-    color: var(--color-text-dark);
-    opacity: 0.7;
+    text-transform: capitalize;
+    margin-top: 2px;
+    margin-bottom: 8px;
+}
+
+.hero-sun-compact {
+    display: flex;
+    gap: 12px;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.hero-sun-compact i {
+    font-size: 9px;
+    margin-right: 3px;
+}
+
+.hero-sun-compact span:first-child i {
+    color: #f59e0b;
+}
+
+.hero-sun-compact span:last-child i {
+    color: #6366f1;
+}
+
+/* Right Column: 3 Metric Cards */
+.hero-metrics-col {
+    flex: 1.5;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Compact Metric Card for Hero */
+.hero-metric-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 8px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.hero-metric-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.hero-metric-card .metric-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--accent-color, #0ea5e9);
+    flex-shrink: 0;
+}
+
+.hero-metric-card .metric-content {
+    flex: 1.5;
+    min-width: 0;
+}
+
+.hero-metric-card .metric-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.2;
+}
+
+.hero-metric-card .metric-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    font-family: 'Outfit', sans-serif;
+    line-height: 1.2;
+}
+
+.hero-metric-card .metric-unit {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-left: 1px;
+}
+
+.hero-metric-card .metric-desc {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 2px;
+    line-height: 1.2;
+}
+
+.hero-metric-card .pin-indicator {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    color: rgba(255, 255, 255, 0.25);
+    transition: all 0.2s ease;
+}
+
+.hero-metric-card:hover .pin-indicator {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.hero-metric-card.pinned .pin-indicator {
+    background: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.6);
+    transform: rotate(-45deg);
+}
+
+.hero-temp {
+    font-size: 4.5rem;
+    font-weight: 700;
+    line-height: 1;
+    margin: 10px 0;
+    font-family: 'Outfit', sans-serif;
+}
+
+.hero-desc {
+    font-size: 1.2rem;
+    text-transform: capitalize;
+    color: #00f2ea;
     margin-bottom: 5px;
 }
 
-.date-value {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--color-text-dark);
-}
-
-.search-submit-btn {
-    width: 90%;
-    margin: 0 auto;
-    display: block;
-    padding: 15px 20px;
-    background-color: var(--color-btn-light);
-    color: var(--color-primary);
-    border: none;
-    border-radius: 15px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s;
-}
-
-.search-submit-btn:hover {
-    background-color: var(--color-primary);
-    color: var(--color-text-light);
-}
-
-/* --- НОВІ СТИЛІ ДЛЯ ФІЛЬТРІВ (ІМІТАЦІЯ СТЕКУ) --- */
-
-/* Контейнер-обгортка, що імітує past-stack-container */
-.filter-stack-container {
-    cursor: pointer;
-    background-color: var(--color-card-light);
-    border-radius: 15px;
-    /* Трохи менше, ніж у карток */
-    position: relative;
-    overflow: hidden;
-    margin-bottom: 10px;
-    /* Відступ між фільтрами */
-    transition: all 0.3s ease-in-out;
-}
-
-/* Базовий стиль для усіх елементів фільтру (заголовків та опцій) */
-.filter-item-base {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 20px;
-    font-size: 18px;
-    font-weight: 500;
-    color: var(--color-text-dark);
-    transition: background-color 0.2s;
-}
-
-/* Заголовок (імітує stack-header) */
-.filter-stack-header {
-    /* Використовує стилі .filter-item-base */
-    background-color: var(--color-secondary);
-    /* Світліший фон */
-    color: var(--color-primary);
-    font-weight: 500;
-    border-radius: 15px;
-    position: relative;
-    z-index: 10;
-    transition: border-radius 0.3s ease;
-}
-
-.filter-stack-header:hover {
-    background-color: var(--color-secondary);
-}
-
-.filter-stack-header .selected-display {
-    font-weight: 700;
-    opacity: 0.8;
-    margin-right: 10px;
-    color: var(--color-primary);
-}
-
-.filter-stack-header .material-icons {
-    color: var(--color-primary);
-}
-
-/* Обгортка для опцій (імітує stack-cards-wrapper) */
-.filter-stack-options {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.5s cubic-bezier(0.8, 0, 0.2, 1);
-    position: relative;
-    margin: 0px 10px 0px 10px;
-    padding-bottom: 5px;
-}
-
-/* Окрема опція (імітує картку у стеку) */
-.filter-option-item {
-    background-color: var(--color-background);
-    /* ЗАМІНЕНО: #fff -> var(--color-background) */
-    /* Білий фон */
-    border-radius: 12px;
-    padding: 12px 15px;
-    margin-top: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-    /* ЗБЕРЕЖЕНО: залишаємо тонку тінь */
-    color: var(--color-text-dark);
-    font-size: 16px;
-    font-weight: 400;
-    transition: background-color 0.2s;
-}
-
-.filter-option-item:hover:not(.disabled) {
-    background-color: var(--color-card-light);
-}
-
-.filter-option-item.disabled {
-    opacity: 0.5;
-    cursor: default;
-    background-color: var(--color-background);
-}
-
-/* Стан 'РОЗГОРНУТО' (expanded) */
-.filter-stack-container.expanded .filter-stack-header {
-    border-radius: 15px 15px 0 0;
-    /* Прибираємо нижні заокруглення */
-    box-shadow: none;
-    /* Прибираємо тінь із заголовка */
-}
-
-.filter-stack-container.expanded .filter-stack-options {
-    max-height: 500px;
-    /* Достатньо велике значення для анімації */
-    background-color: var(--color-card-light);
-    /* Фон опцій */
-    border-radius: 0 0 15px 15px;
-}
-
-.filter-stack-container.expanded .expand-icon {
-    transform: rotate(180deg);
-}
-
-/* Видалив старі, непотрібні стилі .filter-item, .filter-item.no-border, оскільки вони замінені */
-.filter-card .filter-item {
-    display: none;
-}
-
-/* --- CSS для Спінера Завантаження --- */
-
-/* Контейнер, що центрує спінер і текст */
-.loader-container {
-    text-align: center;
-    padding: 40px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    /* Використовуємо колір з вашого дизайну, якщо є */
-    color: var(--color-primary);
-    /* ЗАМІНЕНО: var(--color-primary, #666) -> var(--color-primary) */
-    opacity: 0.8;
-}
-
-/* Текст під спінером */
-.loader-text {
-    margin-top: 15px;
-    /* Відступ від спінера */
-    font-size: 0.9em;
-    color: inherit;
-    /* Наслідує колір .loader-container */
-}
-
-/* Сам спінер (кільце) */
-.spinner {
-    width: 30px;
-    /* Той самий розмір, що й у GIF */
-    height: 30px;
-    /* Використовуємо var(--color-text-dark) з прозорістю */
-    border: 4px solid rgba(var(--color-text-dark), 0.1);
-    /* Світлий колір кільця */
-    /* Колір "активної" частини, беремо з вашої теми */
-    border-top-color: var(--color-primary);
-    /* ЗАМІНЕНО: var(--color-primary, #007bff) -> var(--color-primary) */
-    border-radius: 50%;
-    /* Запускаємо анімацію */
-    animation: spin 1s linear infinite;
-}
-
-/* Анімація обертання */
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-/* --- СТИЛІ ДЛЯ ПОВІДОМЛЕННЯ "НЕМАЄ ЗАНЯТЬ" (ФІНАЛЬНА ВЕРСІЯ) --- */
-
-.no-schedule-message {
-    text-align: center;
-    /* Висота контейнера має бути 100% доступного простору */
-    min-height: calc(100vh - var(--header-height, 100px) - var(--nav-height, 150px));
-    height: auto;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: end;
-    /* Використовуємо justify-content: end для притискання до низу */
-
-    position: relative;
-    margin-bottom: 10px;
-    overflow: hidden;
-}
-
-.no-clock-message {
-    min-height: calc(90vh - var(--header-height, 100px) - var(--nav-height, 150px)) !important;
-
-}
-
-/* Великий, напівпрозорий "N/A" */
-.no-schedule-message::before {
-    content: "N/A";
-    /* Залишаємо vw для адаптивного розміру на мобільних */
-    font-size: 40vw;
-    font-weight: 700;
-    /* Використовуємо Primary з дуже низькою прозорістю */
-   color: #38765e66;
-
-    /* ЗАМІНЕНО: var(--color-placeholder, rgb(56 118 94 / 5%)) -> var(--color-primary) */
-    position: absolute;
-    top: 50%;
-    left: 50%;
-
-    /* Зміщення */
-    transform: translate(-45%, calc(-50% - 15vh)) rotate(35deg);
-
-    line-height: 1;
-    user-select: none;
-    pointer-events: none;
-    z-index: 0;
-}
-
-/* --- ОБМЕЖЕННЯ РОЗМІРУ ДЛЯ ПК (КЛЮЧОВЕ ВИПРАВЛЕННЯ) --- */
-@media (min-width: 600px) {
-
-    /* Застосовуємо, коли екран стає ширшим за 600px */
-    .no-schedule-message::before {
-        /* Фіксуємо максимальний розмір шрифту, щоб він не збільшувався далі */
-        /* Наприклад, 52vw при 400px ширини вікна - це близько 208px. 
-           Встановимо фіксоване значення, близьке до цього. */
-        font-size: 25vw;
-
-        /* Також може знадобитися зменшити вертикальне зміщення, щоб N/A не було надто високо */
-        transform: translate(-45%, calc(-50% - 80px)) rotate(35deg);
-    }
-}
-
-/* Текст (Занять немає на цю дату) */
-.no-schedule-main-text {
-    font-size: 1.3em;
-    font-weight: bold;
-    color: var(--color-primary);
-    /* ЗАМІНЕНО: var(--color-primary, #6a6a6a) -> var(--color-primary) */
-    position: relative;
-    z-index: 1;
-    margin-bottom: 10px;
-    max-width: 80%;
-    /* Збереження вашого зміщення */
-    transform: translateY(-5vh);
-}
-
-/* Додаткова підказка (На жаль, інформація...) */
-.no-schedule-sub-text {
-    font-size: 1em;
-    color: var(--color-text-dark);
-    /* ЗАМІНЕНО: var(--color-text-secondary, #999) -> var(--color-text-dark) */
-    opacity: 0.8;
-    position: relative;
-    z-index: 1;
-    max-width: 80%;
-
-    /* Збереження вашого зміщення */
-    transform: translateY(-5vh);
-}
-
-
-
-
-
-
-
-/* === ІЗОЛЬОВАНІ СТИЛІ === */
-
-/* Загальні стилі для ізоляції */
-#notifications-view {
-    padding: 20px;
-}
-
-/* Контейнер розкладу */
-.schedule-wrapper {
-    max-width: 400px;
-    width: 100%;
-}
-
-/* Заголовок h1 */
-
-
-/* --- СТРУКТУРНІ СТИЛІ: КАРТКА --- */
-.schedule-card {
-    /* Змінено: Картка тепер використовує flex-direction: column для вертикального розміщення рядків */
-    display: flex;
-    flex-direction: column;
-
-    /* align-items: baseline; - видалено/змінено, оскільки тепер це вертикальний flex */
-    /* justify-content: space-between; - видалено, оскільки тепер це вертикальний flex */
-
-    padding: 15px 20px;
-    border-radius: 20px;
-    margin-bottom: 20px;
-    position: relative;
-    /* gap: 10px; можна додати, щоб забезпечити проміжок між рядками, якщо потрібно */
-}
-
-/* Стилі для рядка Заголовок + Статус (тільки для card-first в HTML) */
-.card-info-header {
-    display: flex;
-    justify-content: space-between;
-    z-index: 1;
-}
-
-.card-first {
-    background-color: var(--color-card-dark);
-	color: var(--color-btn-card-light);
-    /* ЗАМІНЕНО: #ECFCE5 -> var(--color-secondary) */
-    min-height: auto;
-    /* Встановлюємо auto або видаляємо, оскільки висота зміниться */
-}
-.card-first .card-info h2 {
-    font-size: 24px;
-    font-weight: 800;
-    margin: 0;
-    color: var(---color-btn-card-light);
-    /* ЗАМІНЕНО: #222 -> var(--color-text-dark) */
-}
-.card-second {
-    background-color: var(--color-background);
-	color: var(--color-text-dark);
-    /* ЗАМІНЕНО: #ffffff -> var(--color-background) */
-}
-
-/* Контейнер назви пари (I пара, II пара...) */
-.card-info {
-    /* Змінено: більше не використовується flex-direction: column, але залишено для h2 */
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 15px;
-}
-
-.card-info h2 {
-    font-size: 24px;
-    font-weight: 800;
-    margin: 0;
-    color: var(--color-text-dark);
-    /* ЗАМІНЕНО: #222 -> var(--color-text-dark) */
-}
-
-/* Контейнер статусу */
-.status-container {
-    /* Змінено: position: relative; залишаємо, але додаємо width, щоб займати необхідний простір */
-    position: relative;
-    margin-top: 0;
-    /* Видалено попередній margin-top: 4px; */
-    height: 31px;
-    /* Фіксована висота, щоб не стрибало при абсолютних елементах */
-    min-width: 145px;
-    /* Приблизна ширина для розміщення двох пігулок */
-}
-
-.status-label-pill,
-.status-time-pill {
-    /* Змінено: тепер вони розміщуються всередині status-container, який знаходиться праворуч */
-    position: absolute;
-    top: 0;
-    height: 31px;
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-}
-
-.status-label-pill {
-    left: auto;
-    /* Видаляємо left: 0; */
-
-    background-color: var(--color-btn-light);
-    /* ЗАМІНЕНО: #D1ECC7 -> var(--color-btn-light) */
-    color: var(--color-text-dark);
-    /* ЗАМІНЕНО: #263F27 -> var(--color-text-dark) */
-    padding: 0px 14px;
-    z-index: 2;
-    justify-content: center;
-}
-
-.status-time-pill {
-    left: auto;
-    /* Видаляємо left: 0; */
-    right: 0;
-    /* Прикріплюємо до правого краю контейнера статусу */
-    background-color: var(--color-background);
-    /* ЗАМІНЕНО: #FCFCF7 -> var(--color-background) */
-    color: var(--color-text-dark);
-    /* ЗАМІНЕНО: #263F27 -> var(--color-text-dark) */
-    z-index: 1;
-    padding: 0 20px 0 80px;
-}
-
-/* Контейнер розкладу годин */
-.card-times {
-    /* Змінено: Встановлюємо display: flex та justify-content: space-between */
-    display: flex;
-    justify-content: space-between;
-    /* Розміщує time-row по всій ширині */
-
-    flex-direction: row;
-    /* Забезпечує горизонтальне розміщення time-row */
-    align-items: flex-start;
-    /* Вирівнювання елементів (time-row) на початку */
-    gap: 15px;
-    /* Проміжок між парами часу */
-
-    position: relative;
-    z-index: 10;
-
-    /* Видалено: flex-direction: column; */
-    /* Видалено: align-items: flex-end; */
-}
-
-.time-row {
-    font-size: 18px;
-    letter-spacing: 0.5px;
-    font-weight: 600;
-    
-    /* ЗАМІНЕНО: #555 -> var(--color-text-dark) */
-    white-space: nowrap;
-    /* Запобігає переносу часу на новий рядок */
-    display: contents;
-}
-
-/* Стилі для часів (залишено без змін) */
-.time-row .time-new {
-    font-weight: 800 !important;
-    font-size: 20px !important;
-    /* ЗАМІНЕНО: #555 -> var(--color-text-dark) */
-}
-.time-pouse-start {
-    
-    /* ЗАМІНЕНО: #919191 -> var(--color-text-dark) */
-    opacity: 0.7;
-}
-.time-pouse-end {
-    
-    /* ЗАМІНЕНО: #919191 -> var(--color-text-dark) */
-    opacity: 0.7;
-}
-
-/* 1. Створення Keyframes для імітації миготіння */
-@keyframes blink-colon {
-    0% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.3;
-    }
-
-    100% {
-        opacity: 1;
-    }
-}
-
-/* 2. Виправлені стилі для елемента .animated-clok */
-.animated-clok {
-    /* Робимо елемент вбудовано-блоковим, щоб він коректно розміщувався в рядку */
-    display: inline-block;
-
-    animation-name: blink-colon;
-    animation-duration: 1.2s;
-    animation-timing-function: steps(1, end);
-    animation-iteration-count: infinite;
-}
-
-/* --- СТИЛІ ДЛЯ SVG ЕЛЕМЕНТА (залишено без змін) --- */
-.svg-pattern {
-    position: absolute;
-    top: 50%;
-    left: 0px;
-    transform: translateY(-45%);
-    opacity: 0.2;
-    z-index: 0;
-}
-
-/* Налаштовуємо кольори для відповідності фону картки */
-.svg-pattern path {
-    fill: var(--color-secondary);
-    /* ЗАМІНЕНО: #DDF3D6 -> var(--color-secondary) */
-}
-
-/*
- * СТИЛІ ДЛЯ КНОПКИ ФІЛЬТРА ДЗВІНКІВ
- */
-#toggle-bells-btn {
+.location-wrapper {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    background-color: var(--color-btn-light);
-    /* ЗАМІНЕНО: #c5e1d1 -> var(--color-btn-light) */
-    color: var(--color-primary);
-    border: none;
-    border-radius: 20px;
-    padding: 8px 16px;
-    margin: 0 auto 16px auto;
-    /* Центруємо кнопку */
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
+    margin-bottom: 10px;
 }
 
-#toggle-bells-btn:hover {
-    background-color: var(--color-primary);
-    color: var(--color-text-light);
-}
-
-#toggle-bells-btn .material-icons {
-    font-size: 18px;
-}
-
-/* Стиль для режиму "Показати всі" */
-#toggle-bells-btn[data-mode="all"] {
-    background-color: var(--color-btn-light);
-    /* ЗАМІНЕНО: #c5e1d1 -> var(--color-btn-light) */
-    color: var(--color-primary);
-    border-color: transparent;
-}
-
-.controls-bar {
-    display: flex;
-    justify-content: space-between;
-    /* Розносить дату та кнопку по краях */
-    align-items: center;
-    margin-bottom: 16px;
-    /* Відступ від карток дзвінків */
-    padding: 0 8px;
-    /* Невеликий внутрішній відступ */
-    gap: 10px;
-    /* Відстань між елементами */
-}
-
-.controls-bar .date-display {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--color-text-dark);
-    /* ЗАМІНЕНО: var(--color-text-secondary) -> var(--color-text-dark) */
-    opacity: 0.8;
-    /* Трохи світліший колір */
-    flex-shrink: 0;
-    /* Щоб дата не стискалася */
-}
-
-/* Оновлення стилів кнопки, щоб вона працювала в flex-контейнері */
-#toggle-bells-btn {
-    /* Видаляємо старий margin, оскільки тепер flex ним керує */
-    margin: 0;
-}
-
-/* --- СТИЛІ ДЛЯ БАНЕРА ВСТАНОВЛЕННЯ (PWA) --- */
-/* Цей блок замінює попередні версії і використовує :root змінні */
-
-.install-banner {
-    position: fixed;
-    bottom: 67px;
-    /* left: 0; */
-    /* right: 0; */
-    height: 65px;
-    border-radius: 20px;
-    /* width: 100%; */
-    max-width: 380px;
-    margin: 10px;
-    /* margin: 0 auto; */
-    background-color: var(--color-secondary);
-    color: var(--color-primary);
-    box-shadow: 0 -4px 12px var(--color-shadow);
-    display: flex;
-    /* justify-content: space-between; */
-    align-items: center;
-    padding: 15px;
-    transform: translateY(130px);
-    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    z-index: 98;
-}
-
-/* Клас .visible додається через JavaScript 
-   для запуску анімації
-*/
-.install-banner.visible {
-    /* Кінцевий стан: банер на місці */
-    transform: translateY(0);
-}
-
-.install-banner p {
-    flex-grow: 1;
-    margin: 0;
-    font-size: 14px;
-    font-weight: 500;
-    /* Добре виглядає з 'Nunito' */
-    padding-right: 15px;
-    /* Відступ від кнопок */
-}
-
-/* Стиль кнопки "Встановити" */
-.install-btn {
-    /* Інвертований стиль: 
-       біла кнопка (як картка) на зеленому фоні
-    */
-    
-    background-color: var(--color-btn-light);
-    color: var(--color-primary);
-    border: none;
-    padding: 8px 16px;
-    /* Використовуємо скруглення, як у інших елементах (напр., .filter-option-item) */
-    border-radius: 20px;
-    font-weight: 700;
-    /* 'Nunito' жирний */
-    cursor: pointer;
-    font-size: 14px;
-    flex-shrink: 0;
-    /* Щоб кнопка не стискалася */
-    transition: background-color 0.2s;
-}
-
-.install-btn:hover {
-    /* При наведенні використовуємо світлий фон, як у .nav-item:hover */
-    background-color: var(--color-primary);
-    color: var(--color-text-light);
-}
-
-
-/* --- СТИЛІ ДЛЯ ЕКРАНА НАЛАШТУВАНЬ (menu-view) --- */
-.settings-container {
-    padding: 20px;
-    height: 100%;
-    box-sizing: border-box;
-}
-
-.settings-list {
-    list-style: none;
-    padding: 0;
-    margin: 20px 0;
-    background: var(--color-background);
-    /* ЗАМІНЕНО: var(--color-surface, #f9f9f9) -> var(--color-background) */
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid var(--color-card-light);
-    /* ЗАМІНЕНО: var(--color-border, #eee) -> var(--color-card-light) */
-}
-
-.settings-item {
+.edit-city-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
+    justify-content: center;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Hourly Forecast Scroll */
+.hourly-forecast {
+    display: flex;
+    overflow-x: auto;
+    gap: 12px;
+    padding: 10px 5px;
+    scrollbar-width: none;
+}
+
+.hourly-forecast::-webkit-scrollbar {
+    display: none;
+}
+
+.hourly-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 12px;
+    min-width: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.hourly-card.active {
+    background: rgba(0, 242, 234, 0.1);
+    border-color: rgba(0, 242, 234, 0.3);
+}
+
+/* Weather Details Grid - Redesigned */
+.weather-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.detail-card {
+    background: rgba(30, 41, 59, 0.3);
+    border-radius: 20px;
     padding: 16px;
-    background: var(--color-background);
-    /* ЗАМІНЕНО: var(--color-card, #fff) -> var(--color-background) */
-    border-bottom: 1px solid var(--color-card-light);
-    /* ЗАМІНЕНО: var(--color-border, #eee) -> var(--color-card-light) */
-    cursor: pointer;
-    transition: background-color 0.2s;
-    min-width: 0;
-}
-
-.settings-item:last-child {
-    border-bottom: none;
-}
-
-.settings-item:active {
-    background-color: var(--color-btn-light);
-    /* ЗАМІНЕНО: var(--color-surface-active, #f0f0f0) -> var(--color-btn-light) */
-}
-
-.settings-item .material-icons {
-    color: var(--color-primary);
-    margin-right: 16px;
-    font-size: 24px;
-    flex-grow: 0;
-    flex-shrink: 0;
-}
-
-.settings-item span {
-    flex-grow: 1;
-    font-size: 1.1em;
-    color: var(--color-text-dark);
-    /* ЗАМІНЕНО: var(--color-text) -> var(--color-text-dark) */
-}
-
-/* Іконка "стрілка вправо" */
-.settings-item .chevron {
-    color: var(--color-text-dark);
-    /* ЗАМІНЕНО: var(--color-text-light, #aaa) -> var(--color-text-dark) */
-    opacity: 0.6;
-    /* ДОДАНО: прозорість для тьмяного вигляду */
-    margin-right: 0;
-    margin-left: 10px;
-    /* Відступ від тексту */
-    flex-grow: 0;
-    /* <-- ВИПРАВЛЕННЯ */
-    flex-shrink: 0;
-    /* <-- ВИПРАВЛЕННЯ */
-}
-
-.settings-item .text {
-    flex-grow: 1;
-    /* <-- Текст займає весь вільний простір */
-    flex-shrink: 1;
-    /* Дозволяємо стискатися, якщо потрібно */
-    min-width: 0;
-    /* Для коректної роботи flex */
-
-    font-size: 1.1em;
-    color: var(--color-text-dark);
-    /* ЗАМІНЕНО: var(--color-text) -> var(--color-text-dark) */
-    text-align: left;
-    /* <-- КЛЮЧОВЕ ВИРІВНЮВАННЯ */
-
-    /* Якщо текст буде задовгим, він не зламає верстку */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    /* Додаємо '...' якщо текст не влазить */
-}
-
-.settings-item .text::-webkit-scrollbar {
-    display: none;
-}
-
-/* --- СТИЛІ ДЛЯ ПЕРЕМИКАЧА (TOGGLE SWITCH) --- */
-
-.settings-item.install-banner-toggle-item .chevron {
-    display: none;
-    /* Приховуємо chevron для елемента з перемикачем */
-}
-
-/* Контейнер перемикача */
-.switch {
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 110px;
     position: relative;
-    display: inline-block;
-    width: 45px;
-    height: 25px;
-    margin-left: auto;
-    /* Притискає перемикач до правого краю */
-    flex-shrink: 0;
-    /* <-- КЛЮЧОВЕ ВИПРАВЛЕННЯ */
+    overflow: hidden;
 }
 
-/* Приховуємо стандартний чекбокс */
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-/* Стиль "повзунка" */
-.slider {
+/* Subtle shine effect on cards */
+.detail-card::after {
+    content: '';
     position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+    pointer-events: none;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+/* Pin Button on Detail Cards */
+.pin-btn {
+    margin-left: auto;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.3);
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    font-size: 10px;
+}
+
+.pin-btn:hover:not(.disabled) {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.6);
+    transform: rotate(-45deg);
+}
+
+.pin-btn.active {
+    background: var(--accent-color, #0ea5e9);
+    color: white;
+    transform: rotate(-45deg);
+}
+
+.pin-btn.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+/* Hero Metric Chips - Pinned metrics in Hero Card */
+.hero-metric-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    font-size: 13px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+}
+
+.hero-metric-chip:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: scale(1.02);
+}
+
+.hero-metric-chip:active {
+    transform: scale(0.98);
+}
+
+.hero-metric-chip i {
+    font-size: 11px;
+    opacity: 0.7;
+}
+
+.hero-metric-chip span {
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.card-icon-small {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.card-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+    font-family: 'Inter', sans-serif;
+}
+
+.card-main-content {
+    display: flex;
+    flex-direction: row;
+    gap: 2px;
+}
+
+.card-value {
+    font-size: 1.75rem;
+    font-weight: 600;
+    font-family: 'Outfit', sans-serif;
+    color: #ffffff;
+    line-height: 1.1;
+}
+
+.card-unit {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 400;
+    margin-left: 2px;
+}
+
+.card-footer {
+    margin-top: auto;
+    padding-top: 8px;
+}
+
+.card-description {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.3;
+    font-weight: 400;
+}
+
+/* Status Badge for Trend */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+    width: fit-content;
+}
+
+.badge-stable {
+    background: rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+}
+
+.badge-up {
+    background: rgba(248, 113, 113, 0.2);
+    color: #fca5a5;
+}
+
+.badge-down {
+    background: rgba(45, 212, 191, 0.2);
+    color: #99f6e4;
+}
+
+/* Tabs */
+.daily-tabs-container {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 10px 0;
+    scrollbar-width: none;
+}
+
+.daily-tab-compact {
+    padding: 10px 16px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    white-space: nowrap;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 80px;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+}
+
+.daily-tab-compact.active {
+    background: rgba(0, 242, 234, 0.15);
+    border-color: rgba(0, 242, 234, 0.4);
+    color: #00f2ea;
+    box-shadow: 0 0 15px rgba(0, 242, 234, 0.1);
+}
+
+.tab-day {
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* Weather Icons Mapping - LOCAL PNG IMAGES */
+.icon-clear-day {
+    background-image: url('images/clear_day.png');
+}
+
+.icon-clear-night {
+    background-image: url('images/clear_night.png');
+}
+
+.icon-partly-cloudy-day {
+    background-image: url('images/partly_cloudy_day.png');
+}
+
+.icon-partly-cloudy-night {
+    background-image: url('images/cloudy.png');
+}
+
+.icon-cloudy {
+    background-image: url('images/cloudy.png');
+}
+
+.icon-rain {
+    background-image: url('images/rain.png');
+}
+
+.icon-snow {
+    background-image: url('images/snow.png');
+}
+
+.icon-fog-day {
+    background-image: url('images/fog.png');
+}
+
+.icon-fog-night {
+    background-image: url('images/fog.png');
+}
+
+.icon-unknown {
+    background-image: url('images/unknown.png');
+}
+
+.icon-drizzle {
+    background-image: url('images/drizzle.png');
+}
+
+.icon-thunderstorm {
+    background-image: url('images/thunderstorm.png');
+}
+
+.icon-heavy-snow {
+    background-image: url('images/heavy_snow.png');
+}
+
+.icon-heavy-rain {
+    background-image: url('images/heavy_showers.png');
+}
+
+/* BELLS SCHEDULE SPECIFIC STYLES - REDESIGNED TIMELINE */
+.timeline-container {
+    margin-top: 3.5rem;
+    /* Space for the top floating indicator */
+    margin-bottom: 2rem;
+    padding: 0 12px;
+}
+
+.timeline-track {
+    position: relative;
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 99px;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.timeline-progress {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: linear-gradient(90deg, #00f2ea, #7f00ff);
+    border-radius: 99px;
+    box-shadow: 0 0 15px rgba(0, 242, 234, 0.4);
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.timeline-point {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 2;
+}
+
+.point-dot {
+    width: 12px;
+    /* Bigger touch target/visual */
+    height: 12px;
+    background: #0f172a;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.timeline-point.passed .point-dot {
+    background: #00f2ea;
+    border-color: #00f2ea;
+    box-shadow: 0 0 10px rgba(0, 242, 234, 0.6);
+}
+
+/* Time labels BELOW the track */
+.point-label {
+    position: absolute;
+    top: 18px;
+    font-size: 12px;
+    font-family: 'Outfit', sans-serif;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Floating "Current Time" Indicator ABOVE the track */
+.current-time-indicator {
+    position: absolute;
+    top: -12px;
+    /* Base align with the track top area */
+    transform: translateX(-50%);
+    z-index: 10;
+    transition: left 0.5s linear;
+}
+
+.current-time-tag {
+    background: rgba(127, 0, 255, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'Outfit', sans-serif;
+    padding: 4px 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 12px rgba(127, 0, 255, 0.3);
+    position: relative;
+    transform: translateY(-100%);
+    /* Lifts the tag completely above the point */
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+}
+
+/* Arrow pointing down */
+.current-time-tag::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid rgba(127, 0, 255, 0.85);
+}
+
+.bell-card-glass {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+}
+
+/* REFINED ACTIVE CARD - True Glassmorphism */
+.bell-card-active {
+    position: relative;
+    background: linear-gradient(145deg, rgba(20, 20, 25, 0.7) 0%, rgba(30, 35, 45, 0.4) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 32px;
+    padding: 24px;
+    overflow: hidden;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+}
+
+/* Subtle ambient gradient inside */
+.bell-card-active::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    right: -20%;
+    width: 70%;
+    height: 70%;
+    background: radial-gradient(circle, rgba(0, 242, 234, 0.15), transparent 70%);
+    filter: blur(40px);
+    z-index: 0;
+}
+
+/* Ensure content is above the background effects */
+.bell-card-active>* {
+    position: relative;
+    z-index: 1;
+}
+
+/* BIG BREAK CARD (RELAX MODE) */
+.big-break-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 32px;
+    background: rgba(25, 20, 35, 0.75);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+        0 20px 40px -5px rgba(0, 0, 0, 0.6),
+        0 0 40px rgba(255, 183, 0, 0.1);
+    /* Amber warm glow */
+    display: none;
+    /* Initially hidden */
+    animation: fadeIn 0.5s ease;
+}
+
+.big-break-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 183, 0, 0.4) 0%, transparent 60%);
+    animation: pulse-slow 6s infinite;
+    pointer-events: none;
+}
+
+/* --- NEW STYLES: TICKET / WALLET UI --- */
+.ticket-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* "NOW" CARD - HERO STYLE */
+.now-hero-card {
+    position: relative;
+    background: linear-gradient(145deg, rgba(20, 20, 25, 0.7) 0%, rgba(30, 35, 45, 0.4) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 32px;
+    padding: 24px;
+    overflow: hidden;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+}
+
+.now-hero-card::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    right: -20%;
+    width: 70%;
+    height: 70%;
+    background: radial-gradient(circle, rgba(0, 242, 234, 0.15), transparent 70%);
+    filter: blur(40px);
+    z-index: 0;
+}
+
+.progress-ring-container {
+    position: relative;
+    width: 60px;
+    height: 60px;
+}
+
+.progress-ring-circle {
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+    transition: stroke-dashoffset 0.5s ease-in-out;
+}
+
+/* "NEXT" TICKET STYLE */
+.ticket-card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    transition: transform 0.2s;
+}
+
+.ticket-card:active {
+    transform: scale(0.98);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.ticket-left {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-right: 2px dashed rgba(255, 255, 255, 0.1);
+    position: relative;
+    min-width: 80px;
+}
+
+/* Notches for ticket effect */
+.ticket-left::before,
+.ticket-left::after {
+    content: '';
+    position: absolute;
+    right: -6px;
+    width: 12px;
+    height: 12px;
+    background-color: #020617;
+    /* Matches body bg */
+    border-radius: 50%;
+    z-index: 2;
+}
+
+.ticket-left::before {
+    top: -6px;
+}
+
+.ticket-left::after {
+    bottom: -6px;
+
+}
+
+.ticket-right {
+    flex: 1;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.date-pill {
+    padding: 8px 16px;
+    border-radius: 100px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+    transition: all 0.3s;
+}
+
+.date-pill.active {
+    background: #fff;
+    color: #000;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}
+
+.tag-minimal {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.4);
+    margin-bottom: 4px;
+}
+
+/* ================================================
+   LOGIN SCREEN - GLASSMORPHISM 2.0 DESIGN 2025
+   ================================================ */
+
+/* Floating Orbs Container */
+.login-orbs-container {
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: var(--color-card-light);
-    /* ЗАМІНЕНО: var(--color-card-light) */
-    transition: 0.4s;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
 }
 
-/* "Ручка" повзунка */
-.slider:before {
+.login-orb {
     position: absolute;
-    content: "";
-    height: 17px;
-    width: 17px;
-    left: 4px;
-    bottom: 4px;
-    background-color: var(--color-background);
-    /* ЗАМІНЕНО: white -> var(--color-background) */
-    transition: 0.4s;
-}
-
-/* Активний стан (увімкнено) */
-input:checked + .slider {
-    background-color: var(--color-primary);
-    /* Активний колір (зелений) */
-}
-
-input:checked + .slider:before {
-    transform: translateX(20px);
-    /* Зміщення "ручки" */
-}
-
-/* Заокруглення */
-.slider.round {
-    border-radius: 25px;
-}
-
-.slider.round:before {
     border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.6;
+    animation: floatOrb 20s infinite ease-in-out;
+}
+
+.login-orb-1 {
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(127, 0, 255, 0.8) 0%, rgba(127, 0, 255, 0) 70%);
+    top: -10%;
+    left: -15%;
+    animation-delay: 0s;
+}
+
+.login-orb-2 {
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle, rgba(0, 242, 234, 0.6) 0%, rgba(0, 242, 234, 0) 70%);
+    top: 10%;
+    right: -20%;
+    animation-delay: -5s;
+    animation-duration: 25s;
+}
+
+.login-orb-3 {
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.7) 0%, rgba(99, 102, 241, 0) 70%);
+    bottom: 20%;
+    left: -10%;
+    animation-delay: -10s;
+    animation-duration: 22s;
+}
+
+.login-orb-4 {
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, rgba(236, 72, 153, 0.4) 0%, rgba(236, 72, 153, 0) 70%);
+    bottom: -15%;
+    right: -15%;
+    animation-delay: -15s;
+    animation-duration: 30s;
+}
+
+@keyframes floatOrb {
+
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    25% {
+        transform: translate(30px, -40px) scale(1.1);
+    }
+
+    50% {
+        transform: translate(-20px, 20px) scale(0.95);
+    }
+
+    75% {
+        transform: translate(40px, 30px) scale(1.05);
+    }
+}
+
+/* Main Login Container */
+.login-container {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 60px 24px 40px;
+    box-sizing: border-box;
+}
+
+/* Top Content */
+.login-top-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding-top: 20px;
+}
+
+/* Logo Wrapper */
+.login-logo-wrapper {
+    position: relative;
+    margin-bottom: 32px;
+}
+
+.login-logo-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 140px;
+    height: 140px;
+    background: radial-gradient(circle, rgba(127, 0, 255, 0.4) 0%, transparent 70%);
+    filter: blur(30px);
+    animation: pulseGlow 3s infinite ease-in-out;
+}
+
+@keyframes pulseGlow {
+
+    0%,
+    100% {
+        opacity: 0.6;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.2);
+    }
+}
+
+.login-logo-ring {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 32px;
+    background: linear-gradient(135deg, rgba(127, 0, 255, 0.3), rgba(0, 242, 234, 0.3));
+    padding: 3px;
+    animation: rotateGradient 8s linear infinite;
+}
+
+@keyframes rotateGradient {
+    0% {
+        background: linear-gradient(0deg, rgba(127, 0, 255, 0.4), rgba(0, 242, 234, 0.4));
+    }
+
+    25% {
+        background: linear-gradient(90deg, rgba(127, 0, 255, 0.4), rgba(0, 242, 234, 0.4));
+    }
+
+    50% {
+        background: linear-gradient(180deg, rgba(127, 0, 255, 0.4), rgba(0, 242, 234, 0.4));
+    }
+
+    75% {
+        background: linear-gradient(270deg, rgba(127, 0, 255, 0.4), rgba(0, 242, 234, 0.4));
+    }
+
+    100% {
+        background: linear-gradient(360deg, rgba(127, 0, 255, 0.4), rgba(0, 242, 234, 0.4));
+    }
+}
+
+.login-logo-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 30px;
+    background: rgba(15, 23, 42, 0.9);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    color: #fff;
+}
+
+.login-logo-inner i {
+    background: linear-gradient(135deg, #00f2ea, #7f00ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 20px rgba(127, 0, 255, 0.5));
+}
+
+/* Welcome Text */
+.login-welcome-text {
+    margin-bottom: 32px;
+}
+
+.login-title {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.login-title-line {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.6);
+    letter-spacing: 0.05em;
+}
+
+.login-title-brand {
+    font-family: 'Outfit', sans-serif;
+    font-size: 3rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #ffffff 0%, #00f2ea 50%, #7f00ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.02em;
+    line-height: 1;
+}
+
+.login-subtitle {
+    margin: 16px 0 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.5;
+    max-width: 280px;
+}
+
+/* Feature Pills */
+.login-features {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.login-feature-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 100px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.login-feature-pill i {
+    font-size: 14px;
+    color: #00f2ea;
+}
+
+.login-feature-pill span {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.login-feature-pill:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(0, 242, 234, 0.3);
+    transform: translateY(-2px);
+}
+
+/* Login Card Wrapper */
+.login-card-wrapper {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Login Card - Glassmorphism 2.0 */
+.login-card {
+    position: relative;
+    background: rgba(20, 20, 30, 0.6);
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
+    border-radius: 32px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-top-color: rgba(255, 255, 255, 0.15);
+    box-shadow:
+        0 25px 50px -12px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+        0 0 80px rgba(127, 0, 255, 0.1);
+    overflow: hidden;
+}
+
+/* Card Shine Effect */
+.login-card-shine {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.03),
+            rgba(255, 255, 255, 0.08),
+            rgba(255, 255, 255, 0.03),
+            transparent);
+    animation: cardShine 4s infinite;
+    pointer-events: none;
+}
+
+@keyframes cardShine {
+    0% {
+        transform: translateX(-50%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Card Content */
+.login-card-content {
+    position: relative;
+    z-index: 1;
+    padding: 32px 24px;
+}
+
+/* Card Header */
+.login-card-header {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.login-card-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: rgba(52, 211, 153, 0.15);
+    border: 1px solid rgba(52, 211, 153, 0.25);
+    border-radius: 100px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #6ee7b7;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 16px;
+}
+
+.login-card-badge i {
+    font-size: 10px;
+}
+
+.login-card-title {
+    margin: 0 0 8px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #fff;
+}
+
+.login-card-desc {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.5;
+}
+
+/* Google Sign-In Button */
+.login-google-btn {
+    position: relative;
+    width: 100%;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.login-google-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.login-google-btn:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.login-google-btn-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9));
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    transition: all 0.3s ease;
+}
+
+.login-google-btn:hover .login-google-btn-bg {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.95));
+    border-color: rgba(0, 0, 0, 0.12);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+}
+
+.login-google-btn-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 18px 24px;
+}
+
+.login-google-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.login-google-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2937;
+    letter-spacing: -0.01em;
+}
+
+.login-google-arrow {
+    display: none;
+}
+
+/* Terms Text */
+.login-terms {
+    margin: 20px 0 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.35);
+    text-align: center;
+    line-height: 1.6;
+}
+
+.login-terms a {
+    color: rgba(255, 255, 255, 0.5);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color 0.2s ease;
+}
+
+.login-terms a:hover {
+    color: #00f2ea;
+}
+
+/* Animation for Login View Entry */
+#login-view.active-view .login-logo-wrapper {
+    animation: slideInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+#login-view.active-view .login-welcome-text {
+    animation: slideInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+    opacity: 0;
+}
+
+#login-view.active-view .login-features {
+    animation: slideInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+    opacity: 0;
+}
+
+#login-view.active-view .login-card {
+    animation: slideInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+    opacity: 0;
+}
+
+@keyframes slideInDown {
+    0% {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Loading Spinner for Google Button */
+.login-loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(31, 41, 55, 0.2);
+    border-top: 2px solid #1f2937;
+    border-radius: 50%;
+    animation: spinLoader 0.8s linear infinite;
+}
+
+@keyframes spinLoader {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
